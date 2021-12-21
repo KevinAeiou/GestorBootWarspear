@@ -1,13 +1,14 @@
 package com.kevin.ceep.ui.activity;
 
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOTA;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_POSICAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_RESULTADO_NOTA_CRIADA;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.POSICAO_INVALIDA;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,8 +19,6 @@ import com.kevin.ceep.model.Nota;
 
 public class FormularioNotaActivity extends AppCompatActivity {
 
-    public static final int POSICAO_INVALIDA = -1;
-    public static final String CHAVE_POSICAO = "posicao";
     private int posicaoRecebida = POSICAO_INVALIDA;
     private TextView titulo;
     private TextView descricao;
