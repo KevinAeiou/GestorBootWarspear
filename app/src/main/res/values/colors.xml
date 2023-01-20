@@ -7,4 +7,25 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="cor_texto_licenca_principiante">#ffcc00</color>
+    <color name="cor_texto_licenca_iniciante">#c3c3c3</color>
+    <color name="cor_texto_licenca_mestre">#ffcc00</color>
+    <color name="cor_texto_licenca_aprediz">#66ff66</color>
+    <color name="cor_texto_raridade_especial">#ff6666</color>
+    <color name="cor_texto_raridade_raro">#ff66ff</color>
+    <color name="cor_texto_raridade_comum">#FCF5EF</color>
+    <color name="cor_texto_nivel">#00ff00</color>
+    <color name="cor_background_escuro">#6DB5CA</color>
+    <color name="cor_background_claro">#B8D8E0</color>
+    <color name="cor_background_laranja">#FF7235</color>
+    <color name="cor_background_bordo">#A71500</color>
+    <color name="cor_background_card">#FCF5EF</color>
+
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="light_blue_900">#FF01579B</color>
+    <color name="light_blue_A200">#FF40C4FF</color>
+    <color name="light_blue_A400">#FF00B0FF</color>
+    <color name="black_overlay">#66000000</color>
+    <string name="cor_teste">#ffffff</string>
 </resources>

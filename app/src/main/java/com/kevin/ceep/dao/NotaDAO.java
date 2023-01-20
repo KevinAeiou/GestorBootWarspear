@@ -5,21 +5,21 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.kevin.ceep.model.Nota;
+import com.kevin.ceep.model.Trabalho;
 
 public class NotaDAO {
 
-    private final static ArrayList<Nota> notas = new ArrayList<>();
+    private final static ArrayList<Trabalho> notas = new ArrayList<>();
 
-    public List<Nota> todos() {
-        return (List<Nota>) notas.clone();
+    public List<Trabalho> todos() {
+        return (List<Trabalho>) notas.clone();
     }
 
-    public void insere(Nota... notas) {
+    public void insere(Trabalho... notas) {
         NotaDAO.notas.addAll(Arrays.asList(notas));
     }
 
-    public void altera(int posicao, Nota nota) {
+    public void altera(int posicao, Trabalho nota) {
         notas.set(posicao, nota);
     }
 

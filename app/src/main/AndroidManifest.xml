@@ -10,10 +10,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Ceep">
         <activity
-            android:name=".ui.activity.FormularioNotaActivity"
+            android:name=".ui.activity.ListaPersonagemActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activity.ListaNotasActivity"
+            android:name=".ui.activity.RecuperarSenhaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.CadastrarUsuarioActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.EntrarUsuarioActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,6 +27,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.activity.ConfirmaTrabalhoActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.activity.ListaRaridadeActivity" />
+        <activity
+            android:name=".ui.activity.ListaTrabalhosEspecificosActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.activity.ListaRaridadeActivity" />
+        <activity
+            android:name=".ui.activity.ListaRaridadeActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.activity.ListaTrabalhosActivity" />
+        <activity
+            android:name=".ui.activity.ListaProfissoesActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.activity.ListaRaridadeActivity" />
+        <activity
+            android:name=".ui.activity.ListaTrabalhosActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

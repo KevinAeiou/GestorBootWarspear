@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.activity.ListaTrabalhosEspecificosActivity">
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayoutTrabalhosEspecificos"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/layoutTrabalhosEspecificos">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/listaTrabalhoEspecificoRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            tools:listitem="@layout/item_trabalho_especifico" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutTrabalhosEspecificos"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/card_background"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/swipeRefreshLayoutTrabalhosEspecificos">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/txtNovoTrabalhoEspecifico"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:layout_constraintStart_toStartOf="@id/layoutTrabalhosEspecificos"
+            app:layout_constraintTop_toTopOf="@id/layoutTrabalhosEspecificos"
+            app:layout_constraintEnd_toStartOf="@id/txtNovoNivelTrabalhoEspecifico"
+            app:layout_constraintBottom_toTopOf="@id/botaoNovoTrabalhoEspecifico">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtNovoTrabalhoEspecifico"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Novo trabalho"
+                android:inputType="text"
+                android:maxLines="3"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/txtNovoNivelTrabalhoEspecifico"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="75dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintStart_toEndOf="@id/txtNovoTrabalhoEspecifico"
+            app:layout_constraintEnd_toEndOf="@id/layoutTrabalhosEspecificos"
+            app:layout_constraintTop_toTopOf="@id/txtNovoTrabalhoEspecifico"
+            app:layout_constraintBottom_toBottomOf="@id/txtNovoTrabalhoEspecifico">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtNovoNivelTrabalhoEspecifico"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nível"
+                android:text="10"
+                android:inputType="numberSigned"
+                android:maxLines="1"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/botaoNovoTrabalhoEspecifico"
+            style="@style/btn"
+            android:text="@string/cadastrar_novo_trabalho"
+            android:layout_margin="16dp"
+            android:layout_marginTop="6dp"
+            android:visibility="gone"
+            android:background="@drawable/botao_estados_background"
+            app:layout_constraintStart_toStartOf="@id/txtNovoTrabalhoEspecifico"
+            app:layout_constraintEnd_toEndOf="@id/txtNovoNivelTrabalhoEspecifico"
+            app:layout_constraintTop_toBottomOf="@id/txtNovoTrabalhoEspecifico"
+            app:layout_constraintBottom_toBottomOf="@id/layoutTrabalhosEspecificos"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

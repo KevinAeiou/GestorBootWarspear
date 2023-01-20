@@ -1,10 +1,10 @@
-package com.kevin.ceep.ui.activity;
+/*package com.kevin.ceep.ui.activity;
 
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOTA;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_POSICAO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_RESULTADO_NOTA_CRIADA;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.POSICAO_INVALIDA;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,38 +15,40 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.kevin.ceep.R;
-import com.kevin.ceep.model.Nota;
+import com.kevin.ceep.model.Trabalho;
 
 public class FormularioNotaActivity extends AppCompatActivity {
 
     private int posicaoRecebida = POSICAO_INVALIDA;
-    private TextView titulo;
-    private TextView descricao;
+    private TextView nome_trabalho;
+    private TextView tipo_licenca;
+    private TextView nivel_trabalho;
+    private TextView profissao_trabalho;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_formulario_nota);
+        setContentView(R.layout.activity_formulario_trabalhos);
 
         inicializaCampos();
 
         Intent dadosRecebidos = getIntent();
         if (dadosRecebidos.hasExtra(CHAVE_NOTA)){
-            Nota notaRecebida = (Nota) dadosRecebidos
+            Trabalho notaRecebida = (Trabalho) dadosRecebidos
                     .getSerializableExtra(CHAVE_NOTA);
             posicaoRecebida = dadosRecebidos.getIntExtra(CHAVE_POSICAO, POSICAO_INVALIDA);
             preencheCampos(notaRecebida);
         }
     }
 
-    private void preencheCampos(Nota notaRecebida) {
-        titulo.setText(notaRecebida.getTitulo());
-        descricao.setText(notaRecebida.getDescricao());
+    private void preencheCampos(Trabalho notaRecebida) {
+        nome_trabalho.setText(notaRecebida.getNome());
+        tipo_licenca.setText(notaRecebida.getProfissao());
     }
 
     private void inicializaCampos() {
-        titulo = findViewById(R.id.formulario_nota_titulo);
-        descricao = findViewById(R.id.formulario_nota_descricao);
+        nome_trabalho = findViewById(R.id.formulario_nota_titulo);
+        tipo_licenca = findViewById(R.id.formulario_nota_descricao);
     }
 
     @Override
@@ -58,27 +60,30 @@ public class FormularioNotaActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (ehMenuSalvaNota(item)){
-            Nota notaCriada = criaNota();
-            retornaNota(notaCriada);
+            //Trabalho notaCriada = criaNota();
+            //retornaNota(notaCriada);
             finish();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void retornaNota(Nota nota) {
+    private void retornaNota(Trabalho nota) {
         Intent resultadoInsercao = new Intent();
         resultadoInsercao.putExtra(CHAVE_NOTA, nota);
         resultadoInsercao.putExtra(CHAVE_POSICAO, posicaoRecebida);
-        setResult(CODIGO_RESULTADO_NOTA_CRIADA, resultadoInsercao);
+        setResult(Activity.RESULT_OK, resultadoInsercao);
     }
 
-    @NonNull
-    private Nota criaNota() {
-        return new Nota(titulo.getText().toString(),
-                descricao.getText().toString());
+    /*@NonNull
+    private Trabalho criaNota() {
+        return new Trabalho(
+                nome_trabalho.getText().toString(),
+                tipo_licenca.getText().toString(),
+                profissao_trabalho.getText().toString(),
+                nivel_trabalho.getText().toString());
     }
 
     private boolean ehMenuSalvaNota(@NonNull MenuItem item) {
         return item.getItemId() == R.id.menuFormularioNotaIcSalva;
     }
-}
+}*/

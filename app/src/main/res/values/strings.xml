@@ -1,3 +1,36 @@
 <resources>
-    <string name="app_name">Ceep</string>
+    <string name="app_name">Produzir</string>
+    <string name="teste">#00ff00</string>
+    <string name="string_desfazer">Defacer</string>
+    <string name="cadastrar_novo_trabalho">Cadastrar novo trabalho</string>
+    <string-array name="licencas">
+        <item>Licença de produção do iniciante</item>
+        <item>Licença de produção do aprendiz</item>
+        <item>Licença de produção do mestre</item>
+        <item>Licença de produção do principiante</item>
+    </string-array>
+    <string name="title_activity_splashscreen">SplashscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="string_ola">Olá</string>
+    <string name="string_entre_em_sua_conta">Entre em sua conta</string>
+    <string name="string_email">Email</string>
+    <string name="string_senha">Senha</string>
+    <string name="string_esqueceu_sua_senha">Esqueceu sua senha?</string>
+    <string name="string_entrar">Entrar</string>
+    <string name="string_nao_possui_uma_conta">Não possui uma conta?</string>
+    <string name="string_cadastre_se"><u>Cadastre-se</u></string>
+
+    <string name="stringCasoChaMa">(.*[A-Z].*)</string>
+    <string name="stringCasoCharMi">(.*[a-z].*)</string>
+    <string name="stringCasoCharNum">(.*[0-9].*)</string>
+    <string name="stringCasoCharS">(.*[@,#,$,%].*$)</string>
+    <string name="string_senha_curta">Senha muito curta.</string>
+    <string name="string_senha_numerica">Senha deve conter ao menos um número.</string>
+    <string name="string_senha_minuscula">Senha deve conter ao menos uma letra minúscula.</string>
+    <string name="string_senha_maiuscula">Senha deve conter ao menos uma letra maiúscula.</string>
+    <string name="string_senha_especial">Senha deve conter ao menos um caracter especial.</string>
+    <string name="string_entre"><u>Entre</u></string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

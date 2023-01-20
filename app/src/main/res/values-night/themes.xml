@@ -12,5 +12,19 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="windowActionBar">true</item>
+        <item name="windowNoTitle">false</item>
+
+        <!-- enable window content transitions -->
+        <item name="android:windowActivityTransitions">true</item>
+
+        <!-- specify enter and exit transitions -->
+        <item name="android:windowEnterTransition">@transition/da_direita</item>
+        <item name="android:windowExitTransition">@transition/da_esquerda</item>
+    </style>
+
+    <style name="ThemeOverlay.Ceep.FullscreenContainer" parent="">
+        <item name="fullscreenBackgroundColor">@color/light_blue_900</item>
+        <item name="fullscreenTextColor">@color/light_blue_A400</item>
     </style>
 </resources>
