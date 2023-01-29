@@ -61,7 +61,6 @@ public class ListaTrabalhoAdapter extends RecyclerView.Adapter<ListaTrabalhoAdap
             return;
         }
         trabalhos.remove(position);
-        trabalhos.clear();
         notifyItemRemoved(position);
         notifyItemRangeChanged(position,trabalhos.size());
         notifyDataSetChanged();
@@ -108,7 +107,7 @@ public class ListaTrabalhoAdapter extends RecyclerView.Adapter<ListaTrabalhoAdap
             if (estado==0){
                 cardview_trabalho.setCardBackgroundColor(Color.parseColor("#6DB5CA"));
             }else if (estado==1){
-                cardview_trabalho.setCardBackgroundColor(Color.parseColor("#ca6db5"));
+                cardview_trabalho.setCardBackgroundColor(Color.parseColor("#6d87ca"));
             }else if (estado==2){
                 cardview_trabalho.setCardBackgroundColor(Color.parseColor("#b5ca6d"));
             }

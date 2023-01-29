@@ -1,23 +1,25 @@
 package com.kevin.ceep.ui.activity;
 
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_CONFIRMA_CADASTRO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_CONFIRMA;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
-import androidx.core.app.ActivityOptionsCompat;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,10 +30,10 @@ import com.kevin.ceep.model.Trabalho;
 
 public class ConfirmaTrabalhoActivity extends AppCompatActivity {
 
-    private AutoCompleteTextView autoComplete;
-    private String[] licencas;
+    private AutoCompleteTextView autoCompleteLicenca,autoCompleteQuantidade;
+    private String[] licencas,quantidade;
     private String personagemId;
-    int pos;
+    int pos,quantidadeSelecionada;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +50,6 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         configuraDropDrow();
-        retornaLicencaSelecionada();
         Log.i(TAG_ACTIVITY,"onResumeConfirma");
     }
 
@@ -60,12 +61,22 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
     }
 
     private void configuraDropDrow() {
-        autoComplete = findViewById(R.id.autoCompleteTextView);
+        autoCompleteLicenca = findViewById(R.id.txtAutoCompleteLicencaTrabalho);
+        autoCompleteQuantidade = findViewById(R.id.txtAutoCompleteQuantidadeTrabalho);
+
         licencas = getResources().getStringArray(R.array.licencas);
-        ArrayAdapter adapter = new ArrayAdapter<>(this,
+        quantidade = getResources().getStringArray(R.array.quantidade);
+
+        ArrayAdapter adapterLicenca = new ArrayAdapter<>(this,
                 R.layout.item_dropdrown, licencas);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        autoComplete.setAdapter(adapter);
+        ArrayAdapter adapterQuantidade = new ArrayAdapter<>(this,
+                R.layout.item_dropdrown, quantidade);
+
+        adapterLicenca.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapterQuantidade.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        autoCompleteLicenca.setAdapter(adapterLicenca);
+        autoCompleteQuantidade.setAdapter(adapterQuantidade);
     }
 
     private void configuraBotaoCadastraTrabalho() {
@@ -84,9 +95,13 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
             personagemId = (String) dadosRecebidos.
                     getSerializableExtra(CHAVE_NOME_PERSONAGEM);
             configuraImagemTrabalho(trabalho);
-            adicionaNovoTrabalho(trabalho);
+            int quantidadeTrabalho = retornaQuantidadeSelecionada();
+            for (int x=0;x<quantidadeTrabalho;x++){
+                adicionaNovoTrabalho(trabalho);
+            }
         }
     }
+
 
     private void configuraImagemTrabalho(Trabalho trabalho) {
         ImageView imageView = findViewById(R.id.imageView);
@@ -94,31 +109,48 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
 
     private void adicionaNovoTrabalho(Trabalho trabalho) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference minhareferencia = database.getReference("Usuarios");
+        DatabaseReference minhareferencia = database.getReference(CHAVE_USUARIOS);
         String usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         String novoId = geraIdAleatorio();
         String licenca = retornaLicencaSelecionada();
-        minhareferencia.child(usuarioId).child("Lista_personagem").child(personagemId).child("Lista_desejo").child(novoId).setValue(trabalho);
-        minhareferencia.child(usuarioId).child("Lista_personagem").child(personagemId).child("Lista_desejo").child(novoId).child("id").setValue(novoId);
-        minhareferencia.child(usuarioId).child("Lista_personagem").child(personagemId).child("Lista_desejo").child(novoId).child("tipo_licenca").setValue(licenca);
+        minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM).child(personagemId).child(CHAVE_LISTA_DESEJO).child(novoId).setValue(trabalho);
+        minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM).child(personagemId).child(CHAVE_LISTA_DESEJO).child(novoId).child("id").setValue(novoId);
+        minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM).child(personagemId).child(CHAVE_LISTA_DESEJO).child(novoId).child("tipo_licenca").setValue(licenca);
+    }
+
+    private int retornaQuantidadeSelecionada() {
+        quantidadeSelecionada = 1;
+        autoCompleteQuantidade.setOnItemClickListener((adapterView, view, i, l) -> {
+            String selecao = (String) adapterView.getItemAtPosition(i);
+            for (int x=0;x<quantidade.length;x++){
+                if (quantidade[x].equals(selecao)){
+                    Log.d("QUANTIDADE",selecao);
+                    Log.d("QUANTIDADE",String.valueOf(x+1));
+                    quantidadeSelecionada = x+1;
+                }
+            }
+        });
+        Log.d("QUANTIDADE", String.valueOf(quantidadeSelecionada));
+        return quantidadeSelecionada;
     }
 
     private String retornaLicencaSelecionada() {
+        String[] licencas_completas = getResources().getStringArray(R.array.licencas_completas);
 
-        autoComplete.setOnItemClickListener((adapterView, view, i, l) -> {
+        autoCompleteLicenca.setOnItemClickListener((adapterView, view, i, l) -> {
             pos = -1;
             String selecao = (String) adapterView.getItemAtPosition(i);
-            for (int x = 0; x < licencas.length; x++) {
-                if (licencas[x].equals(selecao)) {
+            for (int x = 0; x < licencas_completas.length; x++) {
+                if (licencas_completas[x].equals(selecao)) {
                     pos = x;
                     break;
                 }
             }
-            Log.d("Licenca3",licencas[pos]);
+            Log.d("Licenca3",licencas_completas[pos]);
         });
 
-        return licencas[pos];
+        return licencas_completas[pos];
     }
 
     private void vaiParaListaTrabalhosActivity() {

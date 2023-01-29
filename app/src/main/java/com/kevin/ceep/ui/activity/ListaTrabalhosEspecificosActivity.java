@@ -1,5 +1,6 @@
 package com.kevin.ceep.ui.activity;
 
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PROFISSAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_RARIDADE;
@@ -10,6 +11,7 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -31,7 +33,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Profissao;
-import com.kevin.ceep.model.Raridade;
+import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
@@ -45,6 +47,8 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private TextInputEditText edtNovoTrabalho,edtNovoNivelTrabalho;
     private AppCompatButton botaoNovoTrabalho;
+    private RecyclerView recyclerView;
+    private List<Trabalho> trabalhos;
     private String profissao, raridade, trabalho, nivel;
 
     @Override
@@ -53,21 +57,48 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lista_trabalhos_especificos);
         setTitle(CHAVE_TITULO_TRABALHO);
 
+        mostraDialogodeProresso();
+        recebeDadosIntent();
+
         edtNovoTrabalho = findViewById(R.id.edtNovoTrabalhoEspecifico);
         edtNovoNivelTrabalho = findViewById(R.id.edtNovoNivelTrabalhoEspecifico);
         botaoNovoTrabalho = findViewById(R.id.botaoNovoTrabalhoEspecifico);
-        List<String> dados = retornaDadosRecebidos();
 
-        configuraSwipeRefreshLayout();
+        atualizaListaTrabalhoEspecifico();
+
         configuraEditTrabaho();
         configuraBotaoInsereTrabalho();
-        mostraDialogodeProresso();
-        profissao = dados.get(1);
-        raridade = dados.get(0);
-        List<Trabalho> todosTrabalhos = pegaTodosTrabalhos();
-        configuraRecyclerView(todosTrabalhos);
+        configuraDeslizeItem();
+        configuraSwipeRefreshLayout();
         Log.i(TAG_ACTIVITY,"onCreateListaTrabalhosEspecificos");
         }
+
+    private void configuraDeslizeItem() {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int posicaoDeslize = viewHolder.getAdapterPosition();
+                ListaTrabalhoEspecificoAdapter trabalhoAdapter = (ListaTrabalhoEspecificoAdapter) recyclerView.getAdapter();
+                removeTrabalhoLista(posicaoDeslize);
+                trabalhoAdapter.remove(posicaoDeslize);
+            }
+        };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    private void removeTrabalhoLista(int posicaoDeslize) {
+        String idTrabalho = trabalhos.get(posicaoDeslize).getId();
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference minhaReferencia = database.getReference(CHAVE_LISTA_TRABALHO);
+        minhaReferencia.child(idTrabalho).removeValue();
+    }
 
     private void configuraBotaoInsereTrabalho() {
         botaoNovoTrabalho.setOnClickListener(view -> {
@@ -180,18 +211,16 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
         Log.i(TAG_ACTIVITY,"onStopListaTrabalhosEspecificos");
     }
 
-    private List<String> retornaDadosRecebidos() {
-        List<String> dados = new ArrayList<>();
+    private void recebeDadosIntent() {
         Intent dadosRecebidos = getIntent();
         if (dadosRecebidos.hasExtra(CHAVE_NOME_PROFISSAO)) {
-            Raridade raridade = (Raridade) dadosRecebidos
+            Profissao personagemRecebido = (Profissao) dadosRecebidos
                     .getSerializableExtra(CHAVE_NOME_RARIDADE);
-            Profissao profissao = (Profissao) dadosRecebidos
+            Profissao profissaoRecebido = (Profissao) dadosRecebidos
                     .getSerializableExtra(CHAVE_NOME_PROFISSAO);
-            dados.add(raridade.getNome());
-            dados.add(profissao.getNome());
+            raridade=personagemRecebido.getNome();
+            profissao=profissaoRecebido.getNome();
         }
-        return dados;
     }
 
     private void mostraDialogodeProresso(){
@@ -202,10 +231,10 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
     }
 
     private List<Trabalho> pegaTodosTrabalhos() {
-        List<Trabalho> trabalhos = new ArrayList<>();
+        trabalhos = new ArrayList<>();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = database.getReference("Lista_trabalhos");
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dn:dataSnapshot.getChildren()){
@@ -227,7 +256,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
     }
 
     private void configuraRecyclerView(List<Trabalho> todosTrabalhos) {
-        RecyclerView recyclerView = findViewById(R.id.listaTrabalhoEspecificoRecyclerView);
+        recyclerView = findViewById(R.id.listaTrabalhoEspecificoRecyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         configuraAdapter(todosTrabalhos, recyclerView);
@@ -243,7 +272,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onItemClick(Raridade raridade, int posicao) {
+            public void onItemClick(Personagem personagem, int posicao) {
 
             }
 

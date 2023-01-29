@@ -18,9 +18,10 @@ import android.util.Log;
 
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Profissao;
-import com.kevin.ceep.model.Raridade;
+import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.model.Trabalho;
-import com.kevin.ceep.ui.recyclerview.adapter.ListaRaridadeAdapter;
+import com.kevin.ceep.ui.recyclerview.adapter.ListaPersonagemAdapter;
+import com.kevin.ceep.ui.recyclerview.adapter.ListaProfissaoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import java.util.List;
 
 public class ListaRaridadeActivity extends AppCompatActivity {
 
-    private ListaRaridadeAdapter raridadeAdapter;
+    private ListaProfissaoAdapter raridadeAdapter;
     private ProgressDialog progressDialog;
 
     @Override
@@ -38,8 +39,7 @@ public class ListaRaridadeActivity extends AppCompatActivity {
         setTitle(CHAVE_TITULO_RARIDADE);
 
         mostraDialogodeProgresso();
-        List<Raridade> todasRaridades = pegaTodasRaridades();
-        configuraRecyclerView(todasRaridades);
+        atualizarListaRaridade();
         configuraSwipeRefreshLayout();
     }
 
@@ -52,7 +52,7 @@ public class ListaRaridadeActivity extends AppCompatActivity {
     }
 
     private void atualizarListaRaridade() {
-        List<Raridade> todasRaridades = pegaTodasRaridades();
+        List<Profissao> todasRaridades = pegaTodasRaridades();
         configuraRecyclerView(todasRaridades);
     }
 
@@ -63,36 +63,36 @@ public class ListaRaridadeActivity extends AppCompatActivity {
         Log.i(TAG_ACTIVITY,"onStopListaRaridade");
     }
 
-    private void configuraRecyclerView(List<Raridade> todasRaridades) {
+    private void configuraRecyclerView(List<Profissao> todasRaridades) {
         RecyclerView recyclerView = findViewById(R.id.listaRaridadeRecyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        progressDialog.dismiss();
         configuraAdapter(todasRaridades,recyclerView);
     }
 
-    private void configuraAdapter(List<Raridade> todasRaridades, RecyclerView listaRaridades) {
-        raridadeAdapter = new ListaRaridadeAdapter(this,todasRaridades);
+    private void configuraAdapter(List<Profissao> todasRaridades, RecyclerView listaRaridades) {
+        raridadeAdapter = new ListaProfissaoAdapter(this, todasRaridades);
         listaRaridades.setAdapter(raridadeAdapter);
         raridadeAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(Profissao profissao, int posicao) {
-            }
-
-            @Override
-            public void onItemClick(Raridade raridade, int posicao) {
+            public void onItemClick(Profissao raridade, int posicao) {
                 String personagemId = recebeDadosIntent();
                 Intent iniciaProfissoesActivity =
                         new Intent(ListaRaridadeActivity.this,
                                 ListaProfissoesActivity.class);
                 iniciaProfissoesActivity.putExtra(CHAVE_NOME_PERSONAGEM,personagemId);
-                iniciaProfissoesActivity.putExtra(CHAVE_NOME_RARIDADE,raridade);
+                iniciaProfissoesActivity.putExtra(CHAVE_NOME_RARIDADE, raridade);
                 startActivity(iniciaProfissoesActivity,
                         ActivityOptions.makeSceneTransitionAnimation(ListaRaridadeActivity.this).toBundle());
             }
 
             @Override
-            public void onItemClick(Trabalho trabalho, int adapterPosition) {
+            public void onItemClick(Personagem personagem, int posicao) {
+            }
 
+            @Override
+            public void onItemClick(Trabalho trabalho, int adapterPosition) {
             }
         });
     }
@@ -107,31 +107,11 @@ public class ListaRaridadeActivity extends AppCompatActivity {
         return nomePersonagem;
     }
 
-    private List<Raridade> pegaTodasRaridades() {
-        List<Raridade> raridades = new ArrayList<>();
-        raridades.add(new Raridade("1","Comum"));
-        raridades.add(new Raridade("2","Raro"));
-        raridades.add(new Raridade("3","Especial"));
-        progressDialog.dismiss();
-        /*FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = database.getReference("Raridade");
-
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot dn:dataSnapshot.getChildren()){
-                    Raridade raridade = dn.getValue((Raridade.class));
-                    raridades.add(raridade);
-                }
-                raridadeAdapter.notifyDataSetChanged();
-                progressDialog.dismiss();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });*/
+    private List<Profissao> pegaTodasRaridades() {
+        List<Profissao> raridades = new ArrayList<>();
+        raridades.add(new Profissao("Comum"));
+        raridades.add(new Profissao("Raro"));
+        raridades.add(new Profissao("Especial"));
         return raridades;
     }
 

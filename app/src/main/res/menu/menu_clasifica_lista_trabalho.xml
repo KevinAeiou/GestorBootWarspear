@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:title="Todos"
+        android:id="@+id/itemMenuTodos"
+        app:showAsAction="always"/>
+    <item android:title="Para produzir"
+        android:id="@+id/itemMenuProduzir"/>
+    <item android:title="Produzindo"
+        android:id="@+id/itemMenuProduzindo"/>
+    <item android:title="Concluído"
+        android:id="@+id/itemMenuConcluido"/>
+
+</menu>

@@ -33,58 +33,114 @@
         android:id="@+id/swipeRefreshLayoutPersonagem"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/viewPersonagem"
-        app:layout_constraintBottom_toTopOf="@+id/view">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/viewPersonagem">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listaPersonagensRecyclerView"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            tools:listitem="@layout/item_raridade"/>
+            tools:listitem="@layout/item_raridade" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <view
-        android:id="@+id/view"
-        class="androidx.appcompat.widget.LinearLayoutCompat"
-        android:layout_width="0dp"
-        android:layout_height="75dp"
-        android:background="@color/cor_background_card"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/conteiner_componentes_background2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/swipeRefreshLayoutPersonagem" />
+        app:layout_constraintStart_toStartOf="parent">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/txtNovoPersonagem"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="@id/view"
-        app:layout_constraintEnd_toStartOf="@id/botaoNovoPersonagem"
-        app:layout_constraintStart_toStartOf="@+id/view"
-        app:layout_constraintTop_toTopOf="@id/view">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edtNovoPersonagem"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/txtNovoPersonagem"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Novo personagem"
-            android:inputType="text"
-            android:maxLines="1" />
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintEnd_toEndOf="@id/constraintLayout"
+            app:layout_constraintStart_toStartOf="@+id/constraintLayout"
+            app:layout_constraintTop_toTopOf="@id/constraintLayout"
+            app:layout_constraintBottom_toBottomOf="@id/constraintLayout">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtNovoPersonagem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Novo personagem"
+                android:inputType="text"
+                android:maxLines="1" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/botaoNovoPersonagem"
-        style="@style/botaoOk"
-        android:background="@drawable/botao_estados_background"
-        app:layout_constraintBottom_toBottomOf="@id/view"
-        app:layout_constraintEnd_toEndOf="@id/view"
-        app:layout_constraintTop_toTopOf="@+id/view" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/txtEmailPersonagem"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/txtNovoPersonagem"
+            app:layout_constraintStart_toStartOf="@+id/txtNovoPersonagem"
+            app:layout_constraintTop_toBottomOf="@id/txtNovoPersonagem">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtEmailPersonagem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:maxLines="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/txtSenhaPersonagem"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:visibility="gone"
+            app:passwordToggleEnabled="true"
+            app:layout_constraintEnd_toEndOf="@id/txtEmailPersonagem"
+            app:layout_constraintStart_toStartOf="@+id/txtEmailPersonagem"
+            app:layout_constraintTop_toBottomOf="@id/txtEmailPersonagem">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtSenhaPersonagem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Senha"
+                android:inputType="textPassword"
+                android:maxLines="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/botaoNovoPersonagem"
+            style="@style/btn"
+            android:layout_marginBottom="16dp"
+            android:text="Cadastrar"
+            android:visibility="gone"
+            android:enabled="false"
+            android:background="@drawable/botao_estados_background"
+            app:layout_constraintTop_toBottomOf="@id/txtSenhaPersonagem"
+            app:layout_constraintBottom_toBottomOf="@id/constraintLayout"
+            app:layout_constraintEnd_toEndOf="@id/txtSenhaPersonagem"
+            app:layout_constraintStart_toStartOf="@id/txtSenhaPersonagem" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

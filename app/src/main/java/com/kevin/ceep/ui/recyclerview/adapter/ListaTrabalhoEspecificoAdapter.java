@@ -47,6 +47,16 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
         return trabalhos.size();
     }
 
+    public void remove(int posicao){
+        if (posicao<0 || posicao>=trabalhos.size()){
+            return;
+        }
+        trabalhos.remove(posicao);
+        notifyItemRemoved(posicao);
+        notifyItemRangeChanged(posicao,trabalhos.size());
+        notifyDataSetChanged();
+    }
+
     public class TrabalhoEspecificoViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView nome_trabalho_especifico;

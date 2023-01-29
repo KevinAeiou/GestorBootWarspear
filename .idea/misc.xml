@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/drawable-anydpi/ic_action_salva_nota.xml" value="0.240625" />
+        <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.240625" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/drawable/app_background.xml" value="0.1" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/drawable/botao_background.xml" value="0.1111111111111111" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/drawable/botao_inativo_background.xml" value="0.20925925925925926" />
@@ -15,12 +17,12 @@
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/drawable/ic_licenca.xml" value="0.20185185185185187" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/drawable/ic_sair.xml" value="0.240625" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/activity_cadastrar_usuario.xml" value="0.33" />
-        <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/activity_confirma_trabalho.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/activity_confirma_trabalho.xml" value="0.5" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/activity_entrar_usuario.xml" value="0.25" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/activity_formulario_nota.xml" value="0.33" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/activity_formulario_trabalhos.xml" value="0.17844202898550723" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/activity_lista_notas.xml" value="0.25" />
-        <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/activity_lista_personagem.xml" value="0.1" />
+        <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/activity_lista_personagem.xml" value="0.25" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/activity_lista_profissoes.xml" value="0.22" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/activity_lista_raridade.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/activity_lista_trabalhos.xml" value="0.25" />
@@ -32,11 +34,12 @@
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/fragment_lista_trabalho_feito.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/item_dropdrown.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/item_nota.xml" value="0.67" />
-        <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/item_profissao.xml" value="0.5997171145685997" />
+        <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/item_profissao.xml" value="0.5" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/item_raridade.xml" value="0.5" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/item_trabalho.xml" value="0.4444444444444444" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/item_trabalho_especifico.xml" value="0.67" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/toast_customizado.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/menu/menu_clasifica_lista_trabalho.xml" value="0.33" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/menu/menu_navegacao_lista_trabalho.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.240625" />
       </map>

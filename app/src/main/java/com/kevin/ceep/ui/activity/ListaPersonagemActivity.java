@@ -1,13 +1,17 @@
 package com.kevin.ceep.ui.activity;
 
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_CONFIRMA_CADASTRO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PROFISSAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -22,12 +26,12 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -40,22 +44,29 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Profissao;
-import com.kevin.ceep.model.Raridade;
+import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.model.Trabalho;
-import com.kevin.ceep.ui.activity.ListaTrabalhosActivity;
-import com.kevin.ceep.ui.recyclerview.adapter.ListaRaridadeAdapter;
+import com.kevin.ceep.ui.recyclerview.adapter.ListaPersonagemAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class ListaPersonagemActivity extends AppCompatActivity {
 
-    private ListaRaridadeAdapter personagemAdapter;
+    private ListaPersonagemAdapter personagemAdapter;
+    private List<Personagem> personagens;
     private ProgressDialog progressDialog;
-    private TextInputEditText edtNovoPersonagem;
+    private TextInputLayout txtEmailPersonagem, txtSenhaPersonagem;
+    private TextInputEditText edtNovoPersonagem, edtEmailPersonagem,edtSenhaPersonagem;
     private AppCompatButton botaoNovoPersonagem;
     private FirebaseAuth minhaAutenticacao;
+    private RecyclerView recyclerView;
+    private FirebaseDatabase database;
+    private DatabaseReference minhaReferencia;
+    private String usuarioId,nomePersonagem,emailPersonagem,senhaPersonagem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,22 +74,74 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lista_personagem);
         setTitle(CHAVE_TITULO_PERSONAGEM);
 
-        minhaAutenticacao = FirebaseAuth.getInstance();
-        edtNovoPersonagem = findViewById(R.id.edtNovoPersonagem);
-
         recebeDadosIntent();
-        configuraDialogoProgresso();
 
-        configuraSwipeRefreshLayout();
-        configuraEditPersonagem();
+        inicializaComponentes();
+
+        atualizaListaPersonagem();
+
+        configuraCampoNovoPersonagem();
+
         configuraBotaoDeslogaUsuario();
-        configuraBotaoInserePersonagem();
+        configuraBotaoNovoPersonagem();
+        configuraDeslizeItem();
+        configuraSwipeRefreshLayout();
         Log.i(TAG_ACTIVITY,"onCreateListaPersonagem");
+    }
+
+    private void inicializaComponentes() {
+        minhaAutenticacao = FirebaseAuth.getInstance();
+        usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        database = FirebaseDatabase.getInstance();
+        minhaReferencia = database.getReference(CHAVE_USUARIOS);
+        recyclerView = findViewById(R.id.listaPersonagensRecyclerView);
+        txtEmailPersonagem = findViewById(R.id.txtEmailPersonagem);
+        txtSenhaPersonagem = findViewById(R.id.txtSenhaPersonagem);
+        edtNovoPersonagem = findViewById(R.id.edtNovoPersonagem);
+        edtEmailPersonagem = findViewById(R.id.edtEmailPersonagem);
+        edtSenhaPersonagem = findViewById(R.id.edtSenhaPersonagem);
+    }
+
+    private void configuraDeslizeItem() {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int posicaoDeslize = viewHolder.getAdapterPosition();
+                ListaPersonagemAdapter personagemAdapter = (ListaPersonagemAdapter) recyclerView.getAdapter();
+                removePersonagemLista(posicaoDeslize);
+                personagemAdapter.remove(posicaoDeslize);
+            }
+        };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    private void removePersonagemLista(int swipePosicao) {
+        String idPersonagem = personagens.get(swipePosicao).getId();
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference minhareferencia = database.getReference(CHAVE_USUARIOS);
+        Log.d("Remove",idPersonagem);
+        minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM).
+                child(idPersonagem).removeValue();
+    }
+
+    private void atualizaListaPersonagem() {
+        configuraDialogoProgresso();
+        List<Personagem> todosPersonagens = pegaTodosPersonagens();
+        personagens.clear();
+        configuraRecyclerView(todosPersonagens);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
         Log.i(TAG_ACTIVITY,"onResumeListaPersonagem");
     }
 
@@ -134,12 +197,10 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         super.onStart();
         FirebaseUser currentUser = minhaAutenticacao.getCurrentUser();
         minhaAutenticacao.updateCurrentUser(currentUser);
-        List<Raridade> todosPersonagens = pegaTodosPersonagens();
-        configuraRecyclerView(todosPersonagens);
         Log.i(TAG_ACTIVITY,"onStartListaPersonagem");
     }
 
-    private void configuraEditPersonagem() {
+    private void configuraCampoNovoPersonagem() {
         edtNovoPersonagem.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -148,8 +209,71 @@ public class ListaPersonagemActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                String novoPersonagem = edtNovoPersonagem.getText().toString();
-                verificaNomePersonagem(novoPersonagem);
+                nomePersonagem = edtNovoPersonagem.getText().toString();
+                emailPersonagem = edtEmailPersonagem.getText().toString();
+                senhaPersonagem = edtSenhaPersonagem.getText().toString();
+
+                if(verificaEdtPersonagem(nomePersonagem,emailPersonagem,senhaPersonagem)){
+                    if(verificaEmailValido(emailPersonagem)&!nomePersonagem.isEmpty()&!senhaPersonagem.isEmpty()){
+                        habilitaBotaoRecuperaSenha();
+                    }else{
+                        botaoNovoPersonagem.setEnabled(false);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        edtEmailPersonagem.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                nomePersonagem = edtNovoPersonagem.getText().toString();
+                emailPersonagem = edtEmailPersonagem.getText().toString();
+                senhaPersonagem = edtSenhaPersonagem.getText().toString();
+
+                if(verificaEdtPersonagem(nomePersonagem,emailPersonagem,senhaPersonagem)){
+                    if(verificaEmailValido(emailPersonagem)&!nomePersonagem.isEmpty()&!senhaPersonagem.isEmpty()){
+                        habilitaBotaoRecuperaSenha();
+                    }else{
+                        botaoNovoPersonagem.setEnabled(false);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        edtSenhaPersonagem.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                nomePersonagem = edtNovoPersonagem.getText().toString();
+                emailPersonagem = edtEmailPersonagem.getText().toString();
+                senhaPersonagem = edtSenhaPersonagem.getText().toString();
+
+                if(verificaEdtPersonagem(nomePersonagem,emailPersonagem,senhaPersonagem)){
+                    if(verificaEmailValido(emailPersonagem)&!nomePersonagem.isEmpty()&!senhaPersonagem.isEmpty()){
+                        habilitaBotaoRecuperaSenha();
+                    }else{
+                        botaoNovoPersonagem.setEnabled(false);
+                    }
+                }
             }
 
             @Override
@@ -159,36 +283,96 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         });
     }
 
-    private void verificaNomePersonagem(String novoPersonagem) {
-        if (!novoPersonagem.isEmpty()){
-            botaoNovoPersonagem.setEnabled(true);
-        }else{
-            botaoNovoPersonagem.setEnabled(false);
+    private boolean verificaEmailValido(String email) {
+        if(configuraEditEmail(!email.isEmpty()) & configuraEditEmail(Patterns.EMAIL_ADDRESS.matcher(email).matches())){
+            return true;
+        }else {
+            configuraMenssagemAjuda(email);
+        }
+        return false;
+    }
+
+    private void habilitaBotaoRecuperaSenha() {
+        txtEmailPersonagem.setHintTextColor(ColorStateList.valueOf(Color.parseColor("#007FFF")));
+        txtEmailPersonagem.setBoxStrokeColor(Color.parseColor("#007FFF"));
+        txtEmailPersonagem.setHelperTextEnabled(false);
+        botaoNovoPersonagem.setEnabled(true);
+    }
+
+    private void configuraMenssagemAjuda(String email) {
+
+        if (!configuraEditEmail(Patterns.EMAIL_ADDRESS.matcher(email).matches())){
+            txtEmailPersonagem.setHelperText("Por favor, informe um email válido!");
+        }
+        if (!configuraEditEmail(!email.isEmpty()) & email.length()<1){
+            txtEmailPersonagem.setHelperText("Campo requerido!");
         }
     }
 
-    private void configuraBotaoInserePersonagem() {
+    @SuppressLint("NewApi")
+    private boolean configuraEditEmail(boolean email) {
+        if (!email){
+            txtEmailPersonagem.setHintTextColor(ColorStateList.valueOf(getColor(R.color.cor_background_bordo)));
+            txtEmailPersonagem.setBoxStrokeColor(Color.parseColor("#A71500"));
+            txtEmailPersonagem.setHelperTextColor(ColorStateList.valueOf(getColor(R.color.cor_background_bordo)));
+            txtEmailPersonagem.setHelperTextEnabled(true);
+            botaoNovoPersonagem.setEnabled(false);
+            return false;
+        }
+        return true;
+    }
+
+    private Boolean verificaEdtPersonagem(String novoPersonagem, String emailPersonagem, String senhaPersonagem) {
+        if (!novoPersonagem.isEmpty()||!emailPersonagem.isEmpty()||!senhaPersonagem.isEmpty()){
+            txtEmailPersonagem.setVisibility(View.VISIBLE);
+            txtSenhaPersonagem.setVisibility(View.VISIBLE);
+            botaoNovoPersonagem.setVisibility(View.VISIBLE);
+            return true;
+        }else {
+            txtEmailPersonagem.setVisibility(View.GONE);
+            txtSenhaPersonagem.setVisibility(View.GONE);
+            botaoNovoPersonagem.setVisibility(View.GONE);
+        }
+        return false;
+    }
+
+    private void configuraBotaoNovoPersonagem() {
         botaoNovoPersonagem = findViewById(R.id.botaoNovoPersonagem);
         botaoNovoPersonagem.setOnClickListener(view -> {
             adicionaNovoPersonagem();
-            atualizaListaTrabalho();
+            atualizaListaPersonagem();
             edtNovoPersonagem.setText(null);
+            edtEmailPersonagem.setText(null);
+            edtSenhaPersonagem.setText(null);
             botaoNovoPersonagem.setEnabled(false);
         });
     }
 
     private void adicionaNovoPersonagem() {
 
-        String personagem = edtNovoPersonagem.getText().toString();
+        String novoIdPersonagem = geraIdAleatorio();
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference minhaReferencia = database.getReference("Usuarios");
-        String usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Personagem personagem = new Personagem(novoIdPersonagem,nomePersonagem,emailPersonagem,senhaPersonagem,0);
 
-        String novoId = geraIdAleatorio();
+        minhaReferencia.child(usuarioId).child(CHAVE_PERSONAGEM).child(novoIdPersonagem).setValue(personagem);
+        adicionaNovaListaProfissoes(novoIdPersonagem);
+    }
 
-        minhaReferencia.child(usuarioId).child("Lista_personagem").child(novoId).child("nome").setValue(personagem);
-        minhaReferencia.child(usuarioId).child("Lista_personagem").child(novoId).child("id").setValue(novoId);
+    private void adicionaNovaListaProfissoes(String idPersonagem) {
+
+        String[] profissoes = getResources().getStringArray(R.array.profissoes);
+
+        for (int i = 0; i< profissoes.length; i++){
+            String novoIdProfissao = geraIdAleatorio();
+            Profissao profissao = new Profissao(profissoes[i]);
+            minhaReferencia.child(usuarioId)
+                    .child(CHAVE_PERSONAGEM)
+                    .child(idPersonagem)
+                    .child(CHAVE_LISTA_PROFISSAO)
+                    .child(i+novoIdProfissao)
+                    .setValue(profissao);
+        }
+
     }
 
     private String geraIdAleatorio() {
@@ -220,13 +404,8 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshLayoutPersonagem);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(false);
-            atualizaListaTrabalho();
+            atualizaListaPersonagem();
         });
-    }
-
-    private void atualizaListaTrabalho() {
-        List<Raridade> todosPersonagens = pegaTodosPersonagens();
-        configuraRecyclerView(todosPersonagens);
     }
 
     private void configuraDialogoProgresso() {
@@ -236,16 +415,33 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         progressDialog.show();
     }
 
-    private void configuraRecyclerView(List<Raridade> todosPersonagens) {
-        RecyclerView recyclerView = findViewById(R.id.listaPersonagensRecyclerView);
+    private void configuraRecyclerView(List<Personagem> todosPersonagens) {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         configuraAdapter(todosPersonagens,recyclerView);
     }
 
-    private void configuraAdapter(List<Raridade> todosPersonagens, RecyclerView recyclerView) {
-        personagemAdapter = new ListaRaridadeAdapter(this,todosPersonagens);
+    private void configuraAdapter(List<Personagem> todosPersonagens, RecyclerView recyclerView) {
+        personagemAdapter = new ListaPersonagemAdapter(this,todosPersonagens);
         recyclerView.setAdapter(personagemAdapter);
+        personagemAdapter.setOnRadioButtonClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(Profissao profissao, int posicao) {
+
+            }
+
+            @Override
+            public void onItemClick(Personagem personagem, int posicao) {
+                List<Personagem> todosPersonagens = atualizaEstadoPersonagem(personagem);
+                configuraRecyclerView(todosPersonagens);
+            }
+
+            @Override
+            public void onItemClick(Trabalho trabalho, int adapterPosition) {
+
+            }
+        });
+
         personagemAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(Profissao profissao, int posicao) {
@@ -253,7 +449,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onItemClick(Raridade personagem, int posicao) {
+            public void onItemClick(Personagem personagem, int posicao) {
                 Log.d("PERSONAGEM", personagem.getId());
                 Intent iniciaListaTrabalhoActivity =
                         new Intent(getApplicationContext(),
@@ -272,18 +468,23 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         });
     }
 
-    private List<Raridade> pegaTodosPersonagens() {
-        List<Raridade> personagens = new ArrayList<>();
-        String usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    private List<Personagem> atualizaEstadoPersonagem(Personagem raridade) {
+        personagens = new ArrayList<>();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        Log.d("USUARIO", usuarioId);
-        DatabaseReference databaseReference = database.getReference("Usuarios");
-        databaseReference.child(usuarioId).child("Lista_personagem").
-                addValueEventListener(new ValueEventListener() {
+        DatabaseReference personagemReferencia = database.getReference(CHAVE_USUARIOS);
+        personagemReferencia.child(usuarioId).child(CHAVE_PERSONAGEM).
+                addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         for (DataSnapshot dn:dataSnapshot.getChildren()){
-                            Raridade personagem = dn.getValue(Raridade.class);
+                            Personagem personagem = dn.getValue(Personagem.class);
+                            if (personagem.getId().equals(raridade.getId())){
+                                personagemReferencia.child(usuarioId).child(CHAVE_PERSONAGEM).
+                                        child(personagem.getId()).child("estado").setValue(1);
+                            }else{
+                                personagemReferencia.child(usuarioId).child(CHAVE_PERSONAGEM).
+                                        child(personagem.getId()).child("estado").setValue(0);
+                            }
                             personagens.add(personagem);
                         }
                         personagemAdapter.notifyDataSetChanged();
@@ -295,6 +496,32 @@ public class ListaPersonagemActivity extends AppCompatActivity {
 
                     }
                 });
+        return personagens;
+    }
+
+    private List<Personagem> pegaTodosPersonagens() {
+        personagens = new ArrayList<>();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        Log.d("PERSONAGEM", String.valueOf(personagens));
+        DatabaseReference databaseReference = database.getReference(CHAVE_USUARIOS);
+        databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM).
+                addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot dn:dataSnapshot.getChildren()){
+                            Personagem personagem = dn.getValue(Personagem.class);
+                            personagens.add(personagem);
+                        }
+                        personagemAdapter.notifyDataSetChanged();
+                        progressDialog.dismiss();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+        Log.d("PERSONAGEM", String.valueOf(personagens));
         return personagens;
     }
 }

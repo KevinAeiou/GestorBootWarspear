@@ -18,6 +18,9 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -57,10 +60,8 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private RecyclerView recyclerView;
     private List<Trabalho> trabalhos;
-    private FirebaseAuth minhaAutenticacao;
     private String usuarioId, nomePersonagem;
-    private Fragment listaTrabalhoFragmento;
-
+    private Integer estado = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,20 +69,51 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lista_trabalhos);
         setTitle(CHAVE_TITULO_TRABALHO);
 
-        mostraDialogodeProresso();
-        nomePersonagem = recebeDadosIntent();
+        recebeDadosIntent();
 
-        minhaAutenticacao = FirebaseAuth.getInstance();
         usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-
-        recyclerView = findViewById(R.id.listaTrabalhoRecyclerView);
         atualizaListaTrabalho();
 
         configuraBotaoInsereTrabalho();
         configuraDeslizeItem();
         configuraSwipeRefreshLayout();
         Log.i(TAG_ACTIVITY,"onCreateListaTrabalho");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_clasifica_lista_trabalho,menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()){
+
+            case R.id.itemMenuTodos:
+                estado=3;
+                atualizaListaTrabalho();
+                break;
+            case R.id.itemMenuProduzir:
+                estado=0;
+                atualizaListaTrabalho();
+                break;
+            case R.id.itemMenuProduzindo:
+                estado=1;
+                atualizaListaTrabalho();
+                break;
+            case R.id.itemMenuConcluido:
+                estado=2;
+                atualizaListaTrabalho();
+                break;
+
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -105,6 +137,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     }
 
     private void atualizaListaTrabalho() {
+        mostraDialogodeProresso();
         List<Trabalho> todosTrabalhos = pegaTodosTrabalhos();
         configuraRecyclerView(todosTrabalhos);
     }
@@ -118,34 +151,32 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                int swipePosicao = viewHolder.getAdapterPosition();
-                ListaTrabalhoAdapter adapter = (ListaTrabalhoAdapter)recyclerView.getAdapter();
-                removeTrabalhoLista(swipePosicao,nomePersonagem);
-                adapter.remove(swipePosicao);
+                int posicaoDeslize = viewHolder.getAdapterPosition();
+                ListaTrabalhoAdapter trabalhoAdapter = (ListaTrabalhoAdapter)recyclerView.getAdapter();
+                removeTrabalhoLista(posicaoDeslize);
+                trabalhoAdapter.remove(posicaoDeslize);
             }
         };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    private void removeTrabalhoLista(int swipePosicao,String nomePersonagem) {
+    private void removeTrabalhoLista(int swipePosicao) {
         String idTrabalho = trabalhos.get(swipePosicao).getId();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference minhareferencia = database.getReference("Usuarios");
+        DatabaseReference minhareferencia = database.getReference(CHAVE_USUARIOS);
         Log.d("Remove",idTrabalho);
         minhareferencia.child(usuarioId).child("Lista_personagem").
                 child(nomePersonagem).child("Lista_desejo").
                 child(idTrabalho).removeValue();
     }
 
-    private String recebeDadosIntent() {
-        String nomePersonagem = new String();
+    private void recebeDadosIntent() {
         Intent dadosRecebidos = getIntent();
         if (dadosRecebidos.hasExtra(CHAVE_NOME_PERSONAGEM)){
             nomePersonagem = (String) dadosRecebidos.getSerializableExtra(CHAVE_NOME_PERSONAGEM);
         }
-        return nomePersonagem;
     }
 
     private void mostraDialogodeProresso(){
@@ -172,18 +203,21 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
 
     private List<Trabalho> pegaTodosTrabalhos() {
         trabalhos = new ArrayList<>();
-        usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         Log.d("USUARIO", usuarioId);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = database.getReference(CHAVE_USUARIOS);
         databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM).
                 child(nomePersonagem).child(CHAVE_LISTA_DESEJO).
-                addValueEventListener(new ValueEventListener() {
+                addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         for (DataSnapshot dn:dataSnapshot.getChildren()){
                             Trabalho trabalho = dn.getValue(Trabalho.class);
-                            trabalhos.add(trabalho);
+                            if (estado==3){
+                                trabalhos.add(trabalho);
+                            }else if (trabalho.getEstado()==estado){
+                                trabalhos.add(trabalho);
+                            }
                         }
                         trabalhoAdapter.notifyDataSetChanged();
                         progressDialog.dismiss();
@@ -195,6 +229,18 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
                     }
                 });
         return trabalhos;
+    }
+
+    private void configuraRecyclerView(List<Trabalho> todosTrabalhos) {
+        recyclerView = findViewById(R.id.listaTrabalhoRecyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        configuraAdapter(todosTrabalhos, recyclerView);
+    }
+
+    private void configuraAdapter(List<Trabalho> todosTrabalhos, RecyclerView listaTrabalhos) {
+        trabalhoAdapter = new ListaTrabalhoAdapter(this,todosTrabalhos);
+        listaTrabalhos.setAdapter(trabalhoAdapter);
     }
 
     @Override
@@ -260,17 +306,6 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
 
     private boolean ehCodigoRequisicaoInsereNota(int requestCode) {
         return requestCode == CODIGO_REQUISICAO_INSERE_NOTA;
-    }
-
-    private void configuraRecyclerView(List<Trabalho> todosTrabalhos) {
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        configuraAdapter(todosTrabalhos, recyclerView);
-    }
-
-    private void configuraAdapter(List<Trabalho> todosTrabalhos, RecyclerView listaTrabalhos) {
-        trabalhoAdapter = new ListaTrabalhoAdapter(this,todosTrabalhos);
-        listaTrabalhos.setAdapter(trabalhoAdapter);
     }
 /*
     private void vaiParaFormularioNotaActivityAltera(Trabalho nota, int posicao) {
