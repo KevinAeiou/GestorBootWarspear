@@ -42,7 +42,7 @@
             android:id="@+id/listaPersonagensRecyclerView"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            tools:listitem="@layout/item_raridade" />
+            tools:listitem="@layout/item_personagem" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
