@@ -32,6 +32,11 @@ public class ListaTrabalhoAdapter extends RecyclerView.Adapter<ListaTrabalhoAdap
         this.onItemClickListener = onItemClickListener;
     }
 
+    public void setListaFiltrada(List<Trabalho> listaFiltrada){
+        this.trabalhos=listaFiltrada;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public TrabalhoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

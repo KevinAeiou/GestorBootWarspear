@@ -11,6 +11,7 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +25,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
@@ -49,6 +51,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
     private AppCompatButton botaoNovoTrabalho;
     private RecyclerView recyclerView;
     private List<Trabalho> trabalhos;
+    private SearchView busca;
     private String profissao, raridade, trabalho, nivel;
 
     @Override
@@ -66,6 +69,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
 
         atualizaListaTrabalhoEspecifico();
 
+        configuraCampoPesquisa();
         configuraEditTrabaho();
         configuraBotaoInsereTrabalho();
         configuraDeslizeItem();
@@ -90,6 +94,37 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
         };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    private void configuraCampoPesquisa() {
+        busca = findViewById(R.id.buscaTrabalhoEspecifico);
+        busca.clearFocus();
+        busca.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String textoBusca) {
+                listaBusca(textoBusca);
+                return true;
+            }
+        });
+    }
+
+    private void listaBusca(String textoBusca) {
+        List<Trabalho> listaFiltro = new ArrayList<>();
+        for (Trabalho trabalho:trabalhos){
+            if (trabalho.getNome().toLowerCase().contains(textoBusca.toLowerCase())){
+                listaFiltro.add(trabalho);
+            }
+        }
+        if (listaFiltro.isEmpty()){
+            Toast.makeText(this,"Nada encontrado...",Toast.LENGTH_SHORT).show();
+        }else{
+            trabalhoAdapter.setListaFiltrada(listaFiltro);
+        }
     }
 
     private void removeTrabalhoLista(int posicaoDeslize) {

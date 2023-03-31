@@ -52,6 +52,7 @@ import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ListaPersonagemActivity extends AppCompatActivity {
@@ -418,6 +419,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
     private void configuraRecyclerView(List<Personagem> todosPersonagens) {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        Collections.sort(todosPersonagens, (p1, p2) -> p1.getNome().compareToIgnoreCase(p2.getNome()));
         configuraAdapter(todosPersonagens,recyclerView);
     }
 

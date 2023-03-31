@@ -20,15 +20,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,7 +33,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -44,11 +40,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.dao.NotaDAO;
-import com.kevin.ceep.databinding.ActivityListaTrabalhosBinding;
 import com.kevin.ceep.model.Trabalho;
-import com.kevin.ceep.ui.fragment.ListaTrabalhoFazendoFragment;
-import com.kevin.ceep.ui.fragment.ListaTrabalhoFazerFragment;
-import com.kevin.ceep.ui.fragment.ListaTrabalhoFeitoFragment;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoAdapter;
 
 import java.util.ArrayList;
@@ -60,6 +52,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private RecyclerView recyclerView;
     private List<Trabalho> trabalhos;
+    private SearchView busca;
     private String usuarioId, nomePersonagem;
     private Integer estado = 3;
 
@@ -75,10 +68,42 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
 
         atualizaListaTrabalho();
 
+        configuraCampoPesquisa();
         configuraBotaoInsereTrabalho();
         configuraDeslizeItem();
         configuraSwipeRefreshLayout();
         Log.i(TAG_ACTIVITY,"onCreateListaTrabalho");
+    }
+
+    private void configuraCampoPesquisa() {
+        busca = findViewById(R.id.buscaTrabalho);
+        busca.clearFocus();
+        busca.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String textoBusca) {
+                listaBusca(textoBusca);
+                return true;
+            }
+        });
+    }
+
+    private void listaBusca(String textoBusca) {
+        List<Trabalho> listaFiltro = new ArrayList<>();
+        for (Trabalho trabalho:trabalhos){
+            if (trabalho.getNome().toLowerCase().contains(textoBusca.toLowerCase())){
+                listaFiltro.add(trabalho);
+            }
+        }
+        if (listaFiltro.isEmpty()){
+            Toast.makeText(this,"Nada encontrado...",Toast.LENGTH_SHORT).show();
+        }else{
+            trabalhoAdapter.setListaFiltrada(listaFiltro);
+        }
     }
 
     @Override

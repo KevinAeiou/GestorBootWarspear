@@ -8,6 +8,7 @@
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/drawable/app_background.xml" value="0.1" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/drawable/botao_background.xml" value="0.1111111111111111" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/drawable/botao_inativo_background.xml" value="0.20925925925925926" />
+        <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/drawable/busca_backgorund.xml" value="0.240625" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/drawable/card_background.xml" value="0.1" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/drawable/conteiner_componentes_background.xml" value="0.1" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/drawable/conteiner_componentes_background2.xml" value="0.1111111111111111" />
@@ -40,6 +41,7 @@
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/item_trabalho_especifico.xml" value="0.67" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/layout/toast_customizado.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/menu/menu_clasifica_lista_trabalho.xml" value="0.33" />
+        <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/menu/menu_formulario_nota_salva.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/menu/menu_navegacao_lista_trabalho.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Kevin/AndroidStudioProjects/Ceep/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.240625" />
       </map>

@@ -8,18 +8,14 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_CONFIRMA;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
-
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.ImageView;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -29,7 +25,6 @@ import com.kevin.ceep.model.Trabalho;
 public class ConfirmaTrabalhoActivity extends AppCompatActivity {
 
     private AutoCompleteTextView autoCompleteLicenca,autoCompleteQuantidade;
-    private String[] licencas,quantidade;
     private String personagemId, licencaSelecionada;
     private int quantidadeSelecionada;
 
@@ -64,8 +59,8 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         autoCompleteLicenca = findViewById(R.id.txtAutoCompleteLicencaTrabalho);
         autoCompleteQuantidade = findViewById(R.id.txtAutoCompleteQuantidadeTrabalho);
 
-        licencas = getResources().getStringArray(R.array.licencas);
-        quantidade = getResources().getStringArray(R.array.quantidade);
+        String[] licencas = getResources().getStringArray(R.array.licencas);
+        String[] quantidade = getResources().getStringArray(R.array.quantidade);
 
         ArrayAdapter adapterLicenca = new ArrayAdapter<>(this,
                 R.layout.item_dropdrown, licencas);
@@ -94,15 +89,10 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
                     .getSerializableExtra(CHAVE_NOME_TRABALHO);
             personagemId = (String) dadosRecebidos.
                     getSerializableExtra(CHAVE_NOME_PERSONAGEM);
-            configuraImagemTrabalho(trabalho);
             for (int x=0;x<quantidadeSelecionada;x++){
                 adicionaNovoTrabalho(trabalho);
             }
         }
-    }
-
-    private void configuraImagemTrabalho(Trabalho trabalho) {
-        ImageView imageView = findViewById(R.id.imageView);
     }
 
     private void adicionaNovoTrabalho(Trabalho trabalho) {
@@ -117,18 +107,18 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
     }
 
     private void configuraQuantidadeSelecionada() {
+        String[] quantidade = getResources().getStringArray(R.array.quantidade);
         quantidadeSelecionada = 1;
         autoCompleteQuantidade.setOnItemClickListener((adapterView, view, i, l) -> {
-            quantidadeSelecionada = i+1;
+            quantidadeSelecionada = Integer.parseInt(quantidade[i]);
             Log.d("QUANTIDADE1", String.valueOf(i+1));
-            return;
         });
         Log.d("QUANTIDADE2", String.valueOf(quantidadeSelecionada));
     }
 
     private void configuraLicencaSelecionada() {
         String[] licencas_completas = getResources().getStringArray(R.array.licencas_completas);
-
+        licencaSelecionada = licencas_completas[3];
         autoCompleteLicenca.setOnItemClickListener((adapterView, view, i, l) -> {
             String selecao = (String) adapterView.getItemAtPosition(i);
             Log.d("LICENCA1", selecao.substring(11));

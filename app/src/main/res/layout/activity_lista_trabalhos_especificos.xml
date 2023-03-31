@@ -6,6 +6,19 @@
     android:layout_height="match_parent"
     tools:context=".ui.activity.ListaTrabalhosEspecificosActivity">
 
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/buscaTrabalhoEspecifico"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:queryHint="Buscar..."
+        android:background="@drawable/busca_backgorund"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:iconifiedByDefault="false"/>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayoutTrabalhosEspecificos"
         android:layout_width="0dp"

@@ -4,16 +4,16 @@
     <string name="string_desfazer">Defacer</string>
     <string name="cadastrar_novo_trabalho">Cadastrar novo trabalho</string>
     <string-array name="licencas">
-        <item>Licença do iniciante</item>
-        <item>Licença do aprendiz</item>
-        <item>Licença do mestre</item>
         <item>Licença do principiante</item>
+        <item>Licença do mestre</item>
+        <item>Licença do aprendiz</item>
+        <item>Licença do iniciante</item>
     </string-array>
     <string-array name="licencas_completas">
-        <item>Licença de produção do iniciante</item>
-        <item>Licença de produção do aprendiz</item>
-        <item>Licença de produção do mestre</item>
         <item>Licença de produção do principiante</item>
+        <item>Licença de produção do mestre</item>
+        <item>Licença de produção do aprendiz</item>
+        <item>Licença de produção do iniciante</item>
     </string-array>
     <string-array name="profissoes">
         <item>Arma de longo alcance</item>
@@ -26,15 +26,15 @@
         <item>Mantos</item>
     </string-array>
     <string-array name="quantidade">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
         <item>9</item>
+        <item>8</item>
+        <item>7</item>
+        <item>6</item>
+        <item>5</item>
+        <item>4</item>
+        <item>3</item>
+        <item>2</item>
+        <item>1</item>
     </string-array>
     <string name="title_activity_splashscreen">SplashscreenActivity</string>
     <string name="dummy_button">Dummy Button</string>
