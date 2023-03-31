@@ -22,6 +22,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -33,6 +35,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.chip.Chip;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -67,7 +70,9 @@ public class ListaPersonagemActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private FirebaseDatabase database;
     private DatabaseReference minhaReferencia;
+    private Chip chip;
     private String usuarioId,nomePersonagem,emailPersonagem,senhaPersonagem;
+    private String[] mensagens={"Carregando dados...","Erro de conexão..."};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,11 +80,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lista_personagem);
         setTitle(CHAVE_TITULO_PERSONAGEM);
 
-        recebeDadosIntent();
-
         inicializaComponentes();
-
-        atualizaListaPersonagem();
 
         configuraCampoNovoPersonagem();
 
@@ -101,6 +102,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         edtNovoPersonagem = findViewById(R.id.edtNovoPersonagem);
         edtEmailPersonagem = findViewById(R.id.edtEmailPersonagem);
         edtSenhaPersonagem = findViewById(R.id.edtSenhaPersonagem);
+        chip=findViewById(R.id.itemRadioButton);
     }
 
     private void configuraDeslizeItem() {
@@ -133,10 +135,18 @@ public class ListaPersonagemActivity extends AppCompatActivity {
     }
 
     private void atualizaListaPersonagem() {
-        configuraDialogoProgresso();
-        List<Personagem> todosPersonagens = pegaTodosPersonagens();
-        personagens.clear();
-        configuraRecyclerView(todosPersonagens);
+        configuraDialogoProgresso(0);
+        if (vericaConexaoInternet()) {
+            List<Personagem> todosPersonagens = pegaTodosPersonagens();
+            personagens.clear();
+            configuraRecyclerView(todosPersonagens);
+        }else{
+            progressDialog.dismiss();
+            //configuraDialogoProgresso(1);
+            //vaiParaEntraActivity();
+            //finish();
+            //progressDialog.dismiss();
+        }
     }
 
     @Override
@@ -198,6 +208,8 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         super.onStart();
         FirebaseUser currentUser = minhaAutenticacao.getCurrentUser();
         minhaAutenticacao.updateCurrentUser(currentUser);
+        recebeDadosIntent();
+        atualizaListaPersonagem();
         Log.i(TAG_ACTIVITY,"onStartListaPersonagem");
     }
 
@@ -409,11 +421,20 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         });
     }
 
-    private void configuraDialogoProgresso() {
+    private void configuraDialogoProgresso(int posicaoMensagem) {
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
-        progressDialog.setMessage("Carregando dados...");
+        progressDialog.setMessage(mensagens[posicaoMensagem]);
         progressDialog.show();
+    }
+
+    private Boolean vericaConexaoInternet(){
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo infConexao = cm.getActiveNetworkInfo();
+        if(infConexao!=null && infConexao.isConnectedOrConnecting()){
+            return true;
+        }
+        return false;
     }
 
     private void configuraRecyclerView(List<Personagem> todosPersonagens) {
@@ -425,8 +446,9 @@ public class ListaPersonagemActivity extends AppCompatActivity {
 
     private void configuraAdapter(List<Personagem> todosPersonagens, RecyclerView recyclerView) {
         personagemAdapter = new ListaPersonagemAdapter(this,todosPersonagens);
+        progressDialog.dismiss();
         recyclerView.setAdapter(personagemAdapter);
-        personagemAdapter.setOnRadioButtonClickListener(new OnItemClickListener() {
+        personagemAdapter.setOnChipButtonClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(Profissao profissao, int posicao) {
 
@@ -434,8 +456,13 @@ public class ListaPersonagemActivity extends AppCompatActivity {
 
             @Override
             public void onItemClick(Personagem personagem, int posicao) {
-                List<Personagem> todosPersonagens = atualizaEstadoPersonagem(personagem);
-                configuraRecyclerView(todosPersonagens);
+                if (chip.isChecked()){
+                    List<Personagem> todosPersonagens = atualizaEstadoPersonagem(personagem,0);
+                    configuraRecyclerView(todosPersonagens);
+                }else {
+                    List<Personagem> todosPersonagens = atualizaEstadoPersonagem(personagem, 1);
+                    configuraRecyclerView(todosPersonagens);
+                }
             }
 
             @Override
@@ -443,7 +470,6 @@ public class ListaPersonagemActivity extends AppCompatActivity {
 
             }
         });
-
         personagemAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(Profissao profissao, int posicao) {
@@ -470,7 +496,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         });
     }
 
-    private List<Personagem> atualizaEstadoPersonagem(Personagem raridade) {
+    private List<Personagem> atualizaEstadoPersonagem(Personagem raridade,int estado) {
         personagens = new ArrayList<>();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference personagemReferencia = database.getReference(CHAVE_USUARIOS);
@@ -482,10 +508,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
                             Personagem personagem = dn.getValue(Personagem.class);
                             if (personagem.getId().equals(raridade.getId())){
                                 personagemReferencia.child(usuarioId).child(CHAVE_PERSONAGEM).
-                                        child(personagem.getId()).child("estado").setValue(1);
-                            }else{
-                                personagemReferencia.child(usuarioId).child(CHAVE_PERSONAGEM).
-                                        child(personagem.getId()).child("estado").setValue(0);
+                                        child(personagem.getId()).child("estado").setValue(estado);
                             }
                             personagens.add(personagem);
                         }
@@ -515,7 +538,6 @@ public class ListaPersonagemActivity extends AppCompatActivity {
                             personagens.add(personagem);
                         }
                         personagemAdapter.notifyDataSetChanged();
-                        progressDialog.dismiss();
                     }
 
                     @Override
