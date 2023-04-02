@@ -20,15 +20,15 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Raridade" />
+            tools:text="Personagem" />
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/itemRadioButton"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/itemSwitchButton"
+            style="@style/Widget.AppCompat.CompoundButton.Switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="false"
-            android:maxLines="1"
+            android:text="Inativo"
             android:layout_marginEnd="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

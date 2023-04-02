@@ -11,6 +11,7 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,10 +33,11 @@ import android.util.Patterns;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.chip.Chip;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -53,9 +55,7 @@ import com.kevin.ceep.ui.recyclerview.adapter.ListaPersonagemAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class ListaPersonagemActivity extends AppCompatActivity {
@@ -70,7 +70,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private FirebaseDatabase database;
     private DatabaseReference minhaReferencia;
-    private Chip chip;
+    private SwitchCompat switchBotao;
     private String usuarioId,nomePersonagem,emailPersonagem,senhaPersonagem;
     private String[] mensagens={"Carregando dados...","Erro de conexão..."};
 
@@ -102,7 +102,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         edtNovoPersonagem = findViewById(R.id.edtNovoPersonagem);
         edtEmailPersonagem = findViewById(R.id.edtEmailPersonagem);
         edtSenhaPersonagem = findViewById(R.id.edtSenhaPersonagem);
-        chip=findViewById(R.id.itemRadioButton);
+        switchBotao =findViewById(R.id.itemSwitchButton);
     }
 
     private void configuraDeslizeItem() {
@@ -448,28 +448,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         personagemAdapter = new ListaPersonagemAdapter(this,todosPersonagens);
         progressDialog.dismiss();
         recyclerView.setAdapter(personagemAdapter);
-        personagemAdapter.setOnChipButtonClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(Profissao profissao, int posicao) {
 
-            }
-
-            @Override
-            public void onItemClick(Personagem personagem, int posicao) {
-                if (chip.isChecked()){
-                    List<Personagem> todosPersonagens = atualizaEstadoPersonagem(personagem,0);
-                    configuraRecyclerView(todosPersonagens);
-                }else {
-                    List<Personagem> todosPersonagens = atualizaEstadoPersonagem(personagem, 1);
-                    configuraRecyclerView(todosPersonagens);
-                }
-            }
-
-            @Override
-            public void onItemClick(Trabalho trabalho, int adapterPosition) {
-
-            }
-        });
         personagemAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(Profissao profissao, int posicao) {
@@ -496,7 +475,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         });
     }
 
-    private List<Personagem> atualizaEstadoPersonagem(Personagem raridade,int estado) {
+    public List<Personagem> atualizaEstadoPersonagem(Personagem raridade,int estado) {
         personagens = new ArrayList<>();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference personagemReferencia = database.getReference(CHAVE_USUARIOS);

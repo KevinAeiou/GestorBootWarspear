@@ -5,15 +5,19 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
+import android.widget.CompoundButton;
+import android.widget.RadioGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.Chip;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Personagem;
+import com.kevin.ceep.ui.activity.ListaPersonagemActivity;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.List;
@@ -23,19 +27,15 @@ public class ListaPersonagemAdapter extends RecyclerView.Adapter<ListaPersonagem
     private List<Personagem> personagems;
     private Context context;
     private OnItemClickListener onItemClickListener;
-    private OnItemClickListener onRadioButtonClickListener;
-    private OnItemClickListener onChipButtonClickListener;
+    private CompoundButton.OnCheckedChangeListener onCheckedChangeListener;
 
     public ListaPersonagemAdapter(Context context, List<Personagem> personagems) {
         this.personagems = personagems;
         this.context = context;
     }
 
-    public void setOnRadioButtonClickListener(OnItemClickListener onRadioButtonClickListener){
-        this.onRadioButtonClickListener = onRadioButtonClickListener;
-    }
-    public void setOnChipButtonClickListener(OnItemClickListener onChipButtonClickListener){
-        this.onChipButtonClickListener=onChipButtonClickListener;
+    public void setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener onCheckedChangeListener){
+        this.onCheckedChangeListener=onCheckedChangeListener;
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){
@@ -75,16 +75,21 @@ public class ListaPersonagemAdapter extends RecyclerView.Adapter<ListaPersonagem
     public class RaridadeViewHolder extends RecyclerView.ViewHolder{
 
         private final TextView nome_personagem;
-        private final Chip estado_personagem;
+        private final SwitchCompat estado_personagem;
         private Personagem personagem;
 
         public RaridadeViewHolder(@NonNull View itemView) {
             super(itemView);
             nome_personagem = itemView.findViewById(R.id.itemNomePersonagem);
-            estado_personagem = itemView.findViewById(R.id.itemRadioButton);
-
-            estado_personagem.setOnClickListener(view -> onChipButtonClickListener.onItemClick(personagem,getAdapterPosition()));
-            //estado_personagem.setOnClickListener(view -> onRadioButtonClickListener.onItemClick(personagem,getAdapterPosition()));
+            estado_personagem = itemView.findViewById(R.id.itemSwitchButton);
+            estado_personagem.setOnCheckedChangeListener((compoundButton, b) -> {
+                ListaPersonagemActivity personagemActivity = new ListaPersonagemActivity();
+                if (b){
+                    personagemActivity.atualizaEstadoPersonagem(personagem,1);
+                }else{
+                    personagemActivity.atualizaEstadoPersonagem(personagem,0);
+                }
+            });
             itemView.setOnClickListener(view -> onItemClickListener.onItemClick(personagem, getAdapterPosition()));
         }
 
