@@ -87,9 +87,7 @@ public class ListaTrabalhoAdapter extends RecyclerView.Adapter<ListaTrabalhoAdap
             tipo_licenca = itemView.findViewById(R.id.itemTipoLicenca);
             profissao_trabalho = itemView.findViewById(R.id.itemProfissaoTrabalho);
             nivel_trabalho = itemView.findViewById(R.id.itemNivelTrabalho);
-            //itemView.setOnClickListener(v -> {
-            //    onItemClickListener.onItemClick(trabalho, getAdapterPosition());
-            //});
+            itemView.setOnClickListener(v -> onItemClickListener.onItemClick(trabalho, getAdapterPosition()));
         }
         public void vincula(Trabalho trabalho) {
             this.trabalho = trabalho;

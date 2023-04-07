@@ -40,8 +40,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.dao.NotaDAO;
+import com.kevin.ceep.model.Personagem;
+import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoAdapter;
+import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -266,6 +269,25 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     private void configuraAdapter(List<Trabalho> todosTrabalhos, RecyclerView listaTrabalhos) {
         trabalhoAdapter = new ListaTrabalhoAdapter(this,todosTrabalhos);
         listaTrabalhos.setAdapter(trabalhoAdapter);
+        trabalhoAdapter.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(Profissao profissao, int posicao) {
+
+            }
+
+            @Override
+            public void onItemClick(Personagem personagem, int posicao) {
+
+            }
+
+            @Override
+            public void onItemClick(Trabalho trabalho, int adapterPosition) {
+                Intent iniciaTrabalhoEspecificoActivity=
+                        new Intent(getApplicationContext(),TrabalhoEspecificoActivity.class);
+                startActivity(iniciaTrabalhoEspecificoActivity,
+                        ActivityOptions.makeSceneTransitionAnimation(ListaTrabalhosActivity.this).toBundle());
+            }
+        });
     }
 
     @Override

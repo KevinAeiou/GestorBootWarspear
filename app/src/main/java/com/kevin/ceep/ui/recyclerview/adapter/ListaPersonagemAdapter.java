@@ -82,14 +82,14 @@ public class ListaPersonagemAdapter extends RecyclerView.Adapter<ListaPersonagem
             super(itemView);
             nome_personagem = itemView.findViewById(R.id.itemNomePersonagem);
             estado_personagem = itemView.findViewById(R.id.itemSwitchButton);
-            estado_personagem.setOnCheckedChangeListener((compoundButton, b) -> {
+            /*estado_personagem.setOnCheckedChangeListener((compoundButton, b) -> {
                 ListaPersonagemActivity personagemActivity = new ListaPersonagemActivity();
                 if (b){
                     personagemActivity.atualizaEstadoPersonagem(personagem,1);
                 }else{
                     personagemActivity.atualizaEstadoPersonagem(personagem,0);
                 }
-            });
+            });*/
             itemView.setOnClickListener(view -> onItemClickListener.onItemClick(personagem, getAdapterPosition()));
         }
 
