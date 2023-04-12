@@ -3,6 +3,11 @@
     <string name="teste">#00ff00</string>
     <string name="string_desfazer">Defacer</string>
     <string name="cadastrar_novo_trabalho">Cadastrar novo trabalho</string>
+    <string-array name="estados">
+        <item>Produzir</item>
+        <item>Produzindo</item>
+        <item>Concluido</item>
+    </string-array>
     <string-array name="licencas">
         <item>Licença do principiante</item>
         <item>Licença do mestre</item>

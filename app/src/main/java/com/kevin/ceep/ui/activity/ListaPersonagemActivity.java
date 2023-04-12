@@ -152,7 +152,6 @@ public class ListaPersonagemActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         Log.i(TAG_ACTIVITY,"onResumeListaPersonagem");
     }
 
@@ -448,6 +447,13 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         personagemAdapter = new ListaPersonagemAdapter(this,todosPersonagens);
         progressDialog.dismiss();
         recyclerView.setAdapter(personagemAdapter);
+
+        personagemAdapter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+            }
+        });
 
         personagemAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override

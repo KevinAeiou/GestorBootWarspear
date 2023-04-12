@@ -25,6 +25,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:ems="10"
+        android:maxLines="2"
         android:textSize="20sp"
         android:inputType="textPersonName"
         android:text="Nome"
@@ -46,4 +47,43 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/edtNomeTrabalho"
         app:layout_constraintTop_toTopOf="@+id/edtNomeTrabalho" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/txtInputLayoutLicencaTrabalho"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Licença"
+        app:layout_constraintStart_toStartOf="@+id/edtNomeTrabalho"
+        app:layout_constraintEnd_toEndOf="@+id/edtNivelTrabalho"
+        app:layout_constraintTop_toBottomOf="@+id/edtNomeTrabalho">
+
+        <AutoCompleteTextView
+            android:id="@+id/txtAutoCompleteLicencaTrabalhoEspecifico"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:layout_weight="1"
+            android:inputType="none" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/txtInputLayoutEstadoTrabalho"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:hint="Estados"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <AutoCompleteTextView
+            android:id="@+id/txtAutoCompleteEstadoTrabalho"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="none" />
+    </com.google.android.material.textfield.TextInputLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

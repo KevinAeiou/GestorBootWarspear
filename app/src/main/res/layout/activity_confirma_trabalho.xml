@@ -14,56 +14,62 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/txtInputLayoutLicencaTrabalho"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayoutConfirmaTrabalho"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_licenca" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/txtInputLayoutLicencaTrabalho"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayoutConfirmaTrabalho"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:hint="Licenças"
+        android:layout_margin="8dp"
         app:layout_constraintBottom_toTopOf="@+id/botao_cadastrar"
-        app:layout_constraintEnd_toStartOf="@+id/txtInputLayoutQuantidadeTrabalho"
-        app:layout_constraintStart_toStartOf="parent"
-        app:startIconDrawable="@drawable/ic_licenca">
-
-        <AutoCompleteTextView
-            android:id="@+id/txtAutoCompleteLicencaTrabalho"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:inputType="none" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/txtInputLayoutQuantidadeTrabalho"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="@id/txtInputLayoutLicencaTrabalho"
-        app:layout_constraintTop_toTopOf="@id/txtInputLayoutLicencaTrabalho"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/txtInputLayoutLicencaTrabalho">
+        app:layout_constraintStart_toStartOf="parent">
 
-        <AutoCompleteTextView
-            android:id="@+id/txtAutoCompleteQuantidadeTrabalho"
-            android:layout_width="match_parent"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/txtInputLayoutLicencaTrabalho"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="1"
-            android:gravity="center"
-            android:inputType="none" />
+            android:hint="Licenças"
+            app:layout_constraintStart_toStartOf="@id/linearLayoutConfirmaTrabalho"
+            app:layout_constraintEnd_toStartOf="@id/txtInputLayoutQuantidadeTrabalho"
+            app:layout_constraintTop_toTopOf="@id/linearLayoutConfirmaTrabalho"
+            app:layout_constraintBottom_toBottomOf="@id/linearLayoutConfirmaTrabalho"
+            app:startIconDrawable="@drawable/ic_licenca">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <AutoCompleteTextView
+                android:id="@+id/txtAutoCompleteLicencaTrabalho"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/txtInputLayoutQuantidadeTrabalho"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@id/txtInputLayoutLicencaTrabalho"
+            app:layout_constraintEnd_toEndOf="@id/linearLayoutConfirmaTrabalho"
+            app:layout_constraintTop_toTopOf="@id/txtInputLayoutLicencaTrabalho"
+            app:layout_constraintBottom_toBottomOf="@id/txtInputLayoutLicencaTrabalho">
+
+            <AutoCompleteTextView
+                android:id="@+id/txtAutoCompleteQuantidadeTrabalho"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:inputType="none"
+                android:text="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/botao_cadastrar"
@@ -74,7 +80,7 @@
         android:layout_marginBottom="16dp"
         android:background="@drawable/botao_estados_background"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/txtInputLayoutLicencaTrabalho"
-        app:layout_constraintStart_toStartOf="@+id/txtInputLayoutLicencaTrabalho" />
+        app:layout_constraintEnd_toEndOf="@+id/linearLayoutConfirmaTrabalho"
+        app:layout_constraintStart_toStartOf="@+id/linearLayoutConfirmaTrabalho" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

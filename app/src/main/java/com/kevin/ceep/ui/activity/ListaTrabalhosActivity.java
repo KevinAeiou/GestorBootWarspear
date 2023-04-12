@@ -2,6 +2,7 @@ package com.kevin.ceep.ui.activity;
 
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOTA;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_POSICAO;
@@ -236,7 +237,28 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         DatabaseReference databaseReference = database.getReference(CHAVE_USUARIOS);
         databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM).
                 child(nomePersonagem).child(CHAVE_LISTA_DESEJO).
-                addListenerForSingleValueEvent(new ValueEventListener() {
+                addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        trabalhos.clear();
+                        for (DataSnapshot dn:dataSnapshot.getChildren()){
+                            Trabalho trabalho = dn.getValue(Trabalho.class);
+                            if (estado==3){
+                                trabalhos.add(trabalho);
+                            }else if (trabalho.getEstado()==estado){
+                                trabalhos.add(trabalho);
+                            }
+                        }
+                        trabalhoAdapter.notifyDataSetChanged();
+                        progressDialog.dismiss();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+                /*addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         for (DataSnapshot dn:dataSnapshot.getChildren()){
@@ -255,7 +277,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
                     }
-                });
+                });*/
         return trabalhos;
     }
 
@@ -284,6 +306,9 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
             public void onItemClick(Trabalho trabalho, int adapterPosition) {
                 Intent iniciaTrabalhoEspecificoActivity=
                         new Intent(getApplicationContext(),TrabalhoEspecificoActivity.class);
+                iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOTA,CODIGO_REQUISICAO_ALTERA_NOTA);
+                iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_TRABALHO,trabalho);
+                iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_PERSONAGEM,nomePersonagem);
                 startActivity(iniciaTrabalhoEspecificoActivity,
                         ActivityOptions.makeSceneTransitionAnimation(ListaTrabalhosActivity.this).toBundle());
             }

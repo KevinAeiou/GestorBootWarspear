@@ -2,6 +2,7 @@ package com.kevin.ceep.ui.recyclerview.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,14 +35,13 @@ public class ListaPersonagemAdapter extends RecyclerView.Adapter<ListaPersonagem
         this.context = context;
     }
 
-    public void setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener onCheckedChangeListener){
-        this.onCheckedChangeListener=onCheckedChangeListener;
-    }
-
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){
         this.onItemClickListener = onItemClickListener;
     }
 
+    public void setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener onCheckedChangeListener){
+        this.onCheckedChangeListener=onCheckedChangeListener;
+    }
 
     @NonNull
     @Override
@@ -82,15 +82,17 @@ public class ListaPersonagemAdapter extends RecyclerView.Adapter<ListaPersonagem
             super(itemView);
             nome_personagem = itemView.findViewById(R.id.itemNomePersonagem);
             estado_personagem = itemView.findViewById(R.id.itemSwitchButton);
-            /*estado_personagem.setOnCheckedChangeListener((compoundButton, b) -> {
-                ListaPersonagemActivity personagemActivity = new ListaPersonagemActivity();
-                if (b){
-                    personagemActivity.atualizaEstadoPersonagem(personagem,1);
-                }else{
-                    personagemActivity.atualizaEstadoPersonagem(personagem,0);
-                }
-            });*/
+
             itemView.setOnClickListener(view -> onItemClickListener.onItemClick(personagem, getAdapterPosition()));
+            estado_personagem.setOnCheckedChangeListener((compoundButton, b) -> {
+                if (b){
+                    estado_personagem.setText("Ativo");
+                    Log.d("CHECKBOLEAN", String.valueOf(b));
+                }else{
+                    estado_personagem.setText("Inativo");
+                }
+                onCheckedChangeListener.onCheckedChanged(compoundButton, b);
+            });
         }
 
         public void vincula(Personagem personagem){

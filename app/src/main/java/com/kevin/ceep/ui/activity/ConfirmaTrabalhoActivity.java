@@ -69,7 +69,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
 
         adapterLicenca.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         adapterQuantidade.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
+        autoCompleteLicenca.setText(licencas[3]);
         autoCompleteLicenca.setAdapter(adapterLicenca);
         autoCompleteQuantidade.setAdapter(adapterQuantidade);
     }
@@ -101,9 +101,15 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         String usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         String novoId = geraIdAleatorio();
-        minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM).child(personagemId).child(CHAVE_LISTA_DESEJO).child(novoId).setValue(trabalho);
-        minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM).child(personagemId).child(CHAVE_LISTA_DESEJO).child(novoId).child("id").setValue(novoId);
-        minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM).child(personagemId).child(CHAVE_LISTA_DESEJO).child(novoId).child("tipo_licenca").setValue(licencaSelecionada);
+        minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
+                .child(personagemId).child(CHAVE_LISTA_DESEJO)
+                .child(novoId).setValue(trabalho);
+        minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
+                .child(personagemId).child(CHAVE_LISTA_DESEJO)
+                .child(novoId).child("id").setValue(novoId);
+        minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
+                .child(personagemId).child(CHAVE_LISTA_DESEJO)
+                .child(novoId).child("tipo_licenca").setValue(licencaSelecionada);
     }
 
     private void configuraQuantidadeSelecionada() {
