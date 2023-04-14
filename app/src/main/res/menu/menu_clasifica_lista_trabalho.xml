@@ -3,13 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:title="Todos"
-        android:id="@+id/itemMenuTodos"
-        app:showAsAction="always"/>
+        android:id="@+id/itemMenuTodos"/>
     <item android:title="Para produzir"
         android:id="@+id/itemMenuProduzir"/>
     <item android:title="Produzindo"
         android:id="@+id/itemMenuProduzindo"/>
     <item android:title="Concluído"
         android:id="@+id/itemMenuConcluido"/>
+    <item
+        android:id="@+id/itemMenuSwitch"
+        android:title="Inativo"
+        app:actionLayout="@layout/switch_item"
+        app:showAsAction="always" />
 
 </menu>

@@ -28,8 +28,6 @@ public class ListaPersonagemAdapter extends RecyclerView.Adapter<ListaPersonagem
     private List<Personagem> personagems;
     private Context context;
     private OnItemClickListener onItemClickListener;
-    private CompoundButton.OnCheckedChangeListener onCheckedChangeListener;
-
     public ListaPersonagemAdapter(Context context, List<Personagem> personagems) {
         this.personagems = personagems;
         this.context = context;
@@ -37,10 +35,6 @@ public class ListaPersonagemAdapter extends RecyclerView.Adapter<ListaPersonagem
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){
         this.onItemClickListener = onItemClickListener;
-    }
-
-    public void setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener onCheckedChangeListener){
-        this.onCheckedChangeListener=onCheckedChangeListener;
     }
 
     @NonNull
@@ -75,24 +69,13 @@ public class ListaPersonagemAdapter extends RecyclerView.Adapter<ListaPersonagem
     public class RaridadeViewHolder extends RecyclerView.ViewHolder{
 
         private final TextView nome_personagem;
-        private final SwitchCompat estado_personagem;
         private Personagem personagem;
 
         public RaridadeViewHolder(@NonNull View itemView) {
             super(itemView);
             nome_personagem = itemView.findViewById(R.id.itemNomePersonagem);
-            estado_personagem = itemView.findViewById(R.id.itemSwitchButton);
 
             itemView.setOnClickListener(view -> onItemClickListener.onItemClick(personagem, getAdapterPosition()));
-            estado_personagem.setOnCheckedChangeListener((compoundButton, b) -> {
-                if (b){
-                    estado_personagem.setText("Ativo");
-                    Log.d("CHECKBOLEAN", String.valueOf(b));
-                }else{
-                    estado_personagem.setText("Inativo");
-                }
-                onCheckedChangeListener.onCheckedChanged(compoundButton, b);
-            });
         }
 
         public void vincula(Personagem personagem){
@@ -101,19 +84,8 @@ public class ListaPersonagemAdapter extends RecyclerView.Adapter<ListaPersonagem
         }
 
         private void preencheCampo(Personagem personagem) {
-            configuraEstadoPersonagem(personagem);
             nome_personagem.setText(personagem.getNome());
             nome_personagem.setTextColor(Color.parseColor("#FCF5EF"));
-        }
-
-        private void configuraEstadoPersonagem(Personagem personagem) {
-            if (personagem.getEstado()==1){
-                estado_personagem.setText("Ativo");
-                estado_personagem.setChecked(true);
-            }else{
-                estado_personagem.setText("Inativo");
-                estado_personagem.setChecked(false);
-            }
         }
     }
 }

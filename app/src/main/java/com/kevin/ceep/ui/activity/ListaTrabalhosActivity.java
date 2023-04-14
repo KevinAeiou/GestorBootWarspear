@@ -13,6 +13,7 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICA
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.POSICAO_INVALIDA;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.ProgressDialog;
@@ -21,6 +22,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -52,14 +55,19 @@ import java.util.List;
 
 public class ListaTrabalhosActivity extends AppCompatActivity {
 
+    private FirebaseDatabase database;
+    private DatabaseReference databaseReference;
     private ListaTrabalhoAdapter trabalhoAdapter;
     private ProgressDialog progressDialog;
     private RecyclerView recyclerView;
     private List<Trabalho> trabalhos;
     private SearchView busca;
-    private String usuarioId, nomePersonagem;
+    private boolean isChecked = false;
+    private MenuItem checkable;
+    private String usuarioId, personagemId;
     private Integer estado = 3;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,15 +76,46 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
 
         recebeDadosIntent();
 
-        usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        inicializaComponentes();
 
         atualizaListaTrabalho();
-
+        //configuraEstadoPersonagem();
         configuraCampoPesquisa();
         configuraBotaoInsereTrabalho();
         configuraDeslizeItem();
         configuraSwipeRefreshLayout();
         Log.i(TAG_ACTIVITY,"onCreateListaTrabalho");
+    }
+
+    private void configuraEstadoPersonagem() {
+        databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM).
+                child(personagemId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Personagem personagem = dataSnapshot.getValue(Personagem.class);
+                        if (personagem.getEstado()==1){
+                            Log.d("SWITCH","Estado do personagem é ativo.");
+                            isChecked=true;
+                            Log.d("SWITCH","O valor de ischeched é: ."+isChecked);
+                            checkable.setChecked(isChecked);
+                        }else{
+                            Log.d("SWITCH","Estado do personagem é inativo.");
+                            isChecked=false;
+                            Log.d("SWITCH","O valor de ischeched é: ."+isChecked);
+                            checkable.setChecked(isChecked);
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    private void inicializaComponentes() {
+        usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        database = FirebaseDatabase.getInstance();
+        databaseReference = database.getReference(CHAVE_USUARIOS);
     }
 
     private void configuraCampoPesquisa() {
@@ -113,7 +152,10 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_clasifica_lista_trabalho,menu);
-
+        checkable = menu.findItem(R.id.itemMenuSwitch);
+        Log.d("SWITCH","Referencia de checkable foi recuperada.");
+        configuraEstadoPersonagem();
+        //checkable.setActionView(R.layout.switch_item);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -138,6 +180,10 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
                 estado=2;
                 atualizaListaTrabalho();
                 break;
+            case R.id.itemMenuSwitch:
+                isChecked = !item.isChecked();
+                item.setChecked(isChecked);
+                break;
 
             default:
                 break;
@@ -145,16 +191,9 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.i(TAG_ACTIVITY,"onPauseListaTrabalho");
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.i(TAG_ACTIVITY,"onStopListaTrabalho");
+    private void modificaEstadoPersonagem(int estadoPersonagem) {
+        databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM)
+                .child(personagemId).child("estado").setValue(estadoPersonagem);
     }
 
     private void configuraSwipeRefreshLayout() {
@@ -197,14 +236,14 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         DatabaseReference minhareferencia = database.getReference(CHAVE_USUARIOS);
         Log.d("Remove",idTrabalho);
         minhareferencia.child(usuarioId).child("Lista_personagem").
-                child(nomePersonagem).child("Lista_desejo").
+                child(personagemId).child("Lista_desejo").
                 child(idTrabalho).removeValue();
     }
 
     private void recebeDadosIntent() {
         Intent dadosRecebidos = getIntent();
         if (dadosRecebidos.hasExtra(CHAVE_NOME_PERSONAGEM)){
-            nomePersonagem = (String) dadosRecebidos.getSerializableExtra(CHAVE_NOME_PERSONAGEM);
+            personagemId = (String) dadosRecebidos.getSerializableExtra(CHAVE_NOME_PERSONAGEM);
         }
     }
 
@@ -224,7 +263,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         Intent iniciaListaRaridade =
                 new Intent(ListaTrabalhosActivity.this,
                         ListaRaridadeActivity.class);
-        iniciaListaRaridade.putExtra(CHAVE_NOME_PERSONAGEM,nomePersonagem);
+        iniciaListaRaridade.putExtra(CHAVE_NOME_PERSONAGEM, personagemId);
         startActivity(iniciaListaRaridade,
                 ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
         //startActivityForResult(iniciaFormularioNota, CODIGO_REQUISICAO_INSERE_NOTA);
@@ -233,10 +272,8 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     private List<Trabalho> pegaTodosTrabalhos() {
         trabalhos = new ArrayList<>();
         Log.d("USUARIO", usuarioId);
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = database.getReference(CHAVE_USUARIOS);
         databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM).
-                child(nomePersonagem).child(CHAVE_LISTA_DESEJO).
+                child(personagemId).child(CHAVE_LISTA_DESEJO).
                 addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -258,26 +295,6 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
 
                     }
                 });
-                /*addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot dn:dataSnapshot.getChildren()){
-                            Trabalho trabalho = dn.getValue(Trabalho.class);
-                            if (estado==3){
-                                trabalhos.add(trabalho);
-                            }else if (trabalho.getEstado()==estado){
-                                trabalhos.add(trabalho);
-                            }
-                        }
-                        trabalhoAdapter.notifyDataSetChanged();
-                        progressDialog.dismiss();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });*/
         return trabalhos;
     }
 
@@ -308,7 +325,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
                         new Intent(getApplicationContext(),TrabalhoEspecificoActivity.class);
                 iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOTA,CODIGO_REQUISICAO_ALTERA_NOTA);
                 iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_TRABALHO,trabalho);
-                iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_PERSONAGEM,nomePersonagem);
+                iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_PERSONAGEM, personagemId);
                 startActivity(iniciaTrabalhoEspecificoActivity,
                         ActivityOptions.makeSceneTransitionAnimation(ListaTrabalhosActivity.this).toBundle());
             }

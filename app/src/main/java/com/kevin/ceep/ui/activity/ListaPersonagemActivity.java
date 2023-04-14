@@ -70,7 +70,6 @@ public class ListaPersonagemActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private FirebaseDatabase database;
     private DatabaseReference minhaReferencia;
-    private SwitchCompat switchBotao;
     private String usuarioId,nomePersonagem,emailPersonagem,senhaPersonagem;
     private String[] mensagens={"Carregando dados...","Erro de conexão..."};
 
@@ -102,7 +101,6 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         edtNovoPersonagem = findViewById(R.id.edtNovoPersonagem);
         edtEmailPersonagem = findViewById(R.id.edtEmailPersonagem);
         edtSenhaPersonagem = findViewById(R.id.edtSenhaPersonagem);
-        switchBotao =findViewById(R.id.itemSwitchButton);
     }
 
     private void configuraDeslizeItem() {
@@ -447,13 +445,6 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         personagemAdapter = new ListaPersonagemAdapter(this,todosPersonagens);
         progressDialog.dismiss();
         recyclerView.setAdapter(personagemAdapter);
-
-        personagemAdapter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
-            }
-        });
 
         personagemAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
