@@ -13,7 +13,6 @@ public interface NotaActivityConstantes {
     String CHAVE_NOME_PROFISSAO = "nome_profissao";
     String CHAVE_NOME_TRABALHO = "nome_trabalho";
     String CHAVE_NOME_PERSONAGEM = "nome_personagem";
-    String CHAVE_ESTADO = "estado_trabalho";
     String CHAVE_POSICAO = "posicao";
     String CHAVE_CONFIRMA_CADASTRO = "confirma_cadastro";
     String CHAVE_TITULO_TRABALHO = "Trabalhos";

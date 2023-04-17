@@ -183,8 +183,12 @@ public class ListaPersonagemActivity extends AppCompatActivity {
     private void recebeDadosIntent() {
         Intent dadosRecebidos = getIntent();
         if (dadosRecebidos.hasExtra(CHAVE_CONFIRMA_CADASTRO)) {
-            final Toast toast = configuraToastCustomizado();
-            toast.show();
+            Boolean confirmaCadastro= (Boolean) dadosRecebidos.getSerializableExtra(CHAVE_CONFIRMA_CADASTRO);
+            if (confirmaCadastro){
+                final Toast toast = configuraToastCustomizado();
+                toast.show();
+                dadosRecebidos.removeExtra(CHAVE_CONFIRMA_CADASTRO);
+            }
         }
     }
 
