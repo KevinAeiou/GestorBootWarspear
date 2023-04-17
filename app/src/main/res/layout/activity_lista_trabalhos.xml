@@ -2,8 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="match_parent"
+    android:id="@+id/chip"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     tools:context=".ui.activity.ListaTrabalhosActivity">
 
     <androidx.appcompat.widget.SearchView
@@ -11,13 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        app:queryHint="Buscar..."
+        android:layout_marginBottom="8dp"
         android:background="@drawable/busca_backgorund"
+        app:iconifiedByDefault="false"
+        app:layout_constraintBottom_toTopOf="@+id/swipeRefreshLayoutTrabalhos"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:iconifiedByDefault="false"/>
+        app:queryHint="Buscar..." />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayoutTrabalhos"
@@ -32,7 +35,7 @@
             android:id="@+id/listaTrabalhoRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listitem="@layout/item_trabalho"/>
+            tools:listitem="@layout/item_trabalho" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -40,10 +43,21 @@
         android:id="@+id/menuNavegacaoListaTrabalho"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/swipeRefreshLayoutTrabalhos"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/swipeRefreshLayoutTrabalhos" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chipEstadoPersonagem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Inativo"
+        android:checkable="true"
+        app:layout_constraintBottom_toBottomOf="@id/menuNavegacaoListaTrabalho"
+        app:layout_constraintEnd_toEndOf="@+id/menuNavegacaoListaTrabalho"
+        app:layout_constraintStart_toStartOf="@+id/menuNavegacaoListaTrabalho"
+        app:layout_constraintTop_toTopOf="@+id/menuNavegacaoListaTrabalho" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton"
@@ -54,9 +68,9 @@
         android:contentDescription="@string/cadastrar_novo_trabalho"
         android:focusable="true"
         android:foregroundGravity="center"
+        app:backgroundTint="#ff4500"
         app:elevation="20dp"
         app:fabSize="auto"
-        app:backgroundTint="#ff4500"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_adiciona"

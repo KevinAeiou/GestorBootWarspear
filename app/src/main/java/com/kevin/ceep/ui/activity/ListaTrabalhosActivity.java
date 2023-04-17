@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.chip.Chip;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -62,8 +63,8 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private List<Trabalho> trabalhos;
     private SearchView busca;
-    private boolean isChecked = false;
-    private MenuItem checkable;
+    private Chip chipEstado;
+    private Boolean isChecked=false;
     private String usuarioId, personagemId;
     private Integer estado = 3;
 
@@ -79,7 +80,16 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         inicializaComponentes();
 
         atualizaListaTrabalho();
-        //configuraEstadoPersonagem();
+        configuraEstadoPersonagem();
+        chipEstado.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b){
+                chipEstado.setText("Ativo");
+                modificaEstadoPersonagem(1);
+            }else{
+                chipEstado.setText("Inativo");
+                modificaEstadoPersonagem(0);
+            }
+        });
         configuraCampoPesquisa();
         configuraBotaoInsereTrabalho();
         configuraDeslizeItem();
@@ -97,12 +107,14 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
                             Log.d("SWITCH","Estado do personagem é ativo.");
                             isChecked=true;
                             Log.d("SWITCH","O valor de ischeched é: ."+isChecked);
-                            checkable.setChecked(isChecked);
+                            chipEstado.setText("Ativo");
+                            chipEstado.setChecked(isChecked);
                         }else{
                             Log.d("SWITCH","Estado do personagem é inativo.");
                             isChecked=false;
                             Log.d("SWITCH","O valor de ischeched é: ."+isChecked);
-                            checkable.setChecked(isChecked);
+                            chipEstado.setText("Inativo");
+                            chipEstado.setChecked(isChecked);
                         }
                     }
                     @Override
@@ -116,6 +128,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference(CHAVE_USUARIOS);
+        chipEstado=findViewById(R.id.chipEstadoPersonagem);
     }
 
     private void configuraCampoPesquisa() {
@@ -152,10 +165,6 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_clasifica_lista_trabalho,menu);
-        checkable = menu.findItem(R.id.itemMenuSwitch);
-        Log.d("SWITCH","Referencia de checkable foi recuperada.");
-        configuraEstadoPersonagem();
-        //checkable.setActionView(R.layout.switch_item);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -180,10 +189,6 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
                 estado=2;
                 atualizaListaTrabalho();
                 break;
-            case R.id.itemMenuSwitch:
-                isChecked = !item.isChecked();
-                item.setChecked(isChecked);
-                break;
 
             default:
                 break;
@@ -194,6 +199,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     private void modificaEstadoPersonagem(int estadoPersonagem) {
         databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM)
                 .child(personagemId).child("estado").setValue(estadoPersonagem);
+        Log.d("SWITCH","Estado do personagem modificado para: "+estadoPersonagem);
     }
 
     private void configuraSwipeRefreshLayout() {

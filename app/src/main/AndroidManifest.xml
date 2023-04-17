@@ -34,20 +34,16 @@
         </activity>
         <activity
             android:name=".ui.activity.ConfirmaTrabalhoActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.activity.ListaRaridadeActivity" />
+            android:exported="false"/>
         <activity
             android:name=".ui.activity.ListaTrabalhosEspecificosActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.activity.ListaRaridadeActivity" />
+            android:exported="false"/>
         <activity
             android:name=".ui.activity.ListaRaridadeActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.activity.ListaTrabalhosActivity" />
+            android:exported="false"/>
         <activity
             android:name=".ui.activity.ListaProfissoesActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.activity.ListaRaridadeActivity" />
+            android:exported="false"/>
         <activity
             android:name=".ui.activity.ListaTrabalhosActivity"
             android:exported="false" />

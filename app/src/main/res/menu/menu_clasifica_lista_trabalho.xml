@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:title="Todos"
+        app:showAsAction="always"
         android:id="@+id/itemMenuTodos"/>
     <item android:title="Para produzir"
         android:id="@+id/itemMenuProduzir"/>
@@ -10,10 +11,5 @@
         android:id="@+id/itemMenuProduzindo"/>
     <item android:title="Concluído"
         android:id="@+id/itemMenuConcluido"/>
-    <item
-        android:id="@+id/itemMenuSwitch"
-        android:title="Inativo"
-        app:actionLayout="@layout/switch_item"
-        app:showAsAction="always" />
 
 </menu>
