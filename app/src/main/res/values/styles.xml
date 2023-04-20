@@ -49,7 +49,7 @@
         <item name="cardCornerRadius">16dp</item>
         <item name="android:layout_margin">8dp</item>
         <item name="android:gravity">center</item>
-        <item name="cardBackgroundColor">@color/cor_background_escuro</item>
+        <item name="background">@color/cor_background_claro</item>
     </style>
 
     <style name="btn">

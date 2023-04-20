@@ -19,7 +19,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -38,6 +40,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -80,7 +83,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         setTitle(CHAVE_TITULO_PERSONAGEM);
 
         inicializaComponentes();
-
+        atualizaListaPersonagem();
         configuraCampoNovoPersonagem();
 
         configuraBotaoDeslogaUsuario();
@@ -114,8 +117,22 @@ public class ListaPersonagemActivity extends AppCompatActivity {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int posicaoDeslize = viewHolder.getAdapterPosition();
                 ListaPersonagemAdapter personagemAdapter = (ListaPersonagemAdapter) recyclerView.getAdapter();
-                removePersonagemLista(posicaoDeslize);
+                long personagemDeletado = personagemAdapter.getItemId(posicaoDeslize);
                 personagemAdapter.remove(posicaoDeslize);
+                personagemAdapter.notifyItemRemoved(posicaoDeslize);
+                Snackbar.make(recyclerView, "Teste", Snackbar.LENGTH_LONG).setAction("Undo", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // adding on click listener to our action of snack bar.
+                        // below line is to add our item to array list with a position.
+                        //personagens.add(posicaoDeslize, personagemDeletado);
+
+                        // below line is to notify item is
+                        // added to our adapter class.
+                        personagemAdapter.notifyItemInserted(posicaoDeslize);
+                    }
+                }).show();
+                //configuraCaixaDeMensagem(posicaoDeslize, personagemAdapter);
             }
         };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
@@ -210,7 +227,6 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         FirebaseUser currentUser = minhaAutenticacao.getCurrentUser();
         minhaAutenticacao.updateCurrentUser(currentUser);
         recebeDadosIntent();
-        atualizaListaPersonagem();
         Log.i(TAG_ACTIVITY,"onStartListaPersonagem");
     }
 
@@ -447,7 +463,6 @@ public class ListaPersonagemActivity extends AppCompatActivity {
 
     private void configuraAdapter(List<Personagem> todosPersonagens, RecyclerView recyclerView) {
         personagemAdapter = new ListaPersonagemAdapter(this,todosPersonagens);
-        progressDialog.dismiss();
         recyclerView.setAdapter(personagemAdapter);
 
         personagemAdapter.setOnItemClickListener(new OnItemClickListener() {
@@ -476,34 +491,6 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         });
     }
 
-    public List<Personagem> atualizaEstadoPersonagem(Personagem raridade,int estado) {
-        personagens = new ArrayList<>();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference personagemReferencia = database.getReference(CHAVE_USUARIOS);
-        personagemReferencia.child(usuarioId).child(CHAVE_PERSONAGEM).
-                addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot dn:dataSnapshot.getChildren()){
-                            Personagem personagem = dn.getValue(Personagem.class);
-                            if (personagem.getId().equals(raridade.getId())){
-                                personagemReferencia.child(usuarioId).child(CHAVE_PERSONAGEM).
-                                        child(personagem.getId()).child("estado").setValue(estado);
-                            }
-                            personagens.add(personagem);
-                        }
-                        personagemAdapter.notifyDataSetChanged();
-                        progressDialog.dismiss();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-        return personagens;
-    }
-
     private List<Personagem> pegaTodosPersonagens() {
         personagens = new ArrayList<>();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -518,6 +505,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
                             personagens.add(personagem);
                         }
                         personagemAdapter.notifyDataSetChanged();
+                        progressDialog.dismiss();
                     }
 
                     @Override

@@ -1,24 +1,21 @@
 package com.kevin.ceep.ui.recyclerview.adapter;
 
+import static com.kevin.ceep.R.drawable.card_ativo_background;
+
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.RadioGroup;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.SwitchCompat;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.chip.Chip;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Personagem;
-import com.kevin.ceep.ui.activity.ListaPersonagemActivity;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.List;
@@ -69,11 +66,13 @@ public class ListaPersonagemAdapter extends RecyclerView.Adapter<ListaPersonagem
     public class RaridadeViewHolder extends RecyclerView.ViewHolder{
 
         private final TextView nome_personagem;
+        private final CardView card_personagem;
         private Personagem personagem;
 
         public RaridadeViewHolder(@NonNull View itemView) {
             super(itemView);
             nome_personagem = itemView.findViewById(R.id.itemNomePersonagem);
+            card_personagem=itemView.findViewById(R.id.cardViewPersonagem);
 
             itemView.setOnClickListener(view -> onItemClickListener.onItemClick(personagem, getAdapterPosition()));
         }
@@ -86,6 +85,11 @@ public class ListaPersonagemAdapter extends RecyclerView.Adapter<ListaPersonagem
         private void preencheCampo(Personagem personagem) {
             nome_personagem.setText(personagem.getNome());
             nome_personagem.setTextColor(Color.parseColor("#FCF5EF"));
+            if (personagem.getEstado()==1){
+                card_personagem.setBackgroundColor(Color.parseColor("#6DB5CA"));
+            }else{
+                card_personagem.setBackgroundColor(Color.parseColor("#B8D8E0"));
+            }
         }
     }
 }
