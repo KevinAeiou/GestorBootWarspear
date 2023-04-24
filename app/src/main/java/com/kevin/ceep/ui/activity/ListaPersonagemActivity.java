@@ -497,9 +497,10 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         Log.d("PERSONAGEM", String.valueOf(personagens));
         DatabaseReference databaseReference = database.getReference(CHAVE_USUARIOS);
         databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM).
-                addListenerForSingleValueEvent(new ValueEventListener() {
+                addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        personagens.clear();
                         for (DataSnapshot dn:dataSnapshot.getChildren()){
                             Personagem personagem = dn.getValue(Personagem.class);
                             personagens.add(personagem);
