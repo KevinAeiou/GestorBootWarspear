@@ -86,9 +86,9 @@ public class ListaPersonagemAdapter extends RecyclerView.Adapter<ListaPersonagem
             nome_personagem.setText(personagem.getNome());
             nome_personagem.setTextColor(Color.parseColor("#FCF5EF"));
             if (personagem.getEstado()==1){
-                card_personagem.setBackgroundColor(Color.parseColor("#6DB5CA"));
+                card_personagem.setSelected(true);
             }else{
-                card_personagem.setBackgroundColor(Color.parseColor("#B8D8E0"));
+                card_personagem.setSelected(false);
             }
         }
     }

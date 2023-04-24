@@ -66,7 +66,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
             mostraDialogodeProresso();
             minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
                     .child(personagemId).child(CHAVE_LISTA_DESEJO)
-                    .child(trabalhoId).child("licenca").setValue(licencasTrabalho[i]);
+                    .child(trabalhoId).child("tipo_licenca").setValue(licencasTrabalho[i]);
             progressDialog.dismiss();
         });
     }
