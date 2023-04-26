@@ -117,22 +117,22 @@ public class ListaPersonagemActivity extends AppCompatActivity {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int posicaoDeslize = viewHolder.getAdapterPosition();
                 ListaPersonagemAdapter personagemAdapter = (ListaPersonagemAdapter) recyclerView.getAdapter();
-                long personagemDeletado = personagemAdapter.getItemId(posicaoDeslize);
+                Personagem personagemDeletado = personagens.get(viewHolder.getAdapterPosition());
                 personagemAdapter.remove(posicaoDeslize);
                 personagemAdapter.notifyItemRemoved(posicaoDeslize);
-                Snackbar.make(recyclerView, "Teste", Snackbar.LENGTH_LONG).setAction("Undo", new View.OnClickListener() {
+                Snackbar.make(recyclerView, personagemDeletado.getNome(), Snackbar.LENGTH_LONG).setAction("Desfazer", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         // adding on click listener to our action of snack bar.
                         // below line is to add our item to array list with a position.
-                        //personagens.add(posicaoDeslize, personagemDeletado);
+                        personagens.add(posicaoDeslize, personagemDeletado);
 
                         // below line is to notify item is
                         // added to our adapter class.
                         personagemAdapter.notifyItemInserted(posicaoDeslize);
                     }
                 }).show();
-                //configuraCaixaDeMensagem(posicaoDeslize, personagemAdapter);
+                //removePersonagemLista(posicaoDeslize);
             }
         };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
@@ -162,24 +162,6 @@ public class ListaPersonagemActivity extends AppCompatActivity {
             //finish();
             //progressDialog.dismiss();
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.i(TAG_ACTIVITY,"onResumeListaPersonagem");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.i(TAG_ACTIVITY,"onPauseListaPersonagem");
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.i(TAG_ACTIVITY,"onStopListaPersonagem");
     }
 
     private void configuraBotaoDeslogaUsuario() {

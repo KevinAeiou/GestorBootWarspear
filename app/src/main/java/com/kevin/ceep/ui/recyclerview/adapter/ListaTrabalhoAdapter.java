@@ -1,5 +1,6 @@
 package com.kevin.ceep.ui.recyclerview.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kevin.ceep.R;
@@ -101,40 +103,40 @@ public class ListaTrabalhoAdapter extends RecyclerView.Adapter<ListaTrabalhoAdap
             profissao_trabalho.setText(trabalho.getProfissao());
             profissao_trabalho.setTextColor(Color.WHITE);
             nivel_trabalho.setText(String.valueOf(trabalho.getNivel()));
-            nivel_trabalho.setTextColor(Color.parseColor("#00ff00"));
+            nivel_trabalho.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_nivel));
             configuraCorCardViewTrabalho(trabalho);
         }
 
         private void configuraCorCardViewTrabalho(Trabalho trabalho) {
             Integer estado = trabalho.getEstado();
             if (estado==0){
-                cardview_trabalho.setCardBackgroundColor(Color.parseColor("#6DB5CA"));
+                cardview_trabalho.setCardBackgroundColor(ContextCompat.getColor(context,R.color.cor_background_card));
             }else if (estado==1){
-                cardview_trabalho.setCardBackgroundColor(Color.parseColor("#6d87ca"));
+                cardview_trabalho.setCardBackgroundColor(ContextCompat.getColor(context,R.color.cor_background_produzindo));
             }else if (estado==2){
-                cardview_trabalho.setCardBackgroundColor(Color.parseColor("#b5ca6d"));
+                cardview_trabalho.setCardBackgroundColor(ContextCompat.getColor(context,R.color.cor_background_feito));
             }
         }
 
         private void configuraCorLicencaTrabalho(Trabalho trabalho) {
             String licenca = trabalho.getTipo_licenca();
             if (licenca.equals("Licença de produção do iniciante")){
-                tipo_licenca.setTextColor(Color.parseColor("#FCF5EF"));
+                tipo_licenca.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_iniciante));
             }else if (licenca.equals("Licença de produção do aprendiz")){
-                tipo_licenca.setTextColor(Color.parseColor("#66ff66"));
+                tipo_licenca.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_aprediz));
             }else{
-                tipo_licenca.setTextColor(Color.parseColor("#ffcc00"));
+                tipo_licenca.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_mestre));
             }
         }
 
         private void configuraCorNomeTrabalho(Trabalho trabalho) {
             String raridade = trabalho.getRaridade();
             if (raridade.equals("Comum")){
-                nome_trabalho.setTextColor(Color.parseColor("#B8D8E0"));
+                nome_trabalho.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_comum));
             } else if (raridade.equals("Raro")){
-                nome_trabalho.setTextColor(Color.parseColor("#ff66ff"));
+                nome_trabalho.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_raro));
             }else{
-                nome_trabalho.setTextColor(Color.parseColor("#ff6666"));
+                nome_trabalho.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_especial));
             }
         }
     }

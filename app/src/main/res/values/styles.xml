@@ -43,14 +43,10 @@
     <style name="card">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:clickable">true</item>
-        <item name="elevation">16dp</item>
-        <item name="android:focusable">true</item>
-        <item name="cardCornerRadius">20dp</item>
+        <item name="elevation">6dp</item>
+        <item name="cornerRadius">20dp</item>
         <item name="android:layout_margin">8dp</item>
-        <item name="android:gravity">center</item>
-        <item name="android:selectable">true</item>
-        <item name="android:background">@drawable/card_estados_background</item>
+        <item name="android:background">@drawable/card_ativo_background</item>
     </style>
 
     <style name="btn">

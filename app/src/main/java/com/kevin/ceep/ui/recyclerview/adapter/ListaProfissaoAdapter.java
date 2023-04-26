@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kevin.ceep.R;
@@ -70,25 +71,17 @@ public class ListaProfissaoAdapter extends RecyclerView.Adapter<ListaProfissaoAd
 
         private void preencheCampo(Profissao profissao) {
             nome_profissao.setText(profissao.getNome());
-            nome_profissao.setTextColor(Color.WHITE);
             configuraCorRaridade(profissao);
         }
 
         private void configuraCorRaridade(Profissao raridade) {
-            if (raridade.getNome().equals("Comum")){
-                nome_profissao.setTextColor(Color.parseColor("#FCF5EF"));
-            }else if (raridade.getNome().equals("Raro")){
-                nome_profissao.setTextColor(Color.parseColor("#ff66ff"));
+            if (raridade.getNome().equals("Raro")){
+                nome_profissao.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_raro));
             }else if (raridade.getNome().equals("Especial")){
-                nome_profissao.setTextColor(Color.parseColor("#ff6666"));
+                nome_profissao.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_especial));
             }else{
-                nome_profissao.setTextColor(Color.parseColor("#FCF5EF"));
+                nome_profissao.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_comum));
             }
         }
-    }
-
-    public void adiciona(Profissao profissao){
-        profissoes.add(profissao);
-        notifyDataSetChanged();
     }
 }

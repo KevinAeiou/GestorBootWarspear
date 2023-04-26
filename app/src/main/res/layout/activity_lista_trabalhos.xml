@@ -69,7 +69,7 @@
         android:contentDescription="@string/cadastrar_novo_trabalho"
         android:focusable="true"
         android:foregroundGravity="center"
-        app:backgroundTint="#ff4500"
+        app:backgroundTint="@color/cor_background_laranja"
         app:elevation="20dp"
         app:fabSize="auto"
         app:layout_constraintBottom_toBottomOf="parent"

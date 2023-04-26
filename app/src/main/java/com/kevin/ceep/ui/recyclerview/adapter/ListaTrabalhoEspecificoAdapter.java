@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Trabalho;
@@ -89,17 +90,17 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
             profissao_trabalho_especifico.setText(trabalho.getProfissao());
             profissao_trabalho_especifico.setTextColor(Color.WHITE);
             nivel_trabalho_especifico.setText(String.valueOf(trabalho.getNivel()));
-            nivel_trabalho_especifico.setTextColor(Color.parseColor("#00ff00"));
+            nivel_trabalho_especifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_nivel));
         }
 
         private void confiuraCorNomeTrabalo(Trabalho trabalho) {
             String raridade = trabalho.getRaridade();
             if (raridade.equals("Comum")){
-                nome_trabalho_especifico.setTextColor(Color.parseColor("#B8D8E0"));
+                nome_trabalho_especifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_comum));
             }else if (raridade.equals("Raro")){
-                nome_trabalho_especifico.setTextColor(Color.parseColor("#ff66ff"));
+                nome_trabalho_especifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_raro));
             }else if (raridade.equals("Especial")){
-                nome_trabalho_especifico.setTextColor(Color.parseColor("#ff6666"));
+                nome_trabalho_especifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_especial));
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.kevin.ceep.ui.recyclerview.adapter;
 
 import static com.kevin.ceep.R.drawable.card_ativo_background;
+import static com.kevin.ceep.R.drawable.card_inativo_background;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kevin.ceep.R;
@@ -84,11 +86,11 @@ public class ListaPersonagemAdapter extends RecyclerView.Adapter<ListaPersonagem
 
         private void preencheCampo(Personagem personagem) {
             nome_personagem.setText(personagem.getNome());
-            nome_personagem.setTextColor(Color.parseColor("#FCF5EF"));
+            //nome_personagem.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_comum));
             if (personagem.getEstado()==1){
-                card_personagem.setSelected(true);
+                card_personagem.setBackground(ContextCompat.getDrawable(context, card_ativo_background));
             }else{
-                card_personagem.setSelected(false);
+                card_personagem.setBackground(ContextCompat.getDrawable(context, card_inativo_background));
             }
         }
     }

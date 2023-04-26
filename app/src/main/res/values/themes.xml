@@ -3,7 +3,7 @@
     <style name="Theme.Ceep" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/cor_background_escuro</item>
-        <item name="colorPrimaryVariant">@color/cor_background_claro</item>
+        <item name="colorPrimaryVariant">@color/cor_background_escuro_secundario</item>
         <item name="colorOnPrimary">@color/cor_background_card</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
