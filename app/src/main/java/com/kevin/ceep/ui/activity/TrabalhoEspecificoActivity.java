@@ -21,6 +21,8 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -34,8 +36,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private String usuarioId;
     private Trabalho trabalhoRecebido;
     private ProgressDialog progressDialog;
-    private EditText edtNomeTrabalho;
-    private EditText edtNivelTrabalho;
+    private TextInputEditText edtNomeTrabalho,edtNivelTrabalho;
+    private TextInputLayout txtInputEstado, txtInputLicenca;
     private AutoCompleteTextView autoCompleteEstado,autoCompleteLicenca;
     private String[] estadosTrabalho,licencasTrabalho;
     private String personagemId,trabalhoId;
@@ -100,6 +102,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         edtNomeTrabalho=findViewById(R.id.edtNomeTrabalho);
         edtNivelTrabalho=findViewById(R.id.edtNivelTrabalho);
+        txtInputEstado=findViewById(R.id.txtInputLayoutEstadoTrabalho);
+        txtInputLicenca=findViewById(R.id.txtInputLayoutLicencaTrabalho);
         autoCompleteEstado=findViewById(R.id.txtAutoCompleteEstadoTrabalho);
         autoCompleteLicenca=findViewById(R.id.txtAutoCompleteLicencaTrabalhoEspecifico);
         licencasTrabalho=getResources().getStringArray(R.array.licencas_completas);
@@ -119,7 +123,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 Log.d("trabalho", String.valueOf(trabalhoRecebido.getNivel()));
                 configuraComponentes();
             }else if (codigoRequisicao==1){
-
+                txtInputLicenca.setVisibility(View.GONE);
+                txtInputEstado.setVisibility(View.GONE);
             }
         }
     }
