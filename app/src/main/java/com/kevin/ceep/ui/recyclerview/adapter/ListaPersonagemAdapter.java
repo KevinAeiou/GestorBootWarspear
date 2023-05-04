@@ -88,9 +88,9 @@ public class ListaPersonagemAdapter extends RecyclerView.Adapter<ListaPersonagem
             nome_personagem.setText(personagem.getNome());
             //nome_personagem.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_comum));
             if (personagem.getEstado()==1){
-                card_personagem.setBackground(ContextCompat.getDrawable(context, card_ativo_background));
+                card_personagem.setCardBackgroundColor(ContextCompat.getColor(context,R.color.cor_background_escuro));
             }else{
-                card_personagem.setBackground(ContextCompat.getDrawable(context, card_inativo_background));
+                card_personagem.setCardBackgroundColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_iniciante));
             }
         }
     }

@@ -25,7 +25,7 @@
         android:id="@+id/linearLayoutConfirmaTrabalho"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="16dp"
         app:layout_constraintBottom_toTopOf="@+id/botao_cadastrar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -46,6 +46,8 @@
                 android:id="@+id/txtAutoCompleteLicencaTrabalho"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:maxLines="1"
                 android:inputType="none" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -67,6 +69,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:inputType="none"
+                android:textColor="@color/white"
                 android:text="1" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -76,9 +79,7 @@
         android:id="@+id/botao_cadastrar"
         style="@style/btn"
         android:text="Adicionar"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
+        android:layout_margin="16dp"
         android:background="@drawable/botao_estados_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/linearLayoutConfirmaTrabalho"

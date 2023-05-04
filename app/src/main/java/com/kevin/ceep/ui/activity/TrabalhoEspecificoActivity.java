@@ -113,12 +113,15 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                         .getSerializableExtra(CHAVE_NOME_TRABALHO);
                 Log.d("trabalho", String.valueOf(trabalhoRecebido.getNivel()));
                 configuraComponentes();
+            }else if (codigoRequisicao==1){
+
             }
         }
     }
 
     private void configuraComponentes() {
-        setTitle(CHAVE_TITULO_ALTERA_STATUS_TRABALHO);
+        String trabalho=trabalhoRecebido.getNome();
+        setTitle(trabalho);
         String estado = estadosTrabalho[trabalhoRecebido.getEstado()];
         String licenca=trabalhoRecebido.getTipo_licenca();
         trabalhoId=trabalhoRecebido.getId();

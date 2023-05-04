@@ -66,6 +66,8 @@
             android:layout_height="wrap_content"
             android:padding="8dp"
             android:layout_weight="1"
+            android:textColor="@color/white"
+            android:gravity="center"
             android:inputType="none" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -85,6 +87,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColor="@color/white"
+            android:gravity="center"
             android:inputType="none" />
     </com.google.android.material.textfield.TextInputLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
