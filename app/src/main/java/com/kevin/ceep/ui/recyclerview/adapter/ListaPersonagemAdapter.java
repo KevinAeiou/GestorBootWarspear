@@ -1,11 +1,5 @@
 package com.kevin.ceep.ui.recyclerview.adapter;
-
-import static com.kevin.ceep.R.drawable.card_ativo_background;
-import static com.kevin.ceep.R.drawable.card_inativo_background;
-
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

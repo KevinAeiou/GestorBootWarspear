@@ -26,6 +26,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
 
     private AutoCompleteTextView autoCompleteLicenca,autoCompleteQuantidade;
     private String personagemId, licencaSelecionada;
+    private Trabalho trabalho;
     private int quantidadeSelecionada;
 
     @Override
@@ -34,11 +35,22 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_confirma_trabalho);
         setTitle(CHAVE_TITULO_CONFIRMA);
 
+        recebeDadosIntent();
         configuraBotaoCadastraTrabalho();
 
         Log.i(TAG_ACTIVITY,"onCreateConfirma");
     }
 
+    private void recebeDadosIntent() {
+        Intent dadosRecebidos = getIntent();
+        if (dadosRecebidos.hasExtra(CHAVE_NOME_TRABALHO)) {
+            trabalho = (Trabalho) dadosRecebidos
+                    .getSerializableExtra(CHAVE_NOME_TRABALHO);
+            setTitle(trabalho.getNome());
+            personagemId = (String) dadosRecebidos.
+                    getSerializableExtra(CHAVE_NOME_PERSONAGEM);
+        }
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -83,15 +95,8 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
     }
 
     private void cadastraNovoTrabalho() {
-        Intent dadosRecebidos = getIntent();
-        if (dadosRecebidos.hasExtra(CHAVE_NOME_TRABALHO)) {
-            Trabalho trabalho = (Trabalho) dadosRecebidos
-                    .getSerializableExtra(CHAVE_NOME_TRABALHO);
-            personagemId = (String) dadosRecebidos.
-                    getSerializableExtra(CHAVE_NOME_PERSONAGEM);
-            for (int x=0;x<quantidadeSelecionada;x++){
-                adicionaNovoTrabalho(trabalho);
-            }
+        for (int x=0;x<quantidadeSelecionada;x++){
+            adicionaNovoTrabalho(trabalho);
         }
     }
 

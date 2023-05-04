@@ -5,6 +5,7 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSO
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PROFISSAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_RARIDADE;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOTA;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
 
@@ -47,12 +48,11 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
 
     private ListaTrabalhoEspecificoAdapter trabalhoAdapter;
     private ProgressDialog progressDialog;
-    private TextInputEditText edtNovoTrabalho,edtNovoNivelTrabalho;
     private AppCompatButton botaoNovoTrabalho;
     private RecyclerView recyclerView;
     private List<Trabalho> trabalhos;
+    private String raridade, profissao, personagemId;
     private SearchView busca;
-    private String profissao, raridade, trabalho, nivel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,19 +63,20 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
         mostraDialogodeProresso();
         recebeDadosIntent();
 
-        edtNovoTrabalho = findViewById(R.id.edtNovoTrabalhoEspecifico);
-        edtNovoNivelTrabalho = findViewById(R.id.edtNovoNivelTrabalhoEspecifico);
-        botaoNovoTrabalho = findViewById(R.id.botaoNovoTrabalhoEspecifico);
+        inicializaComponentes();
 
         atualizaListaTrabalhoEspecifico();
 
         configuraCampoPesquisa();
-        configuraEditTrabaho();
         configuraBotaoInsereTrabalho();
         configuraDeslizeItem();
         configuraSwipeRefreshLayout();
         Log.i(TAG_ACTIVITY,"onCreateListaTrabalhosEspecificos");
         }
+
+    private void inicializaComponentes() {
+        botaoNovoTrabalho = findViewById(R.id.botaoNovoTrabalhoEspecifico);
+    }
 
     private void configuraDeslizeItem() {
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT) {
@@ -137,93 +138,20 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
 
     private void configuraBotaoInsereTrabalho() {
         botaoNovoTrabalho.setOnClickListener(view -> {
-            adicionaNovoTrabalho();
-            atualizaListaTrabalhoEspecifico();
-            edtNovoTrabalho.setText(null);
-            botaoNovoTrabalho.setVisibility(View.GONE);
+            vaiParaTrabaloEspecificoActivity();
         });
     }
 
-    private void adicionaNovoTrabalho() {
-        String novoId = geraIdAleatorio();
-        Trabalho novoTrabalho = new Trabalho(novoId,trabalho,profissao,"",raridade, 0, Integer.parseInt(nivel));
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference minhaReferencia = database.getReference("Lista_trabalhos");
-
-        minhaReferencia.child(novoId).setValue(novoTrabalho);
-    }
-
-    private String geraIdAleatorio() {
-        // chose a Character random from this String
-        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                + "0123456789"
-                + "abcdefghijklmnopqrstuvxyz";
-
-        // create StringBuffer size of AlphaNumericString
-        StringBuilder sb = new StringBuilder(28);
-
-        for (int i = 0; i < 28; i++) {
-
-            // generate a random number between
-            // 0 to AlphaNumericString variable length
-            int index
-                    = (int)(AlphaNumericString.length()
-                    * Math.random());
-
-            // add Character one by one in end of sb
-            sb.append(AlphaNumericString
-                    .charAt(index));
-        }
-
-        return sb.toString();
-    }
-
-    private void configuraEditTrabaho() {
-        edtNovoTrabalho.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                trabalho = edtNovoTrabalho.getText().toString();
-                nivel = edtNovoNivelTrabalho.getText().toString();
-                verificaNomeTrabalho(trabalho,nivel);
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-        edtNovoNivelTrabalho.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                trabalho = edtNovoTrabalho.getText().toString();
-                nivel = edtNovoNivelTrabalho.getText().toString();
-                verificaNomeTrabalho(trabalho,nivel);
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-    }
-
-    private void verificaNomeTrabalho(String novoTrabalho,String novoNivelTrabalho) {
-        if (!novoTrabalho.isEmpty()&!novoNivelTrabalho.isEmpty()){
-            botaoNovoTrabalho.setVisibility(View.VISIBLE);
-        }else{
-            botaoNovoTrabalho.setVisibility(View.GONE);
-        }
+    private void vaiParaTrabaloEspecificoActivity() {
+        Intent cadastraNovoTrabalho=
+                new Intent(getApplicationContext(),
+                        TrabalhoEspecificoActivity.class);
+        cadastraNovoTrabalho.putExtra(CHAVE_NOTA,1);
+        cadastraNovoTrabalho.putExtra(CHAVE_NOME_PERSONAGEM, personagemId);
+        cadastraNovoTrabalho.putExtra(CHAVE_NOME_PROFISSAO,profissao);
+        cadastraNovoTrabalho.putExtra(CHAVE_NOME_RARIDADE,raridade);
+        startActivity(cadastraNovoTrabalho,
+                ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
     }
 
     private void configuraSwipeRefreshLayout() {
@@ -239,13 +167,6 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
         configuraRecyclerView(todosTrabalhos);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        finish();
-        Log.i(TAG_ACTIVITY,"onStopListaTrabalhosEspecificos");
-    }
-
     private void recebeDadosIntent() {
         Intent dadosRecebidos = getIntent();
         if (dadosRecebidos.hasExtra(CHAVE_NOME_PROFISSAO)) {
@@ -253,6 +174,8 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
                     .getSerializableExtra(CHAVE_NOME_RARIDADE);
             Profissao profissaoRecebido = (Profissao) dadosRecebidos
                     .getSerializableExtra(CHAVE_NOME_PROFISSAO);
+            personagemId = (String) dadosRecebidos.
+                    getSerializableExtra(CHAVE_NOME_PERSONAGEM);
             raridade=personagemRecebido.getNome();
             profissao=profissaoRecebido.getNome();
         }
@@ -314,19 +237,15 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
             @Override
             public void onItemClick(Trabalho trabalho, int adapterPosition) {
 
-                Intent dadosRecebidos = getIntent();
                 Intent iniciaTrabalhosActivity =
                         new Intent(ListaTrabalhosEspecificosActivity.this,
                                 ConfirmaTrabalhoActivity.class);
 
-                if (dadosRecebidos.hasExtra(CHAVE_NOME_PROFISSAO)) {
-                    iniciaTrabalhosActivity.putExtra(CHAVE_NOME_TRABALHO, trabalho);
-                    String personagemId = (String) dadosRecebidos.
-                            getSerializableExtra(CHAVE_NOME_PERSONAGEM);
-                    iniciaTrabalhosActivity.putExtra(CHAVE_NOME_PERSONAGEM, personagemId);
-                    startActivity(iniciaTrabalhosActivity,
-                            ActivityOptions.makeSceneTransitionAnimation(ListaTrabalhosEspecificosActivity.this).toBundle());
-                }
+                iniciaTrabalhosActivity.putExtra(CHAVE_NOME_TRABALHO, trabalho);
+                iniciaTrabalhosActivity.putExtra(CHAVE_NOME_PERSONAGEM, personagemId);
+                startActivity(iniciaTrabalhosActivity,
+                        ActivityOptions.makeSceneTransitionAnimation(ListaTrabalhosEspecificosActivity.this).toBundle());
+
             }
         });
     }

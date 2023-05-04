@@ -52,6 +52,11 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
         configuraDropdownEstados();
         modificaEstado();
+        /*
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference minhaReferencia = database.getReference("Lista_trabalhos");
+
+        minhaReferencia.child(novoId).setValue(novoTrabalho);*/
     }
 
     private void modificaEstado() {

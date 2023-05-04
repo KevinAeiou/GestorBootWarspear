@@ -1,5 +1,7 @@
 package com.kevin.ceep.ui.activity;
 
+import com.kevin.ceep.model.Trabalho;
+
 public interface NotaActivityConstantes {
 
     String CHAVE_NOTA = "nota";
