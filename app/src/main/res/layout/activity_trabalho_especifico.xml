@@ -20,36 +20,35 @@
         app:srcCompat="@drawable/ic_adiciona" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/txtNomeTrabalho"
+        android:id="@+id/txtLayoutNomeTrabalho"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:hint="Trabalho"
+        android:hint="Nome trabalho"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/txtNivelTrabalho">
+        app:layout_constraintBottom_toTopOf="@+id/txtLayoutNivelTrabalho">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edtNomeTrabalho"
-            android:text="Trabalho"
             android:textSize="18sp"
+            android:maxLines="1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/txtNivelTrabalho"
+        android:id="@+id/txtLayoutNivelTrabalho"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="70dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:hint="Nível"
-        app:layout_constraintEnd_toEndOf="@+id/txtNomeTrabalho"
-        app:layout_constraintBottom_toTopOf="@+id/txtInputLayoutLicencaTrabalho">
+        app:layout_constraintEnd_toEndOf="@+id/txtLayoutNomeTrabalho"
+        app:layout_constraintBottom_toTopOf="@+id/txtLayoutLicencaTrabalho">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edtNivelTrabalho"
-            android:text="0"
             android:gravity="center"
             android:inputType="numberSigned"
             android:textSize="18sp"
@@ -59,15 +58,15 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/txtInputLayoutLicencaTrabalho"
+        android:id="@+id/txtLayoutLicencaTrabalho"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
         android:hint="Licença"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/txtNivelTrabalho"
-        app:layout_constraintStart_toStartOf="@+id/txtNomeTrabalho">
+        app:layout_constraintEnd_toEndOf="@+id/txtLayoutNivelTrabalho"
+        app:layout_constraintStart_toStartOf="@+id/txtLayoutNomeTrabalho">
 
         <AutoCompleteTextView
             android:id="@+id/txtAutoCompleteLicencaTrabalhoEspecifico"
@@ -82,7 +81,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/txtInputLayoutEstadoTrabalho"
+        android:id="@+id/txtLayoutEstadoTrabalho"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

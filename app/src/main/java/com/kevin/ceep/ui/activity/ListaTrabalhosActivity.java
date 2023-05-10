@@ -81,6 +81,15 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
 
         atualizaListaTrabalho();
         configuraEstadoPersonagem();
+        configuraChipMudaEstadoPersonagem();
+        configuraCampoPesquisa();
+        configuraBotaoInsereTrabalho();
+        configuraDeslizeItem();
+        configuraSwipeRefreshLayout();
+        Log.i(TAG_ACTIVITY,"onCreateListaTrabalho");
+    }
+
+    private void configuraChipMudaEstadoPersonagem() {
         chipEstado.setOnCheckedChangeListener((compoundButton, b) -> {
             if (b){
                 chipEstado.setText("Ativo");
@@ -90,11 +99,6 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
                 modificaEstadoPersonagem(0);
             }
         });
-        configuraCampoPesquisa();
-        configuraBotaoInsereTrabalho();
-        configuraDeslizeItem();
-        configuraSwipeRefreshLayout();
-        Log.i(TAG_ACTIVITY,"onCreateListaTrabalho");
     }
 
     private void configuraEstadoPersonagem() {
@@ -164,7 +168,8 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_clasifica_lista_trabalho,menu);
+        getMenuInflater().inflate(R.menu.menu_clasifica_lista_trabalho,
+                menu);
         return super.onCreateOptionsMenu(menu);
     }
 

@@ -22,13 +22,9 @@ import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -47,11 +43,12 @@ import java.util.List;
 public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
 
     private ListaTrabalhoEspecificoAdapter trabalhoAdapter;
+    private Profissao raridadeRecebido,profissaoRecebido;
     private ProgressDialog progressDialog;
     private AppCompatButton botaoNovoTrabalho;
     private RecyclerView recyclerView;
     private List<Trabalho> trabalhos;
-    private String raridade, profissao, personagemId;
+    private String personagemId;
     private SearchView busca;
 
     @Override
@@ -148,8 +145,8 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
                         TrabalhoEspecificoActivity.class);
         cadastraNovoTrabalho.putExtra(CHAVE_NOTA,1);
         cadastraNovoTrabalho.putExtra(CHAVE_NOME_PERSONAGEM, personagemId);
-        cadastraNovoTrabalho.putExtra(CHAVE_NOME_PROFISSAO,profissao);
-        cadastraNovoTrabalho.putExtra(CHAVE_NOME_RARIDADE,raridade);
+        cadastraNovoTrabalho.putExtra(CHAVE_NOME_PROFISSAO,profissaoRecebido);
+        cadastraNovoTrabalho.putExtra(CHAVE_NOME_RARIDADE,raridadeRecebido);
         startActivity(cadastraNovoTrabalho,
                 ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
     }
@@ -170,14 +167,12 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
     private void recebeDadosIntent() {
         Intent dadosRecebidos = getIntent();
         if (dadosRecebidos.hasExtra(CHAVE_NOME_PROFISSAO)) {
-            Profissao personagemRecebido = (Profissao) dadosRecebidos
+            raridadeRecebido = (Profissao) dadosRecebidos
                     .getSerializableExtra(CHAVE_NOME_RARIDADE);
-            Profissao profissaoRecebido = (Profissao) dadosRecebidos
+            profissaoRecebido = (Profissao) dadosRecebidos
                     .getSerializableExtra(CHAVE_NOME_PROFISSAO);
             personagemId = (String) dadosRecebidos.
                     getSerializableExtra(CHAVE_NOME_PERSONAGEM);
-            raridade=personagemRecebido.getNome();
-            profissao=profissaoRecebido.getNome();
         }
     }
 
@@ -197,7 +192,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dn:dataSnapshot.getChildren()){
                     Trabalho trabalho = dn.getValue(Trabalho.class);
-                    if (trabalho.getProfissao().equals(profissao) && trabalho.getRaridade().equals(raridade)){
+                    if (trabalho.getProfissao().equals(profissaoRecebido.getNome()) && trabalho.getRaridade().equals(raridadeRecebido.getNome())){
                         trabalhos.add(trabalho);
                     }
                 }
