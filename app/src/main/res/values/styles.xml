@@ -47,7 +47,6 @@
         <item name="cardCornerRadius">20dp</item>
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginEnd">8dp</item>
-        <item name="android:layout_marginBottom">2dp</item>
         <item name="cardPreventCornerOverlap">true</item>
         <item name="cardUseCompatPadding">true</item>
         <item name="cardBackgroundColor">@color/cor_background_card</item>
