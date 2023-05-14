@@ -6,10 +6,12 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSO
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PROFISSAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_RARIDADE;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOTA;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_NOVO_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +22,6 @@ import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,18 +37,21 @@ import com.kevin.ceep.R;
 import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Trabalho;
 
+import java.util.Objects;
+
 public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private FirebaseDatabase database;
     private DatabaseReference minhareferencia;
     private Trabalho trabalhoRecebido;
     private Profissao raridadeRecebido,profissaoRecebido;
-    private ProgressDialog progressDialog;
     private TextInputEditText edtNomeTrabalho,edtNivelTrabalho;
     private TextInputLayout txtInputEstado, txtInputLicenca,txtInputNome,txtInputNivel;
     private AutoCompleteTextView autoCompleteEstado,autoCompleteLicenca;
-    private String[] estadosTrabalho,licencasTrabalho, mensagemErro={"Campo requerido!","Inválido!"};
-    private String usuarioId,personagemId,trabalhoId;
+    private String[] estadosTrabalho,licencasTrabalho;
+    private final String[] mensagemErro={"Campo requerido!","Inválido!"};
+    private String usuarioId,personagemId,trabalhoId,licencaModificada;
+    private int codigoRequisicao,posicaoEstado=0;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -56,7 +60,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_trabalho_especifico);
 
         inicializaComponentes();
-
         recebeDadosIntent();
 
         configuraDropdownEstados();
@@ -64,34 +67,22 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     }
 
     private void modificaEstado() {
-        autoCompleteEstado.setOnItemClickListener((adapterView, view, i, l) -> {
-            mostraDialogodeProresso();
-            minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
-                    .child(personagemId).child(CHAVE_LISTA_DESEJO)
-                    .child(trabalhoId).child("estado").setValue(i);
-            progressDialog.dismiss();
-        });
-        autoCompleteLicenca.setOnItemClickListener((adapterView, view, i, l) -> {
-            mostraDialogodeProresso();
-            minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
-                    .child(personagemId).child(CHAVE_LISTA_DESEJO)
-                    .child(trabalhoId).child("tipo_licenca").setValue(licencasTrabalho[i]);
-            progressDialog.dismiss();
-        });
+        autoCompleteEstado.setOnItemClickListener((adapterView, view, i, l) -> posicaoEstado=i);
+        autoCompleteLicenca.setOnItemClickListener((adapterView, view, i, l) -> licencaModificada=licencasTrabalho[i]);
     }
 
     private void mostraDialogodeProresso(){
-        progressDialog = new ProgressDialog(this);
+        ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Modificando estado...");
         progressDialog.show();
     }
 
     private void configuraDropdownEstados() {
-        ArrayAdapter adapterLicenca=new ArrayAdapter(this,
-                R.layout.item_dropdrown,licencasTrabalho);
-        ArrayAdapter adapterEstado=new ArrayAdapter(this,
-                R.layout.item_dropdrown,estadosTrabalho);
+        ArrayAdapter<String> adapterLicenca= new ArrayAdapter<>(this,
+                R.layout.item_dropdrown, licencasTrabalho);
+        ArrayAdapter<String> adapterEstado= new ArrayAdapter<>(this,
+                R.layout.item_dropdrown, estadosTrabalho);
         adapterLicenca.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         adapterEstado.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         autoCompleteLicenca.setAdapter(adapterLicenca);
@@ -99,9 +90,10 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     }
 
     private void inicializaComponentes() {
-        database = FirebaseDatabase.getInstance();
-        minhareferencia = database.getReference(CHAVE_USUARIOS);
-        usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        database=FirebaseDatabase.getInstance();
+        minhareferencia=database.getReference(CHAVE_USUARIOS);
+        usuarioId= Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+
         edtNomeTrabalho=findViewById(R.id.edtNomeTrabalho);
         edtNivelTrabalho=findViewById(R.id.edtNivelTrabalho);
         txtInputEstado=findViewById(R.id.txtLayoutEstadoTrabalho);
@@ -111,45 +103,47 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         autoCompleteEstado=findViewById(R.id.txtAutoCompleteEstadoTrabalho);
         autoCompleteLicenca=findViewById(R.id.txtAutoCompleteLicencaTrabalhoEspecifico);
         licencasTrabalho=getResources().getStringArray(R.array.licencas_completas);
-        estadosTrabalho = getResources().getStringArray(R.array.estados);
+        estadosTrabalho=getResources().getStringArray(R.array.estados);
     }
 
     private void recebeDadosIntent() {
         Intent dadosRecebidos=getIntent();
 
-        if (dadosRecebidos.hasExtra(CHAVE_NOTA)){
-            int codigoRequisicao = (int) dadosRecebidos
-                    .getSerializableExtra(CHAVE_NOTA);
+        if (dadosRecebidos.hasExtra(CHAVE_TRABALHO)){
+            codigoRequisicao= (int) dadosRecebidos
+                    .getSerializableExtra(CHAVE_TRABALHO);
             personagemId= (String) dadosRecebidos.getSerializableExtra(CHAVE_NOME_PERSONAGEM);
-            if (codigoRequisicao==2){
+            if (codigoRequisicao== CODIGO_REQUISICAO_ALTERA_TRABALHO){
                 trabalhoRecebido= (Trabalho) dadosRecebidos
                         .getSerializableExtra(CHAVE_NOME_TRABALHO);
-                Log.d("trabalho", String.valueOf(trabalhoRecebido.getNivel()));
-                configuraComponentes();
-            }else if (codigoRequisicao==1){
-                setTitle(CHAVE_TITULO_NOVO_TRABALHO);
+                configuraComponentesAlteraTrabalho();
+            }else if (codigoRequisicao== CODIGO_REQUISICAO_INSERE_TRABALHO){
                 raridadeRecebido=(Profissao) dadosRecebidos
                         .getSerializableExtra(CHAVE_NOME_RARIDADE);
                 profissaoRecebido=(Profissao) dadosRecebidos
                         .getSerializableExtra(CHAVE_NOME_PROFISSAO);
-                txtInputLicenca.setVisibility(View.GONE);
-                txtInputEstado.setVisibility(View.GONE);
+                configuraLayoutNovoTrabalho();
             }
         }
     }
 
-    private void configuraComponentes() {
-        String trabalho=trabalhoRecebido.getNome();
-        setTitle(trabalho);
-        String estado = estadosTrabalho[trabalhoRecebido.getEstado()];
-        String licenca=trabalhoRecebido.getTipo_licenca();
-        trabalhoId=trabalhoRecebido.getId();
-        autoCompleteEstado.setText(estado);
-        autoCompleteLicenca.setText(licenca);
-        edtNomeTrabalho.setEnabled(false);
+    private void configuraLayoutNovoTrabalho() {
+        setTitle(CHAVE_TITULO_NOVO_TRABALHO);
+        txtInputLicenca.setVisibility(View.GONE);
+        txtInputEstado.setVisibility(View.GONE);
+    }
+
+    private void configuraComponentesAlteraTrabalho() {
+        setTitle(trabalhoRecebido.getNome());
         edtNivelTrabalho.setEnabled(false);
-        edtNomeTrabalho.setText(trabalhoRecebido.getNome());
+        edtNomeTrabalho.setEnabled(false);
+        trabalhoId=trabalhoRecebido.getId();
+        autoCompleteEstado.setText(estadosTrabalho[trabalhoRecebido.getEstado()]);
         edtNivelTrabalho.setText(String.valueOf(trabalhoRecebido.getNivel()));
+        autoCompleteLicenca.setText(trabalhoRecebido.getTipo_licenca());
+        edtNomeTrabalho.setText(trabalhoRecebido.getNome());
+        posicaoEstado=trabalhoRecebido.getEstado();
+        licencaModificada=trabalhoRecebido.getTipo_licenca();
     }
 
     @Override
@@ -161,20 +155,52 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.itemMenuSalvaTrabalho:
-                String nome=edtNomeTrabalho.getText().toString().trim();
-                String nivel=edtNivelTrabalho.getText().toString().trim();
+        if (item.getItemId() == R.id.itemMenuSalvaTrabalho) {
+            if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO) {
+                if (verificaTrabalhoModificado()) {
+                    Trabalho trabalhoModificado=configuraTrabalho(trabalhoId,
+                            trabalhoRecebido.getNome(),
+                            trabalhoRecebido.getProfissao(),
+                            licencaModificada,
+                            trabalhoRecebido.getRaridade(),
+                            posicaoEstado,
+                            trabalhoRecebido.getNivel());
+                    modificaTrabalhoServidor(trabalhoModificado);
+                }
+                vaiParaListaTrabalhosActivity();
+            } else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO) {
+                String nome = Objects.requireNonNull(edtNomeTrabalho.getText()).toString().trim();
+                String nivel = Objects.requireNonNull(edtNivelTrabalho.getText()).toString().trim();
 
-                if (verificaEdtTrabalho(nome,txtInputNome,0)
-                        & verificaEdtTrabalho(nivel,txtInputNivel,1)){
+                if (verificaCamposNovoTrabalho(nome, nivel)) {
                     cadastraNovoTrabalho(nome, nivel);
                     vaiParaListaTrabalhosEspecificosActivity();
-                    finish();
                 }
-                break;
+            }
+            finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean verificaCamposNovoTrabalho(String nome, String nivel) {
+        return verificaEdtTrabalho(nome, txtInputNome, 0)
+                & verificaEdtTrabalho(nivel, txtInputNivel, 1);
+    }
+
+    private boolean verificaTrabalhoModificado() {
+        return !(licencaModificada.equals(trabalhoRecebido.getTipo_licenca())) ||
+                posicaoEstado!=trabalhoRecebido.getEstado();
+    }
+
+    @NonNull
+    private Trabalho configuraTrabalho(String id, String nome,String profissao, String licenca,String raridade, int estado, int nivel) {
+        return new Trabalho(id,nome,profissao,licenca,raridade,estado,nivel);
+    }
+
+    private void modificaTrabalhoServidor(Trabalho trabalhoModificado) {
+        minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
+                .child(personagemId).child(CHAVE_LISTA_DESEJO)
+                .child(trabalhoId).setValue(trabalhoModificado);
     }
 
     private Boolean verificaEdtTrabalho(String edtTexto,TextInputLayout inputLayout,int posicaoErro) {
@@ -191,14 +217,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private void cadastraNovoTrabalho(String nome, String nivel) {
         DatabaseReference minhaReferencia = database.getReference(CHAVE_LISTA_TRABALHO);
         String novoId = geraIdAleatorio();
-        Trabalho novoTrabalho=
-                new Trabalho(novoId
-                        , nome
-                        ,profissaoRecebido.getNome()
-                        ,""
-                        ,raridadeRecebido.getNome()
-                        ,0
-                        ,Integer.parseInt(nivel));
+        Trabalho novoTrabalho=configuraTrabalho(novoId,nome,profissaoRecebido.getNome(),"",raridadeRecebido.getNome(),0,Integer.parseInt(nivel));
         minhaReferencia.child(novoId).setValue(novoTrabalho);
     }
 
@@ -209,6 +228,16 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         vaiParaListaTrabalhos.putExtra(CHAVE_NOME_PERSONAGEM,personagemId);
         vaiParaListaTrabalhos.putExtra(CHAVE_NOME_PROFISSAO,profissaoRecebido);
         vaiParaListaTrabalhos.putExtra(CHAVE_NOME_RARIDADE,raridadeRecebido);
+        startActivity(vaiParaListaTrabalhos
+                ,ActivityOptions.makeSceneTransitionAnimation(TrabalhoEspecificoActivity.this)
+                        .toBundle());
+    }
+
+    private void vaiParaListaTrabalhosActivity() {
+        Intent vaiParaListaTrabalhos=
+                new Intent(getApplicationContext()
+                        ,ListaTrabalhosActivity.class);
+        vaiParaListaTrabalhos.putExtra(CHAVE_NOME_PERSONAGEM,personagemId);
         startActivity(vaiParaListaTrabalhos
                 ,ActivityOptions.makeSceneTransitionAnimation(TrabalhoEspecificoActivity.this)
                         .toBundle());

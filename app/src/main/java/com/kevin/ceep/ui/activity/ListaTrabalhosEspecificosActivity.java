@@ -5,8 +5,9 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSO
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PROFISSAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_RARIDADE;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOTA;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
 
 import androidx.annotation.NonNull;
@@ -135,15 +136,15 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
 
     private void configuraBotaoInsereTrabalho() {
         botaoNovoTrabalho.setOnClickListener(view -> {
-            vaiParaTrabaloEspecificoActivity();
+            vaiParaTrabalhoEspecificoActivity();
         });
     }
 
-    private void vaiParaTrabaloEspecificoActivity() {
+    private void vaiParaTrabalhoEspecificoActivity() {
         Intent cadastraNovoTrabalho=
                 new Intent(getApplicationContext(),
                         TrabalhoEspecificoActivity.class);
-        cadastraNovoTrabalho.putExtra(CHAVE_NOTA,1);
+        cadastraNovoTrabalho.putExtra(CHAVE_TRABALHO, CODIGO_REQUISICAO_INSERE_TRABALHO);
         cadastraNovoTrabalho.putExtra(CHAVE_NOME_PERSONAGEM, personagemId);
         cadastraNovoTrabalho.putExtra(CHAVE_NOME_PROFISSAO,profissaoRecebido);
         cadastraNovoTrabalho.putExtra(CHAVE_NOME_RARIDADE,raridadeRecebido);

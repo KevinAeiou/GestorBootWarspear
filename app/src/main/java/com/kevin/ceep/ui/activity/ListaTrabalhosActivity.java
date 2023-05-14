@@ -3,13 +3,13 @@ package com.kevin.ceep.ui.activity;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOTA;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_POSICAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_NOTA;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_NOTA;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.POSICAO_INVALIDA;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
 
@@ -22,8 +22,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -245,16 +243,15 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference minhareferencia = database.getReference(CHAVE_USUARIOS);
-        Log.d("Remove",idTrabalho);
-        minhareferencia.child(usuarioId).child("Lista_personagem").
-                child(personagemId).child("Lista_desejo").
+        minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM).
+                child(personagemId).child(CHAVE_LISTA_DESEJO).
                 child(idTrabalho).removeValue();
     }
 
     private void recebeDadosIntent() {
         Intent dadosRecebidos = getIntent();
         if (dadosRecebidos.hasExtra(CHAVE_NOME_PERSONAGEM)){
-            personagemId = (String) dadosRecebidos.getSerializableExtra(CHAVE_NOME_PERSONAGEM);
+            personagemId=(String) dadosRecebidos.getSerializableExtra(CHAVE_NOME_PERSONAGEM);
         }
     }
 
@@ -332,15 +329,20 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
 
             @Override
             public void onItemClick(Trabalho trabalho, int adapterPosition) {
-                Intent iniciaTrabalhoEspecificoActivity=
-                        new Intent(getApplicationContext(),TrabalhoEspecificoActivity.class);
-                iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOTA,CODIGO_REQUISICAO_ALTERA_NOTA);
-                iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_TRABALHO,trabalho);
-                iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_PERSONAGEM, personagemId);
-                startActivity(iniciaTrabalhoEspecificoActivity,
-                        ActivityOptions.makeSceneTransitionAnimation(ListaTrabalhosActivity.this).toBundle());
+                vaiParaTrabalhoEspecificoActivity(trabalho);
             }
         });
+    }
+
+    private void vaiParaTrabalhoEspecificoActivity(Trabalho trabalho) {
+        Intent iniciaTrabalhoEspecificoActivity=
+                new Intent(getApplicationContext(),TrabalhoEspecificoActivity.class);
+        iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_TRABALHO, CODIGO_REQUISICAO_ALTERA_TRABALHO);
+        iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_TRABALHO, trabalho);
+        iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_PERSONAGEM, personagemId);
+        startActivity(iniciaTrabalhoEspecificoActivity,
+                ActivityOptions.makeSceneTransitionAnimation(ListaTrabalhosActivity.this).toBundle());
+        finish();
     }
 
     @Override
@@ -348,14 +350,14 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (ehResultadoInsereNota(requestCode, data)) {
             if (resultadoOk(resultCode)){
-                Trabalho notaRecebida = (Trabalho) data.getSerializableExtra(CHAVE_NOTA);
+                Trabalho notaRecebida = (Trabalho) data.getSerializableExtra(CHAVE_TRABALHO);
                 adiciona(notaRecebida);
             }
         }
 
         if (ehResultadoAlteraNota(requestCode, data)) {
             if (resultadoOk(resultCode)){
-                Trabalho notaRecebida = (Trabalho) data.getSerializableExtra(CHAVE_NOTA);
+                Trabalho notaRecebida = (Trabalho) data.getSerializableExtra(CHAVE_TRABALHO);
                 int posicaoRecebida = data.getIntExtra(CHAVE_POSICAO, POSICAO_INVALIDA);
                 if (ehPosicaoValida(posicaoRecebida)){
                     altera(notaRecebida, posicaoRecebida);
@@ -383,7 +385,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     }
 
     private boolean ehCodigoRequisicaoAlteraNota(int requestCode) {
-        return requestCode == CODIGO_REQUISICAO_ALTERA_NOTA;
+        return requestCode == CODIGO_REQUISICAO_ALTERA_TRABALHO;
     }
 
     private void adiciona(Trabalho nota) {
@@ -397,7 +399,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     }
 
     private boolean temNota(@Nullable Intent data) {
-        return data.hasExtra(CHAVE_NOTA);
+        return data.hasExtra(CHAVE_TRABALHO);
     }
 
     private boolean resultadoOk(int resultCode) {
@@ -405,7 +407,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     }
 
     private boolean ehCodigoRequisicaoInsereNota(int requestCode) {
-        return requestCode == CODIGO_REQUISICAO_INSERE_NOTA;
+        return requestCode == CODIGO_REQUISICAO_INSERE_TRABALHO;
     }
 /*
     private void vaiParaFormularioNotaActivityAltera(Trabalho nota, int posicao) {

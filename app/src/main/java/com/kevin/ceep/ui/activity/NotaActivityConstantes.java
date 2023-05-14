@@ -1,10 +1,8 @@
 package com.kevin.ceep.ui.activity;
 
-import com.kevin.ceep.model.Trabalho;
-
 public interface NotaActivityConstantes {
 
-    String CHAVE_NOTA = "nota";
+    String CHAVE_TRABALHO = "trabalho";
     String CHAVE_USUARIOS = "Usuarios";
     String CHAVE_PERSONAGEM = "Lista_personagem";
     String CHAVE_LISTA_DESEJO = "Lista_desejo";
@@ -26,7 +24,7 @@ public interface NotaActivityConstantes {
     String CHAVE_TITULO_ALTERA_STATUS_TRABALHO = "Altera estado";
     String CHAVE_TITULO_NOVO_TRABALHO="Novo trabalho";
     String TAG_ACTIVITY = "Estado da Activity";
-    int CODIGO_REQUISICAO_INSERE_NOTA = 1;
-    int CODIGO_REQUISICAO_ALTERA_NOTA = 2;
+    int CODIGO_REQUISICAO_INSERE_TRABALHO = 1;
+    int CODIGO_REQUISICAO_ALTERA_TRABALHO = 2;
     int POSICAO_INVALIDA = -1;
 }
