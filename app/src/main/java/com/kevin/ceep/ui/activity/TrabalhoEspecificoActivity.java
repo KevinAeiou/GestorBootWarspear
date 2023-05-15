@@ -20,6 +20,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -50,7 +51,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private AutoCompleteTextView autoCompleteEstado,autoCompleteLicenca;
     private String[] estadosTrabalho,licencasTrabalho;
     private final String[] mensagemErro={"Campo requerido!","Inválido!"};
-    private String usuarioId,personagemId,trabalhoId,licencaModificada;
+    private String usuarioId,personagemId,trabalhoId,licencaModificada,nome,nivel;
     private int codigoRequisicao,posicaoEstado=0;
 
     @SuppressLint("MissingInflatedId")
@@ -71,11 +72,44 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         autoCompleteLicenca.setOnItemClickListener((adapterView, view, i, l) -> licencaModificada=licencasTrabalho[i]);
     }
 
-    private void mostraDialogodeProresso(){
+    private void mostraDialogoDeProresso(int codigoRequisicao){
         ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setCancelable(false);
-        progressDialog.setMessage("Modificando estado...");
+        configuraMensagemProgressDialog(codigoRequisicao, progressDialog);
+        progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancelar", (dialogInterface, i) -> {
+            progressDialog.dismiss();
+        });
+        progressDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Confirmar", (dialogInterface, i) -> {
+            configuraAcaoTrabalho(codigoRequisicao, progressDialog);
+        });
         progressDialog.show();
+    }
+
+    private void configuraAcaoTrabalho(int codigoRequisicao, ProgressDialog progressDialog) {
+        progressDialog.dismiss();
+        if(codigoRequisicao==CODIGO_REQUISICAO_INSERE_TRABALHO){
+            cadastraNovoTrabalho();
+            vaiParaListaTrabalhosEspecificosActivity();
+        }else if(codigoRequisicao==CODIGO_REQUISICAO_ALTERA_TRABALHO){
+            Trabalho trabalhoModificado=configuraTrabalho(trabalhoId,
+                    trabalhoRecebido.getNome(),
+                    trabalhoRecebido.getProfissao(),
+                    licencaModificada,
+                    trabalhoRecebido.getRaridade(),
+                    posicaoEstado,
+                    trabalhoRecebido.getNivel());
+            modificaTrabalhoServidor(trabalhoModificado);
+            vaiParaListaTrabalhosActivity();
+        }
+        finish();
+    }
+
+    private void configuraMensagemProgressDialog(int codigoRequisicao, ProgressDialog progressDialog) {
+        progressDialog.setCancelable(false);
+        if (codigoRequisicao==CODIGO_REQUISICAO_INSERE_TRABALHO){
+            progressDialog.setMessage("Salvando novo trabalho...");
+        }else if (codigoRequisicao==CODIGO_REQUISICAO_ALTERA_TRABALHO){
+            progressDialog.setMessage("Modificando trabalho...");
+        }
     }
 
     private void configuraDropdownEstados() {
@@ -155,34 +189,27 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.itemMenuSalvaTrabalho) {
-            if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO) {
+        if (item.getItemId()==R.id.itemMenuSalvaTrabalho) {
+            if (codigoRequisicao==CODIGO_REQUISICAO_ALTERA_TRABALHO) {
                 if (verificaTrabalhoModificado()) {
-                    Trabalho trabalhoModificado=configuraTrabalho(trabalhoId,
-                            trabalhoRecebido.getNome(),
-                            trabalhoRecebido.getProfissao(),
-                            licencaModificada,
-                            trabalhoRecebido.getRaridade(),
-                            posicaoEstado,
-                            trabalhoRecebido.getNivel());
-                    modificaTrabalhoServidor(trabalhoModificado);
+                    mostraDialogoDeProresso(CODIGO_REQUISICAO_ALTERA_TRABALHO);
+                }else{
+                    vaiParaListaTrabalhosActivity();
+                    finish();
                 }
-                vaiParaListaTrabalhosActivity();
-            } else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO) {
-                String nome = Objects.requireNonNull(edtNomeTrabalho.getText()).toString().trim();
-                String nivel = Objects.requireNonNull(edtNivelTrabalho.getText()).toString().trim();
+            } else if (codigoRequisicao==CODIGO_REQUISICAO_INSERE_TRABALHO) {
+                nome=Objects.requireNonNull(edtNomeTrabalho.getText()).toString().trim();
+                nivel=Objects.requireNonNull(edtNivelTrabalho.getText()).toString().trim();
 
-                if (verificaCamposNovoTrabalho(nome, nivel)) {
-                    cadastraNovoTrabalho(nome, nivel);
-                    vaiParaListaTrabalhosEspecificosActivity();
+                if (verificaCamposNovoTrabalho()) {
+                    mostraDialogoDeProresso(CODIGO_REQUISICAO_INSERE_TRABALHO);
                 }
             }
-            finish();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean verificaCamposNovoTrabalho(String nome, String nivel) {
+    private boolean verificaCamposNovoTrabalho() {
         return verificaEdtTrabalho(nome, txtInputNome, 0)
                 & verificaEdtTrabalho(nivel, txtInputNivel, 1);
     }
@@ -214,7 +241,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         return true;
     }
 
-    private void cadastraNovoTrabalho(String nome, String nivel) {
+    private void cadastraNovoTrabalho() {
         DatabaseReference minhaReferencia = database.getReference(CHAVE_LISTA_TRABALHO);
         String novoId = geraIdAleatorio();
         Trabalho novoTrabalho=configuraTrabalho(novoId,nome,profissaoRecebido.getNome(),"",raridadeRecebido.getNome(),0,Integer.parseInt(nivel));
