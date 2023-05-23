@@ -16,6 +16,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.CheckBox;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -25,6 +27,7 @@ import com.kevin.ceep.model.Trabalho;
 public class ConfirmaTrabalhoActivity extends AppCompatActivity {
 
     private AutoCompleteTextView autoCompleteLicenca,autoCompleteQuantidade;
+    private CheckBox checkBoxTrabalhoRecorrente;
     private String personagemId, licencaSelecionada;
     private Trabalho trabalho;
     private int quantidadeSelecionada;
@@ -36,6 +39,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         setTitle(CHAVE_TITULO_CONFIRMA);
 
         recebeDadosIntent();
+        checkBoxTrabalhoRecorrente=findViewById(R.id.checkBoxProducaoRec);
         configuraBotaoCadastraTrabalho();
 
         Log.i(TAG_ACTIVITY,"onCreateConfirma");
@@ -96,25 +100,40 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
 
     private void cadastraNovoTrabalho() {
         for (int x=0;x<quantidadeSelecionada;x++){
-            adicionaNovoTrabalho(trabalho);
+            adicionaNovoTrabalho();
         }
     }
 
-    private void adicionaNovoTrabalho(Trabalho trabalho) {
+    private void adicionaNovoTrabalho() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference minhareferencia = database.getReference(CHAVE_USUARIOS);
         String usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         String novoId = geraIdAleatorio();
-        minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
+        int recorrencia;
+        if (checkBoxTrabalhoRecorrente.isChecked()){
+            recorrencia=1;
+        }else{
+            recorrencia=0;
+        }
+        Trabalho novoTrabalho=new Trabalho(
+                novoId,
+                trabalho.getNome(),
+                trabalho.getProfissao(),
+                licencaSelecionada,
+                trabalho.getRaridade(),
+                0,
+                trabalho.getNivel(),
+                recorrencia);
+        /*minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
                 .child(personagemId).child(CHAVE_LISTA_DESEJO)
                 .child(novoId).setValue(trabalho);
         minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
                 .child(personagemId).child(CHAVE_LISTA_DESEJO)
-                .child(novoId).child("id").setValue(novoId);
+                .child(novoId).child("id").setValue(novoId);*/
         minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
                 .child(personagemId).child(CHAVE_LISTA_DESEJO)
-                .child(novoId).child("tipo_licenca").setValue(licencaSelecionada);
+                .child(novoId).setValue(novoTrabalho);
     }
 
     private void configuraQuantidadeSelecionada() {

@@ -28,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.CheckBox;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -48,11 +49,12 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private Profissao raridadeRecebido,profissaoRecebido;
     private TextInputEditText edtNomeTrabalho,edtNivelTrabalho;
     private TextInputLayout txtInputEstado, txtInputLicenca,txtInputNome,txtInputNivel;
+    private CheckBox checkBoxTrabalhoEspecifico;
     private AutoCompleteTextView autoCompleteEstado,autoCompleteLicenca;
     private String[] estadosTrabalho,licencasTrabalho;
     private final String[] mensagemErro={"Campo requerido!","Inválido!"};
     private String usuarioId,personagemId,trabalhoId,licencaModificada,nome,nivel;
-    private int codigoRequisicao,posicaoEstado=0;
+    private int codigoRequisicao,posicaoEstado=0,recorrencia=0;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -75,12 +77,10 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private void mostraDialogoDeProresso(int codigoRequisicao){
         ProgressDialog progressDialog = new ProgressDialog(this);
         configuraMensagemProgressDialog(codigoRequisicao, progressDialog);
-        progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancelar", (dialogInterface, i) -> {
-            progressDialog.dismiss();
-        });
-        progressDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Confirmar", (dialogInterface, i) -> {
-            configuraAcaoTrabalho(codigoRequisicao, progressDialog);
-        });
+        progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE,"Cancelar",(dialogInterface, i) ->
+                progressDialog.dismiss());
+        progressDialog.setButton(DialogInterface.BUTTON_POSITIVE,"Confirmar",(dialogInterface, i) ->
+                configuraAcaoTrabalho(codigoRequisicao, progressDialog));
         progressDialog.show();
     }
 
@@ -90,13 +90,15 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
             cadastraNovoTrabalho();
             vaiParaListaTrabalhosEspecificosActivity();
         }else if(codigoRequisicao==CODIGO_REQUISICAO_ALTERA_TRABALHO){
-            Trabalho trabalhoModificado=configuraTrabalho(trabalhoId,
+            Trabalho trabalhoModificado=configuraTrabalho(
+                    trabalhoId,
                     trabalhoRecebido.getNome(),
                     trabalhoRecebido.getProfissao(),
                     licencaModificada,
                     trabalhoRecebido.getRaridade(),
                     posicaoEstado,
-                    trabalhoRecebido.getNivel());
+                    trabalhoRecebido.getNivel(),
+                    recorrencia);
             modificaTrabalhoServidor(trabalhoModificado);
             vaiParaListaTrabalhosActivity();
         }
@@ -138,6 +140,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         autoCompleteLicenca=findViewById(R.id.txtAutoCompleteLicencaTrabalhoEspecifico);
         licencasTrabalho=getResources().getStringArray(R.array.licencas_completas);
         estadosTrabalho=getResources().getStringArray(R.array.estados);
+        checkBoxTrabalhoEspecifico=findViewById(R.id.checkBoxTrabalhoEspecifico);
     }
 
     private void recebeDadosIntent() {
@@ -165,6 +168,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         setTitle(CHAVE_TITULO_NOVO_TRABALHO);
         txtInputLicenca.setVisibility(View.GONE);
         txtInputEstado.setVisibility(View.GONE);
+        checkBoxTrabalhoEspecifico.setVisibility(View.GONE);
     }
 
     private void configuraComponentesAlteraTrabalho() {
@@ -178,6 +182,9 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         edtNomeTrabalho.setText(trabalhoRecebido.getNome());
         posicaoEstado=trabalhoRecebido.getEstado();
         licencaModificada=trabalhoRecebido.getTipo_licenca();
+        if (trabalhoRecebido.getRecorrencia()==1){
+            checkBoxTrabalhoEspecifico.setChecked(true);
+        }
     }
 
     @Override
@@ -216,12 +223,29 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private boolean verificaTrabalhoModificado() {
         return !(licencaModificada.equals(trabalhoRecebido.getTipo_licenca())) ||
-                posicaoEstado!=trabalhoRecebido.getEstado();
+                posicaoEstado!=trabalhoRecebido.getEstado()||
+                verificaCheckModificado();
+    }
+
+    private boolean verificaCheckModificado() {
+        configuraCheckBoxRecorrencia();
+        if (recorrencia!=trabalhoRecebido.getRecorrencia()){
+            return true;
+        }
+        return false;
+    }
+
+    private void configuraCheckBoxRecorrencia() {
+        if (checkBoxTrabalhoEspecifico.isChecked()){
+            recorrencia=1;
+        }else{
+            recorrencia=0;
+        }
     }
 
     @NonNull
-    private Trabalho configuraTrabalho(String id, String nome,String profissao, String licenca,String raridade, int estado, int nivel) {
-        return new Trabalho(id,nome,profissao,licenca,raridade,estado,nivel);
+    private Trabalho configuraTrabalho(String id, String nome,String profissao, String licenca,String raridade, int estado, int nivel,int recorrencia) {
+        return new Trabalho(id,nome,profissao,licenca,raridade,estado,nivel, recorrencia);
     }
 
     private void modificaTrabalhoServidor(Trabalho trabalhoModificado) {
@@ -244,7 +268,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private void cadastraNovoTrabalho() {
         DatabaseReference minhaReferencia = database.getReference(CHAVE_LISTA_TRABALHO);
         String novoId = geraIdAleatorio();
-        Trabalho novoTrabalho=configuraTrabalho(novoId,nome,profissaoRecebido.getNome(),"",raridadeRecebido.getNome(),0,Integer.parseInt(nivel));
+        Trabalho novoTrabalho=configuraTrabalho(novoId,nome,profissaoRecebido.getNome(),"",raridadeRecebido.getNome(),0,Integer.parseInt(nivel),0);
         minhaReferencia.child(novoId).setValue(novoTrabalho);
     }
 

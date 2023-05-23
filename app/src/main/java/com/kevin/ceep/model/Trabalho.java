@@ -11,10 +11,11 @@ public class Trabalho implements Serializable {
     private String raridade;
     private Integer estado;
     private Integer nivel;
+    private Integer recorrencia;
 
     public Trabalho(){}
 
-    public Trabalho(String id, String nome, String profissao, String tipo_licenca, String raridade, Integer estado, Integer nivel) {
+    public Trabalho(String id, String nome, String profissao, String tipo_licenca, String raridade, Integer estado, Integer nivel, Integer recorrencia) {
         this.id = id;
         this.nome = nome;
         this.profissao = profissao;
@@ -22,6 +23,7 @@ public class Trabalho implements Serializable {
         this.raridade = raridade;
         this.estado = estado;
         this.nivel = nivel;
+        this.recorrencia = recorrencia;
     }
 
     public String getNome() {
@@ -50,5 +52,9 @@ public class Trabalho implements Serializable {
 
     public Integer getEstado() {
         return estado;
+    }
+
+    public Integer getRecorrencia() {
+        return recorrencia;
     }
 }
