@@ -64,7 +64,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     private Chip chipEstado;
     private Boolean isChecked=false;
     private String usuarioId, personagemId;
-    private Integer estado = 3;
+    private Integer estado=0;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -175,7 +175,6 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         switch (item.getItemId()){
-
             case R.id.itemMenuTodos:
                 estado=3;
                 atualizaListaTrabalho();
@@ -192,7 +191,6 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
                 estado=2;
                 atualizaListaTrabalho();
                 break;
-
             default:
                 break;
         }
@@ -240,10 +238,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
 
     private void removeTrabalhoLista(int swipePosicao) {
         String idTrabalho = trabalhos.get(swipePosicao).getId();
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference minhareferencia = database.getReference(CHAVE_USUARIOS);
-        minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM).
+        databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM).
                 child(personagemId).child(CHAVE_LISTA_DESEJO).
                 child(idTrabalho).removeValue();
     }
@@ -288,11 +283,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
                         trabalhos.clear();
                         for (DataSnapshot dn:dataSnapshot.getChildren()){
                             Trabalho trabalho = dn.getValue(Trabalho.class);
-                            if (estado==3){
-                                trabalhos.add(trabalho);
-                            }else if (trabalho.getEstado()==estado){
-                                trabalhos.add(trabalho);
-                            }
+                            filtraListaTrabalho(trabalho);
                         }
                         trabalhoAdapter.notifyDataSetChanged();
                         progressDialog.dismiss();
@@ -304,6 +295,14 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
                     }
                 });
         return trabalhos;
+    }
+
+    private void filtraListaTrabalho(Trabalho trabalho) {
+        if (estado==3){
+            trabalhos.add(trabalho);
+        }else if (trabalho.getEstado()==estado){
+            trabalhos.add(trabalho);
+        }
     }
 
     private void configuraRecyclerView(List<Trabalho> todosTrabalhos) {
