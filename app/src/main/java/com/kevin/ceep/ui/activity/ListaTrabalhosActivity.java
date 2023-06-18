@@ -1,5 +1,6 @@
 package com.kevin.ceep.ui.activity;
 
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_CONFIRMA_CADASTRO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
@@ -20,8 +21,11 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -74,7 +78,6 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         setTitle(CHAVE_TITULO_TRABALHO);
 
         recebeDadosIntent();
-
         inicializaComponentes();
 
         atualizaListaTrabalho();
@@ -248,6 +251,26 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         if (dadosRecebidos.hasExtra(CHAVE_NOME_PERSONAGEM)){
             personagemId=(String) dadosRecebidos.getSerializableExtra(CHAVE_NOME_PERSONAGEM);
         }
+        if (dadosRecebidos.hasExtra(CHAVE_CONFIRMA_CADASTRO)) {
+            Boolean confirmaCadastro= (Boolean) dadosRecebidos.getSerializableExtra(CHAVE_CONFIRMA_CADASTRO);
+            if (confirmaCadastro){
+                final Toast toast = configuraToastCustomizado();
+                toast.show();
+                dadosRecebidos.removeExtra(CHAVE_CONFIRMA_CADASTRO);
+            }
+        }
+    }
+
+    @NonNull
+    private Toast configuraToastCustomizado() {
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(R.layout.toast_customizado,
+                findViewById(R.id.toastCustomizadoLayout));
+        final Toast toast = new Toast(getApplicationContext());
+        toast.setGravity(Gravity.CENTER_VERTICAL,0,0);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        return toast;
     }
 
     private void mostraDialogodeProresso(){

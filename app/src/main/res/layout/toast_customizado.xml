@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="28dp"
-        android:text="Trabalho cadastrado!"
+        android:text="Trabalho adicionado!"
         android:textColor="#ffffff"
         android:textSize="20sp"
         android:textStyle="bold"

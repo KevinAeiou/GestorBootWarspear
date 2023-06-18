@@ -125,12 +125,6 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
                 0,
                 trabalho.getNivel(),
                 recorrencia);
-        /*minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
-                .child(personagemId).child(CHAVE_LISTA_DESEJO)
-                .child(novoId).setValue(trabalho);
-        minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
-                .child(personagemId).child(CHAVE_LISTA_DESEJO)
-                .child(novoId).child("id").setValue(novoId);*/
         minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
                 .child(personagemId).child(CHAVE_LISTA_DESEJO)
                 .child(novoId).setValue(novoTrabalho);
@@ -166,8 +160,9 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
     private void vaiParaListaTrabalhosActivity() {
         Intent iniciaListaTrabalho =
                 new Intent(ConfirmaTrabalhoActivity.this,
-                        ListaPersonagemActivity.class);
+                        ListaTrabalhosActivity.class);
         iniciaListaTrabalho.putExtra(CHAVE_CONFIRMA_CADASTRO,true);
+        iniciaListaTrabalho.putExtra(CHAVE_NOME_PERSONAGEM,personagemId);
         startActivity(iniciaListaTrabalho,
                 ActivityOptions.makeSceneTransitionAnimation(ConfirmaTrabalhoActivity.this).toBundle());
     }

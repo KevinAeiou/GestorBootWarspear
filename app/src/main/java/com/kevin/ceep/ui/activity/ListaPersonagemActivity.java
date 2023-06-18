@@ -179,36 +179,11 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         startActivity(vaiParaEntraActivity, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
     }
 
-    private void recebeDadosIntent() {
-        Intent dadosRecebidos = getIntent();
-        if (dadosRecebidos.hasExtra(CHAVE_CONFIRMA_CADASTRO)) {
-            Boolean confirmaCadastro= (Boolean) dadosRecebidos.getSerializableExtra(CHAVE_CONFIRMA_CADASTRO);
-            if (confirmaCadastro){
-                final Toast toast = configuraToastCustomizado();
-                toast.show();
-                dadosRecebidos.removeExtra(CHAVE_CONFIRMA_CADASTRO);
-            }
-        }
-    }
-
-    @NonNull
-    private Toast configuraToastCustomizado() {
-        LayoutInflater inflater = getLayoutInflater();
-        View layout = inflater.inflate(R.layout.toast_customizado,
-                findViewById(R.id.toastCustomizadoLayout));
-        final Toast toast = new Toast(getApplicationContext());
-        toast.setGravity(Gravity.CENTER_VERTICAL,0,0);
-        toast.setDuration(Toast.LENGTH_SHORT);
-        toast.setView(layout);
-        return toast;
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
         FirebaseUser currentUser = minhaAutenticacao.getCurrentUser();
         minhaAutenticacao.updateCurrentUser(currentUser);
-        recebeDadosIntent();
         Log.i(TAG_ACTIVITY,"onStartListaPersonagem");
     }
 
