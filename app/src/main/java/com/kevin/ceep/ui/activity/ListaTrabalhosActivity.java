@@ -156,7 +156,9 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     private void listaBusca(String textoBusca) {
         List<Trabalho> listaFiltro = new ArrayList<>();
         for (Trabalho trabalho:trabalhos){
-            if (trabalho.getNome().toLowerCase().contains(textoBusca.toLowerCase())){
+            if (trabalho.getNome().toLowerCase().contains(textoBusca.toLowerCase())||
+                    trabalho.getProfissao().toLowerCase().contains(textoBusca.toLowerCase())||
+                    trabalho.getTipo_licenca().toLowerCase().contains(textoBusca.toLowerCase())){
                 listaFiltro.add(trabalho);
             }
         }

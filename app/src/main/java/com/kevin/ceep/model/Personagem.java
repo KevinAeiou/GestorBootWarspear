@@ -9,15 +9,17 @@ public class Personagem implements Serializable {
     private String email;
     private String senha;
     private Integer estado;
+    private Integer uso;
 
     public Personagem(){}
 
-    public Personagem(String id, String nome, String email, String senha, Integer estado) {
+    public Personagem(String id, String nome, String email, String senha, Integer estado, Integer uso) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
         this.estado = estado;
+        this.uso = uso;
     }
 
     public String getNome() {
@@ -38,5 +40,9 @@ public class Personagem implements Serializable {
 
     public String getEmail() {
         return email;
+    }
+
+    public Integer getUso() {
+        return uso;
     }
 }

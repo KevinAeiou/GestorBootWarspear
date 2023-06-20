@@ -80,12 +80,16 @@ public class ListaPersonagemAdapter extends RecyclerView.Adapter<ListaPersonagem
 
         private void preencheCampo(Personagem personagem) {
             nome_personagem.setText(personagem.getNome());
-            //nome_personagem.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_comum));
             if (personagem.getEstado()==1){
-                card_personagem.setCardBackgroundColor(ContextCompat.getColor(context,R.color.cor_background_escuro));
+                if (personagem.getUso()==1){
+                    card_personagem.setCardBackgroundColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_principiante));
+                }else{
+                    card_personagem.setCardBackgroundColor(ContextCompat.getColor(context,R.color.cor_background_escuro));
+                }
             }else{
                 card_personagem.setCardBackgroundColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_iniciante));
             }
+
         }
     }
 }
