@@ -12,8 +12,11 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
 import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -56,17 +59,39 @@ public class ListaProfissoesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lista_profissoes);
         setTitle(CHAVE_TITULO_PROFISSAO);
 
+        inicializaComponentes();
+
+        recebeDadosIntent();
+
+        atualizaListaProficoes();
+        configuraDeslizeItem();
+    }
+
+    private void atualizaListaProficoes() {
+        mostraDialogodeProgresso();
+        if (verificaConexaoInternet()){
+            todasProfissoes = pegaTodasProfissoes();
+            configuraRecyclerView();
+        }else{
+            progressDialog.dismiss();
+            Toast.makeText(this,"Erro na conexão...",Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private boolean verificaConexaoInternet() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo infConexao = cm.getActiveNetworkInfo();
+        if(infConexao!=null && infConexao.isConnectedOrConnecting()){
+            return true;
+        }
+        return false;
+    }
+
+    private void inicializaComponentes() {
         recyclerView = findViewById(R.id.listaProfissoesRecyclerView);
         database = FirebaseDatabase.getInstance();
         minhaReferencia = database.getReference(CHAVE_USUARIOS);
         usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-        recebeDadosIntent();
-        mostraDialogodeProgresso();
-
-        todasProfissoes = pegaTodasProfissoes();
-        configuraRecyclerView();
-        configuraDeslizeItem();
     }
 
     private void configuraDeslizeItem() {
@@ -91,7 +116,7 @@ public class ListaProfissoesActivity extends AppCompatActivity {
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    private void atualizaListaProfissoes() {
+    private void modificaListaProfissoes() {
         limpaListaProfissoes();
         for (int i = 0; i<todasProfissoes.size(); i++){
             String novoIdProfissao = geraIdAleatorio();
@@ -136,7 +161,7 @@ public class ListaProfissoesActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         if (CHAVE_ATUALIZA_LISTA_PROFISSOES){
-            atualizaListaProfissoes();
+            modificaListaProfissoes();
         }
         finish();
         Log.i(TAG_ACTIVITY,"onStopListaProfissoes");

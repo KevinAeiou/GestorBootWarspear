@@ -120,23 +120,25 @@ public class ListaPersonagemActivity extends AppCompatActivity {
                 Personagem personagemDeletado = personagens.get(viewHolder.getAdapterPosition());
                 personagemAdapter.remove(posicaoDeslize);
                 personagemAdapter.notifyItemRemoved(posicaoDeslize);
-                Snackbar.make(recyclerView, personagemDeletado.getNome(), Snackbar.LENGTH_LONG).setAction("Desfazer", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // adding on click listener to our action of snack bar.
-                        // below line is to add our item to array list with a position.
-                        personagens.add(posicaoDeslize, personagemDeletado);
 
-                        // below line is to notify item is
-                        // added to our adapter class.
-                        personagemAdapter.notifyItemInserted(posicaoDeslize);
-                    }
-                }).show();
+                configuraSnackBar(posicaoDeslize, personagemAdapter, personagemDeletado);
                 //removePersonagemLista(posicaoDeslize);
             }
         };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    private void configuraSnackBar(int posicaoDeslize, ListaPersonagemAdapter personagemAdapter, Personagem personagemDeletado) {
+        Snackbar.make(recyclerView, personagemDeletado.getNome(), Snackbar.LENGTH_LONG).setAction("Desfazer", v -> {
+            // adding on click listener to our action of snack bar.
+            // below line is to add our item to array list with a position.
+            personagens.add(posicaoDeslize, personagemDeletado);
+
+            // below line is to notify item is
+            // added to our adapter class.
+            personagemAdapter.notifyItemInserted(posicaoDeslize);
+        }).show();
     }
 
     private void removePersonagemLista(int swipePosicao) {
@@ -157,6 +159,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
             configuraRecyclerView(todosPersonagens);
         }else{
             progressDialog.dismiss();
+            Toast.makeText(this,"Erro na conexão...",Toast.LENGTH_LONG).show();
             //configuraDialogoProgresso(1);
             //vaiParaEntraActivity();
             //finish();
@@ -341,7 +344,6 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         minhaReferencia.child(usuarioId).child(CHAVE_PERSONAGEM).child(novoIdPersonagem).setValue(personagem);
         adicionaNovaListaProfissoes(novoIdPersonagem);
     }
-
     private void adicionaNovaListaProfissoes(String idPersonagem) {
 
         String[] profissoes = getResources().getStringArray(R.array.profissoes);

@@ -22,6 +22,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -58,11 +60,8 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lista_trabalhos_especificos);
         setTitle(CHAVE_TITULO_TRABALHO);
 
-        mostraDialogodeProresso();
         recebeDadosIntent();
-
         inicializaComponentes();
-
         atualizaListaTrabalhoEspecifico();
 
         configuraCampoPesquisa();
@@ -161,8 +160,23 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
     }
 
     private void atualizaListaTrabalhoEspecifico() {
-        List<Trabalho> todosTrabalhos = pegaTodosTrabalhos();
-        configuraRecyclerView(todosTrabalhos);
+        mostraDialogodeProresso();
+        if (verificaConexaoInternet()){
+            List<Trabalho> todosTrabalhos = pegaTodosTrabalhos();
+            configuraRecyclerView(todosTrabalhos);
+        }else{
+            progressDialog.dismiss();
+            Toast.makeText(this,"Erro na conexão...",Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private boolean verificaConexaoInternet() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo infConexao = cm.getActiveNetworkInfo();
+        if(infConexao!=null && infConexao.isConnectedOrConnecting()){
+            return true;
+        }
+        return false;
     }
 
     private void recebeDadosIntent() {

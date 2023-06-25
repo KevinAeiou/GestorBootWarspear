@@ -19,6 +19,8 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -218,8 +220,22 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
 
     private void atualizaListaTrabalho() {
         mostraDialogodeProresso();
-        List<Trabalho> todosTrabalhos = pegaTodosTrabalhos();
-        configuraRecyclerView(todosTrabalhos);
+        if (vericaConexaoInternet()) {
+            List<Trabalho> todosTrabalhos = pegaTodosTrabalhos();
+            configuraRecyclerView(todosTrabalhos);
+        }else {
+            progressDialog.dismiss();
+            Toast.makeText(this,"Erro na conexão...",Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private boolean vericaConexaoInternet() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo infConexao = cm.getActiveNetworkInfo();
+        if(infConexao!=null && infConexao.isConnectedOrConnecting()){
+            return true;
+        }
+        return false;
     }
 
     private void configuraDeslizeItem() {
