@@ -52,7 +52,6 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private List<Trabalho> trabalhos;
     private String personagemId;
-    private SearchView busca;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +86,9 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
                 int posicaoDeslize = viewHolder.getAdapterPosition();
                 ListaTrabalhoEspecificoAdapter trabalhoAdapter = (ListaTrabalhoEspecificoAdapter) recyclerView.getAdapter();
                 removeTrabalhoLista(posicaoDeslize);
-                trabalhoAdapter.remove(posicaoDeslize);
+                if (trabalhoAdapter != null) {
+                    trabalhoAdapter.remove(posicaoDeslize);
+                }
             }
         };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
@@ -95,7 +96,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
     }
 
     private void configuraCampoPesquisa() {
-        busca = findViewById(R.id.buscaTrabalhoEspecifico);
+        SearchView busca = findViewById(R.id.buscaTrabalhoEspecifico);
         busca.clearFocus();
         busca.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -134,9 +135,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
     }
 
     private void configuraBotaoInsereTrabalho() {
-        botaoNovoTrabalho.setOnClickListener(view -> {
-            vaiParaTrabalhoEspecificoActivity();
-        });
+        botaoNovoTrabalho.setOnClickListener(view -> vaiParaTrabalhoEspecificoActivity());
     }
 
     private void vaiParaTrabalhoEspecificoActivity() {
@@ -173,10 +172,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
     private boolean verificaConexaoInternet() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo infConexao = cm.getActiveNetworkInfo();
-        if(infConexao!=null && infConexao.isConnectedOrConnecting()){
-            return true;
-        }
-        return false;
+        return infConexao != null && infConexao.isConnectedOrConnecting();
     }
 
     private void recebeDadosIntent() {
@@ -207,7 +203,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dn:dataSnapshot.getChildren()){
                     Trabalho trabalho = dn.getValue(Trabalho.class);
-                    if (trabalho.getProfissao().equals(profissaoRecebido.getNome()) && trabalho.getRaridade().equals(raridadeRecebido.getNome())){
+                    if (trabalho != null && trabalho.getProfissao().equals(profissaoRecebido.getNome()) && trabalho.getRaridade().equals(raridadeRecebido.getNome())) {
                         trabalhos.add(trabalho);
                     }
                 }

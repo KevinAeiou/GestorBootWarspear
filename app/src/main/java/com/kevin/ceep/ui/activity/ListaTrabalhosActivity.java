@@ -96,10 +96,10 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         chipEstado.setOnCheckedChangeListener((compoundButton, b) -> {
             if (b){
                 chipEstado.setText("Ativo");
-                modificaEstadoPersonagem(1);
+                modificaEstadoPersonagem(true);
             }else{
                 chipEstado.setText("Inativo");
-                modificaEstadoPersonagem(0);
+                modificaEstadoPersonagem(false);
             }
         });
     }
@@ -110,7 +110,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Personagem personagem = dataSnapshot.getValue(Personagem.class);
-                        if (personagem.getEstado()==1){
+                        if (personagem.getEstado()){
                             Log.d("SWITCH","Estado do personagem é ativo.");
                             isChecked=true;
                             Log.d("SWITCH","O valor de ischeched é: ."+isChecked);
@@ -204,7 +204,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void modificaEstadoPersonagem(int estadoPersonagem) {
+    private void modificaEstadoPersonagem(boolean estadoPersonagem) {
         databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM)
                 .child(personagemId).child("estado").setValue(estadoPersonagem);
         Log.d("SWITCH","Estado do personagem modificado para: "+estadoPersonagem);

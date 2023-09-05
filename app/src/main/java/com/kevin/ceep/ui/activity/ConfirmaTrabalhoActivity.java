@@ -110,11 +110,11 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         String usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         String novoId = geraIdAleatorio();
-        int recorrencia;
+        boolean recorrencia;
         if (checkBoxTrabalhoRecorrente.isChecked()){
-            recorrencia=1;
+            recorrencia=true;
         }else{
-            recorrencia=0;
+            recorrencia=false;
         }
         Trabalho novoTrabalho=new Trabalho(
                 novoId,

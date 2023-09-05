@@ -54,8 +54,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private String[] estadosTrabalho,licencasTrabalho;
     private final String[] mensagemErro={"Campo requerido!","Inválido!"};
     private String usuarioId,personagemId,trabalhoId,licencaModificada,nome,nivel;
-    private int codigoRequisicao,posicaoEstado=0,recorrencia=0;
-
+    private int codigoRequisicao,posicaoEstado=0;
+    private boolean recorrencia=true;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,7 +182,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         edtNomeTrabalho.setText(trabalhoRecebido.getNome());
         posicaoEstado=trabalhoRecebido.getEstado();
         licencaModificada=trabalhoRecebido.getTipo_licenca();
-        if (trabalhoRecebido.getRecorrencia()==1){
+        if (trabalhoRecebido.isRecorrencia()){
             checkBoxTrabalhoEspecifico.setChecked(true);
         }
     }
@@ -229,7 +229,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private boolean verificaCheckModificado() {
         configuraCheckBoxRecorrencia();
-        if (recorrencia!=trabalhoRecebido.getRecorrencia()){
+        if (recorrencia!=trabalhoRecebido.isRecorrencia()){
             return true;
         }
         return false;
@@ -237,15 +237,15 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private void configuraCheckBoxRecorrencia() {
         if (checkBoxTrabalhoEspecifico.isChecked()){
-            recorrencia=1;
+            recorrencia=true;
         }else{
-            recorrencia=0;
+            recorrencia=false;
         }
     }
 
     @NonNull
-    private Trabalho configuraTrabalho(String id, String nome,String profissao, String licenca,String raridade, int estado, int nivel,int recorrencia) {
-        return new Trabalho(id,nome,profissao,licenca,raridade,estado,nivel, recorrencia);
+    private Trabalho configuraTrabalho(String id, String nome,String profissao, String licenca,String raridade, int estado, int nivel,boolean recorrencia) {
+        return new Trabalho(id,nome,profissao,licenca,raridade,estado,nivel,recorrencia);
     }
 
     private void modificaTrabalhoServidor(Trabalho trabalhoModificado) {
@@ -268,7 +268,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private void cadastraNovoTrabalho() {
         DatabaseReference minhaReferencia = database.getReference(CHAVE_LISTA_TRABALHO);
         String novoId = geraIdAleatorio();
-        Trabalho novoTrabalho=configuraTrabalho(novoId,nome,profissaoRecebido.getNome(),"",raridadeRecebido.getNome(),0,Integer.parseInt(nivel),0);
+        Trabalho novoTrabalho=configuraTrabalho(novoId,nome,profissaoRecebido.getNome(),"",raridadeRecebido.getNome(),0,Integer.parseInt(nivel),false);
         minhaReferencia.child(novoId).setValue(novoTrabalho);
     }
 

@@ -8,12 +8,12 @@ public class Personagem implements Serializable {
     private String nome;
     private String email;
     private String senha;
-    private Integer estado;
-    private Integer uso;
+    private boolean estado;
+    private boolean  uso;
 
     public Personagem(){}
 
-    public Personagem(String id, String nome, String email, String senha, Integer estado, Integer uso) {
+    public Personagem(String id, String nome, String email, String senha, boolean estado, boolean uso) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -30,7 +30,7 @@ public class Personagem implements Serializable {
         return id;
     }
 
-    public Integer getEstado() {
+    public boolean getEstado() {
         return estado;
     }
 
@@ -42,7 +42,7 @@ public class Personagem implements Serializable {
         return email;
     }
 
-    public Integer getUso() {
+    public boolean getUso() {
         return uso;
     }
 }

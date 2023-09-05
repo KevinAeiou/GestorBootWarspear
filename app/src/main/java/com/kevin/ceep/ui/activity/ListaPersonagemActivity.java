@@ -340,7 +340,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
 
     private void adicionaNovoPersonagem() {
         String novoIdPersonagem = geraIdAleatorio();
-        Personagem personagem = new Personagem(novoIdPersonagem,nomePersonagem,emailPersonagem,senhaPersonagem,0,0);
+        Personagem personagem = new Personagem(novoIdPersonagem,nomePersonagem,emailPersonagem,senhaPersonagem,false,false);
         minhaReferencia.child(usuarioId).child(CHAVE_PERSONAGEM).child(novoIdPersonagem).setValue(personagem);
         adicionaNovaListaProfissoes(novoIdPersonagem);
     }
