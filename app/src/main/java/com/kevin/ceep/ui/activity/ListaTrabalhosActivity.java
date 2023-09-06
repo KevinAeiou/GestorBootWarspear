@@ -30,6 +30,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -60,6 +64,22 @@ import java.util.List;
 
 public class ListaTrabalhosActivity extends AppCompatActivity {
 
+    private static final String TAG="MainActivity";
+    ActivityResultLauncher<Intent> activityLauncher=registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    Log.d(TAG,"onActivityResult");
+                    if (result.getResultCode()==1){
+                        Intent intent=result.getData();
+                        if (intent!=null){
+                            
+                        }
+                    }
+                }
+            }
+    );
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
     private ListaTrabalhoAdapter trabalhoAdapter;
@@ -380,9 +400,10 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_TRABALHO, CODIGO_REQUISICAO_ALTERA_TRABALHO);
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_TRABALHO, trabalho);
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_PERSONAGEM, personagemId);
-        startActivity(iniciaTrabalhoEspecificoActivity,
+        activityLauncher.launch(iniciaTrabalhoEspecificoActivity);
+        /*startActivity(iniciaTrabalhoEspecificoActivity,
                 ActivityOptions.makeSceneTransitionAnimation(ListaTrabalhosActivity.this).toBundle());
-        finish();
+        finish();*/
     }
 
     @Override

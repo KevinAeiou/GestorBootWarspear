@@ -279,9 +279,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         vaiParaListaTrabalhos.putExtra(CHAVE_NOME_PERSONAGEM,personagemId);
         vaiParaListaTrabalhos.putExtra(CHAVE_NOME_PROFISSAO,profissaoRecebido);
         vaiParaListaTrabalhos.putExtra(CHAVE_NOME_RARIDADE,raridadeRecebido);
-        startActivity(vaiParaListaTrabalhos
-                ,ActivityOptions.makeSceneTransitionAnimation(TrabalhoEspecificoActivity.this)
-                        .toBundle());
+        setResult(1,vaiParaListaTrabalhos);
+        TrabalhoEspecificoActivity.super.onBackPressed();
     }
 
     private void vaiParaListaTrabalhosActivity() {
@@ -289,9 +288,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 new Intent(getApplicationContext()
                         ,ListaTrabalhosActivity.class);
         vaiParaListaTrabalhos.putExtra(CHAVE_NOME_PERSONAGEM,personagemId);
-        startActivity(vaiParaListaTrabalhos
-                ,ActivityOptions.makeSceneTransitionAnimation(TrabalhoEspecificoActivity.this)
-                        .toBundle());
+        setResult(1,vaiParaListaTrabalhos);
+        TrabalhoEspecificoActivity.super.onBackPressed();
     }
 
     static String geraIdAleatorio() {
