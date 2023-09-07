@@ -25,6 +25,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Trabalho;
 
+import java.util.Objects;
+
 public class ConfirmaTrabalhoActivity extends AppCompatActivity {
 
     private AutoCompleteTextView autoCompleteLicenca,autoCompleteQuantidade;
@@ -51,7 +53,9 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         if (dadosRecebidos.hasExtra(CHAVE_NOME_TRABALHO)) {
             trabalho = (Trabalho) dadosRecebidos
                     .getSerializableExtra(CHAVE_NOME_TRABALHO);
-            setTitle(trabalho.getNome());
+            if (trabalho != null) {
+                setTitle(trabalho.getNome());
+            }
             personagemId = (String) dadosRecebidos.
                     getSerializableExtra(CHAVE_NOME_PERSONAGEM);
         }
@@ -79,9 +83,9 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         String[] licencas = getResources().getStringArray(R.array.licencas);
         String[] quantidade = getResources().getStringArray(R.array.quantidade);
 
-        ArrayAdapter adapterLicenca = new ArrayAdapter<>(this,
+        ArrayAdapter<String> adapterLicenca = new ArrayAdapter<>(this,
                 R.layout.item_dropdrown, licencas);
-        ArrayAdapter adapterQuantidade = new ArrayAdapter<>(this,
+        ArrayAdapter<String> adapterQuantidade = new ArrayAdapter<>(this,
                 R.layout.item_dropdrown, quantidade);
 
         adapterLicenca.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -110,15 +114,11 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
     private void adicionaNovoTrabalho() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference minhareferencia = database.getReference(CHAVE_USUARIOS);
-        String usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
 
         String novoId = geraIdAleatorio();
         boolean recorrencia;
-        if (checkBoxTrabalhoRecorrente.isChecked()){
-            recorrencia=true;
-        }else{
-            recorrencia=false;
-        }
+        recorrencia= checkBoxTrabalhoRecorrente.isChecked();
         Trabalho novoTrabalho=new Trabalho(
                 novoId,
                 trabalho.getNome(),
