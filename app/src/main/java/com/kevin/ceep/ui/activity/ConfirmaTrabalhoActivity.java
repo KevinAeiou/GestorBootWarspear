@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
@@ -86,7 +87,9 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         adapterLicenca.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         adapterQuantidade.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         autoCompleteLicenca.setText(licencas[3]);
+        autoCompleteLicenca.setTextColor(Color.BLACK);
         autoCompleteLicenca.setAdapter(adapterLicenca);
+        autoCompleteQuantidade.setTextColor(Color.BLACK);
         autoCompleteQuantidade.setAdapter(adapterQuantidade);
     }
 
