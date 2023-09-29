@@ -110,6 +110,7 @@ public class ListaRaridadeActivity extends AppCompatActivity {
     private List<Profissao> pegaTodasRaridades() {
         List<Profissao> raridades = new ArrayList<>();
         raridades.add(new Profissao("Comum"));
+        raridades.add(new Profissao("Melhorado"));
         raridades.add(new Profissao("Raro"));
         raridades.add(new Profissao("Especial"));
         return raridades;
