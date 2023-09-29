@@ -1,5 +1,6 @@
 package com.kevin.ceep.ui.activity;
 
+import static com.kevin.ceep.ui.activity.ListaPersonagemActivity.geraIdAleatorio;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
@@ -290,25 +291,5 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         vaiParaListaTrabalhos.putExtra(CHAVE_NOME_PERSONAGEM,personagemId);
         setResult(1,vaiParaListaTrabalhos);
         TrabalhoEspecificoActivity.super.onBackPressed();
-    }
-
-    static String geraIdAleatorio() {
-        // chose a Character random from this String
-        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                + "0123456789"
-                + "abcdefghijklmnopqrstuvxyz";
-        // create StringBuffer size of AlphaNumericString
-        StringBuilder sb = new StringBuilder(28);
-        for (int i = 0; i < 28; i++) {
-            // generate a random number between
-            // 0 to AlphaNumericString variable length
-            int index
-                    = (int)(AlphaNumericString.length()
-                    * Math.random());
-            // add Character one by one in end of sb
-            sb.append(AlphaNumericString
-                    .charAt(index));
-        }
-        return sb.toString();
     }
 }

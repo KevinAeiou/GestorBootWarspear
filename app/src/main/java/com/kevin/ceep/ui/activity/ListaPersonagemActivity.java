@@ -365,7 +365,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
 
     }
 
-    private String geraIdAleatorio() {
+    static String geraIdAleatorio() {
         // chose a Character random from this String
         String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 + "0123456789"

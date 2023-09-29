@@ -1,5 +1,6 @@
 package com.kevin.ceep.ui.activity;
 
+import static com.kevin.ceep.ui.activity.ListaPersonagemActivity.geraIdAleatorio;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_CONFIRMA_CADASTRO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
@@ -8,6 +9,7 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_CONFIRMA;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import android.app.ActivityOptions;
@@ -116,11 +118,11 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         DatabaseReference minhareferencia = database.getReference(CHAVE_USUARIOS);
         String usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
 
-        //String novoId = geraIdAleatorio();
+        String novoId = geraIdAleatorio();
         boolean recorrencia;
         recorrencia= checkBoxTrabalhoRecorrente.isChecked();
         Trabalho novoTrabalho=new Trabalho(
-                null,
+                novoId,
                 trabalho.getNome(),
                 trabalho.getProfissao(),
                 licencaSelecionada,
@@ -130,6 +132,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
                 recorrencia);
         minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
                 .child(personagemId).child(CHAVE_LISTA_DESEJO)
+                .child(novoId)
                 .setValue(novoTrabalho);
     }
 
