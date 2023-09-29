@@ -24,6 +24,7 @@ public interface NotaActivityConstantes {
     String CHAVE_TITULO_ALTERA_STATUS_TRABALHO = "Altera estado";
     String CHAVE_TITULO_NOVO_TRABALHO="Novo trabalho";
     String TAG_ACTIVITY = "Estado da Activity";
+    String CHAVE_ESTADO = "estado";
     int CODIGO_REQUISICAO_INSERE_TRABALHO = 1;
     int CODIGO_REQUISICAO_ALTERA_TRABALHO = 2;
     int POSICAO_INVALIDA = -1;

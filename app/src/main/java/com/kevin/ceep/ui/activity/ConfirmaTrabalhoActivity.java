@@ -109,7 +109,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         DatabaseReference minhareferencia = database.getReference(CHAVE_USUARIOS);
         String usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        String novoId = geraIdAleatorio();
+        //String novoId = geraIdAleatorio();
         boolean recorrencia;
         if (checkBoxTrabalhoRecorrente.isChecked()){
             recorrencia=true;
@@ -117,7 +117,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
             recorrencia=false;
         }
         Trabalho novoTrabalho=new Trabalho(
-                novoId,
+                null,
                 trabalho.getNome(),
                 trabalho.getProfissao(),
                 licencaSelecionada,
@@ -127,7 +127,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
                 recorrencia);
         minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
                 .child(personagemId).child(CHAVE_LISTA_DESEJO)
-                .child(novoId).setValue(novoTrabalho);
+                .setValue(novoTrabalho);
     }
 
     private void configuraQuantidadeSelecionada() {
@@ -165,25 +165,5 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         iniciaListaTrabalho.putExtra(CHAVE_NOME_PERSONAGEM,personagemId);
         startActivity(iniciaListaTrabalho,
                 ActivityOptions.makeSceneTransitionAnimation(ConfirmaTrabalhoActivity.this).toBundle());
-    }
-
-    static String geraIdAleatorio() {
-        // chose a Character random from this String
-        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                + "0123456789"
-                + "abcdefghijklmnopqrstuvxyz";
-        // create StringBuffer size of AlphaNumericString
-        StringBuilder sb = new StringBuilder(28);
-        for (int i = 0; i < 28; i++) {
-            // generate a random number between
-            // 0 to AlphaNumericString variable length
-            int index
-                    = (int)(AlphaNumericString.length()
-                    * Math.random());
-            // add Character one by one in end of sb
-            sb.append(AlphaNumericString
-                    .charAt(index));
-        }
-        return sb.toString();
     }
 }
