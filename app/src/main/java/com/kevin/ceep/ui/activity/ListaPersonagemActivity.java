@@ -40,6 +40,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -340,9 +342,11 @@ public class ListaPersonagemActivity extends AppCompatActivity {
 
     private void adicionaNovoPersonagem() {
         String novoIdPersonagem = geraIdAleatorio();
-        Personagem personagem = new Personagem(novoIdPersonagem,nomePersonagem,emailPersonagem,senhaPersonagem,false,false);
-        minhaReferencia.child(usuarioId).child(CHAVE_PERSONAGEM).child(novoIdPersonagem).setValue(personagem);
-        adicionaNovaListaProfissoes(novoIdPersonagem);
+        Personagem personagem = new Personagem(novoIdPersonagem,nomePersonagem,emailPersonagem,senhaPersonagem,false,false,true);
+        minhaReferencia.child(usuarioId).child(CHAVE_PERSONAGEM).child(novoIdPersonagem).setValue(personagem).addOnSuccessListener(unused -> {
+            Log.d("AdicionaNovoPersonagem", String.valueOf(personagem.getId()));
+            adicionaNovaListaProfissoes(personagem.getId());
+        }).addOnFailureListener(e -> Log.d("AdicionaNovoPersonagem", String.valueOf(e)));
     }
     private void adicionaNovaListaProfissoes(String idPersonagem) {
 

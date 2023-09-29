@@ -1,7 +1,6 @@
 package com.kevin.ceep.ui.activity;
 
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_CONFIRMA_CADASTRO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_ESTADO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
@@ -14,8 +13,6 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICA
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.POSICAO_INVALIDA;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
-
-import static java.lang.Boolean.TRUE;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -33,6 +30,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -63,11 +64,29 @@ import java.util.List;
 
 public class ListaTrabalhosActivity extends AppCompatActivity {
 
+    private static final String TAG="MainActivity";
+    ActivityResultLauncher<Intent> activityLauncher=registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    Log.d(TAG,"onActivityResult");
+                    if (result.getResultCode()==1){
+                        Intent intent=result.getData();
+                        if (intent!=null){
+                            
+                        }
+                    }
+                }
+            }
+    );
+    private FirebaseDatabase database;
     private DatabaseReference databaseReference;
     private ListaTrabalhoAdapter trabalhoAdapter;
     private ProgressDialog progressDialog;
     private RecyclerView recyclerView;
     private List<Trabalho> trabalhos;
+    private SearchView busca;
     private Chip chipEstado;
     private Boolean isChecked=false;
     private String usuarioId, personagemId;
@@ -114,13 +133,13 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
                         if (personagem.getEstado()){
                             Log.d("SWITCH","Estado do personagem é ativo.");
                             isChecked=true;
-                            int aSwitch = Log.d("SWITCH", "O valor de ischeched é: ." + true);
+                            Log.d("SWITCH","O valor de ischeched é: ."+isChecked);
                             chipEstado.setText("Ativo");
                             chipEstado.setChecked(isChecked);
                         }else{
                             Log.d("SWITCH","Estado do personagem é inativo.");
                             isChecked=false;
-                            int aSwitch = Log.d("SWITCH", "O valor de ischeched é: ." + false);
+                            Log.d("SWITCH","O valor de ischeched é: ."+isChecked);
                             chipEstado.setText("Inativo");
                             chipEstado.setChecked(isChecked);
                         }
@@ -134,13 +153,13 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
 
     private void inicializaComponentes() {
         usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference(CHAVE_USUARIOS);
         chipEstado=findViewById(R.id.chipEstadoPersonagem);
     }
 
     private void configuraCampoPesquisa() {
-        SearchView busca = findViewById(R.id.buscaTrabalho);
+        busca = findViewById(R.id.buscaTrabalho);
         busca.clearFocus();
         busca.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -181,6 +200,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
         switch (item.getItemId()){
             case R.id.itemMenuTodos:
                 estado=3;
@@ -206,7 +226,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
 
     private void modificaEstadoPersonagem(boolean estadoPersonagem) {
         databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM)
-                .child(personagemId).child(CHAVE_ESTADO).setValue(estadoPersonagem);
+                .child(personagemId).child("estado").setValue(estadoPersonagem);
         Log.d("SWITCH","Estado do personagem modificado para: "+estadoPersonagem);
     }
 
@@ -250,9 +270,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
                 int posicaoDeslize = viewHolder.getAdapterPosition();
                 ListaTrabalhoAdapter trabalhoAdapter = (ListaTrabalhoAdapter)recyclerView.getAdapter();
                 removeTrabalhoLista(posicaoDeslize);
-                if (trabalhoAdapter != null) {
-                    trabalhoAdapter.remove(posicaoDeslize);
-                }
+                trabalhoAdapter.remove(posicaoDeslize);
             }
         };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
@@ -273,7 +291,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         }
         if (dadosRecebidos.hasExtra(CHAVE_CONFIRMA_CADASTRO)) {
             Boolean confirmaCadastro= (Boolean) dadosRecebidos.getSerializableExtra(CHAVE_CONFIRMA_CADASTRO);
-            if (confirmaCadastro != null && confirmaCadastro.equals(TRUE)) {
+            if (confirmaCadastro){
                 final Toast toast = configuraToastCustomizado();
                 toast.show();
                 dadosRecebidos.removeExtra(CHAVE_CONFIRMA_CADASTRO);
@@ -382,9 +400,10 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_TRABALHO, CODIGO_REQUISICAO_ALTERA_TRABALHO);
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_TRABALHO, trabalho);
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_PERSONAGEM, personagemId);
-        startActivity(iniciaTrabalhoEspecificoActivity,
+        activityLauncher.launch(iniciaTrabalhoEspecificoActivity);
+        /*startActivity(iniciaTrabalhoEspecificoActivity,
                 ActivityOptions.makeSceneTransitionAnimation(ListaTrabalhosActivity.this).toBundle());
-        finish();
+        finish();*/
     }
 
     @Override
