@@ -75,7 +75,7 @@ public class ListaProfissaoAdapter extends RecyclerView.Adapter<ListaProfissaoAd
         }
 
         private void configuraCorRaridade(Profissao raridade) {
-            if (raridade.getNome().equals("Raro")){
+            if (raridade.getNome().equals("Raro")||raridade.getNome().equals("Melhorado")){
                 nome_profissao.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_raro));
             }else if (raridade.getNome().equals("Especial")){
                 nome_profissao.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_especial));
