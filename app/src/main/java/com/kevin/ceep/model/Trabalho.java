@@ -11,11 +11,12 @@ public class Trabalho implements Serializable {
     private String raridade;
     private Integer estado;
     private Integer nivel;
+    private Integer experiencia;
     private boolean recorrencia;
 
     public Trabalho(){}
 
-    public Trabalho(String id, String nome, String profissao, String tipo_licenca, String raridade, Integer estado, Integer nivel, boolean recorrencia) {
+    public Trabalho(String id, String nome, String profissao, String tipo_licenca, String raridade, Integer estado, Integer nivel, Integer experiencia, boolean recorrencia) {
         this.id = id;
         this.nome = nome;
         this.profissao = profissao;
@@ -23,6 +24,7 @@ public class Trabalho implements Serializable {
         this.raridade = raridade;
         this.estado = estado;
         this.nivel = nivel;
+        this.experiencia = experiencia;
         this.recorrencia = recorrencia;
     }
 
@@ -56,5 +58,9 @@ public class Trabalho implements Serializable {
 
     public boolean isRecorrencia() {
         return recorrencia;
+    }
+
+    public Integer getExperiencia() {
+        return experiencia;
     }
 }

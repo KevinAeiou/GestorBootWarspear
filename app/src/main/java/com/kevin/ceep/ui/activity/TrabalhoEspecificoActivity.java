@@ -19,7 +19,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import android.annotation.SuppressLint;
-import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -48,13 +47,13 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private DatabaseReference minhareferencia;
     private Trabalho trabalhoRecebido;
     private Profissao raridadeRecebido,profissaoRecebido;
-    private TextInputEditText edtNomeTrabalho,edtNivelTrabalho;
-    private TextInputLayout txtInputEstado, txtInputLicenca,txtInputNome,txtInputNivel;
+    private TextInputEditText edtNomeTrabalho,edtNivelTrabalho,edtExperienciaTrabalho;
+    private TextInputLayout txtInputEstado, txtInputLicenca,txtInputNome,txtInputNivel,txtInputExperiencia;
     private CheckBox checkBoxTrabalhoEspecifico;
     private AutoCompleteTextView autoCompleteEstado,autoCompleteLicenca;
     private String[] estadosTrabalho,licencasTrabalho;
     private final String[] mensagemErro={"Campo requerido!","Inválido!"};
-    private String usuarioId,personagemId,trabalhoId,licencaModificada,nome,nivel;
+    private String usuarioId,personagemId,trabalhoId,licencaModificada,nome,nivel,experiencia;
     private int codigoRequisicao,posicaoEstado=0;
     private boolean recorrencia=true;
     @SuppressLint("MissingInflatedId")
@@ -99,6 +98,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                     trabalhoRecebido.getRaridade(),
                     posicaoEstado,
                     trabalhoRecebido.getNivel(),
+                    trabalhoRecebido.getExperiencia(),
                     recorrencia);
             modificaTrabalhoServidor(trabalhoModificado);
             vaiParaListaTrabalhosActivity();
@@ -133,10 +133,12 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
         edtNomeTrabalho=findViewById(R.id.edtNomeTrabalho);
         edtNivelTrabalho=findViewById(R.id.edtNivelTrabalho);
+        edtExperienciaTrabalho=findViewById(R.id.edtExperienciaTrabalho);
         txtInputEstado=findViewById(R.id.txtLayoutEstadoTrabalho);
         txtInputLicenca=findViewById(R.id.txtLayoutLicencaTrabalho);
         txtInputNome=findViewById(R.id.txtLayoutNomeTrabalho);
         txtInputNivel=findViewById(R.id.txtLayoutNivelTrabalho);
+        txtInputExperiencia=findViewById(R.id.txtLayoutExperienciaTrabalho);
         autoCompleteEstado=findViewById(R.id.txtAutoCompleteEstadoTrabalho);
         autoCompleteLicenca=findViewById(R.id.txtAutoCompleteLicencaTrabalhoEspecifico);
         licencasTrabalho=getResources().getStringArray(R.array.licencas_completas);
@@ -174,11 +176,13 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private void configuraComponentesAlteraTrabalho() {
         setTitle(trabalhoRecebido.getNome());
-        edtNivelTrabalho.setEnabled(false);
         edtNomeTrabalho.setEnabled(false);
+        edtNivelTrabalho.setEnabled(false);
+        edtExperienciaTrabalho.setEnabled(false);
         trabalhoId=trabalhoRecebido.getId();
         autoCompleteEstado.setText(estadosTrabalho[trabalhoRecebido.getEstado()]);
         edtNivelTrabalho.setText(String.valueOf(trabalhoRecebido.getNivel()));
+        edtExperienciaTrabalho.setText(String.valueOf(trabalhoRecebido.getExperiencia()));
         autoCompleteLicenca.setText(trabalhoRecebido.getTipo_licenca());
         edtNomeTrabalho.setText(trabalhoRecebido.getNome());
         posicaoEstado=trabalhoRecebido.getEstado();
@@ -208,6 +212,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
             } else if (codigoRequisicao==CODIGO_REQUISICAO_INSERE_TRABALHO) {
                 nome=Objects.requireNonNull(edtNomeTrabalho.getText()).toString().trim();
                 nivel=Objects.requireNonNull(edtNivelTrabalho.getText()).toString().trim();
+                experiencia=Objects.requireNonNull(edtNivelTrabalho.getText()).toString().trim();
 
                 if (verificaCamposNovoTrabalho()) {
                     mostraDialogoDeProresso(CODIGO_REQUISICAO_INSERE_TRABALHO);
@@ -219,7 +224,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private boolean verificaCamposNovoTrabalho() {
         return verificaEdtTrabalho(nome, txtInputNome, 0)
-                & verificaEdtTrabalho(nivel, txtInputNivel, 1);
+                & verificaEdtTrabalho(nivel, txtInputNivel, 1)
+                & verificaEdtTrabalho(experiencia,txtInputExperiencia,1);
     }
 
     private boolean verificaTrabalhoModificado() {
@@ -245,8 +251,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     }
 
     @NonNull
-    private Trabalho configuraTrabalho(String id, String nome,String profissao, String licenca,String raridade, int estado, int nivel,boolean recorrencia) {
-        return new Trabalho(id,nome,profissao,licenca,raridade,estado,nivel,recorrencia);
+    private Trabalho configuraTrabalho(String id, String nome,String profissao, String licenca,String raridade, int estado, int nivel,int experiencia,boolean recorrencia) {
+        return new Trabalho(id,nome,profissao,licenca,raridade,estado,nivel, experiencia, recorrencia);
     }
 
     private void modificaTrabalhoServidor(Trabalho trabalhoModificado) {
@@ -269,7 +275,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private void cadastraNovoTrabalho() {
         DatabaseReference minhaReferencia = database.getReference(CHAVE_LISTA_TRABALHO);
         String novoId = geraIdAleatorio();
-        Trabalho novoTrabalho=configuraTrabalho(novoId,nome,profissaoRecebido.getNome(),"",raridadeRecebido.getNome(),0,Integer.parseInt(nivel),false);
+        Trabalho novoTrabalho=configuraTrabalho(novoId,nome,profissaoRecebido.getNome(),"",raridadeRecebido.getNome(),0,Integer.parseInt(nivel),Integer.parseInt(experiencia),false);
         minhaReferencia.child(novoId).setValue(novoTrabalho);
     }
 

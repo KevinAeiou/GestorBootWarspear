@@ -129,6 +129,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
                 trabalho.getRaridade(),
                 0,
                 trabalho.getNivel(),
+                trabalho.getExperiencia(),
                 recorrencia);
         minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
                 .child(personagemId).child(CHAVE_LISTA_DESEJO)

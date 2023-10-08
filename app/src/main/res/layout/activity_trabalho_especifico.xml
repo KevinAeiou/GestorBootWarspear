@@ -54,18 +54,36 @@
             android:textSize="18sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/txtLayoutExperienciaTrabalho"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:hint="Exp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toStartOf="@+id/txtLayoutNivelTrabalho"
+        app:layout_constraintTop_toTopOf="@+id/txtLayoutNivelTrabalho"
+        app:layout_constraintBottom_toBottomOf="@+id/txtLayoutNivelTrabalho">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtExperienciaTrabalho"
+            android:gravity="center"
+            android:inputType="numberSigned"
+            android:textSize="18sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <CheckBox
         android:id="@+id/checkBoxTrabalhoEspecifico"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Trabalho recorrente"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="@+id/txtLayoutNivelTrabalho"
+        android:text="Recorrente"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/txtLayoutExperienciaTrabalho"
         app:layout_constraintStart_toStartOf="@+id/txtLayoutNomeTrabalho"
-        app:layout_constraintTop_toTopOf="@+id/txtLayoutNivelTrabalho" />
+        app:layout_constraintTop_toTopOf="@+id/txtLayoutExperienciaTrabalho" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/txtLayoutLicencaTrabalho"
@@ -86,7 +104,7 @@
             android:gravity="center"
             android:inputType="none"
             android:padding="8dp"
-            android:textColor="@color/white" />
+            android:textColor="@color/black" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -105,7 +123,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:gravity="center"
             android:inputType="none" />
     </com.google.android.material.textfield.TextInputLayout>
