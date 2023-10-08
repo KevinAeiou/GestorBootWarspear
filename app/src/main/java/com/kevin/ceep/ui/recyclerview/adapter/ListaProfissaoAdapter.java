@@ -55,11 +55,13 @@ public class ListaProfissaoAdapter extends RecyclerView.Adapter<ListaProfissaoAd
     public class ProfissaoViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView nome_profissao;
+        private final TextView experiencia_profissao;
         private Profissao profissao;
 
         public ProfissaoViewHolder(@NonNull View itemView) {
             super(itemView);
             nome_profissao = itemView.findViewById(R.id.itemNomeProfissao);
+            experiencia_profissao = itemView.findViewById(R.id.itemExperienciaProfissao);
 
             itemView.setOnClickListener(v -> onItemClickListener.onItemClick(profissao,getAdapterPosition()));
         }
@@ -70,18 +72,68 @@ public class ListaProfissaoAdapter extends RecyclerView.Adapter<ListaProfissaoAd
         }
 
         private void preencheCampo(Profissao profissao) {
+            String expMaximo = defineExperienciaMaxima(profissao);
+            String exp= profissao.getExperiencia()+"/"+expMaximo;
             nome_profissao.setText(profissao.getNome());
-            configuraCorRaridade(profissao);
+            experiencia_profissao.setText(exp);
         }
 
-        private void configuraCorRaridade(Profissao raridade) {
-            if (raridade.getNome().equals("Raro")||raridade.getNome().equals("Melhorado")){
-                nome_profissao.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_raro));
-            }else if (raridade.getNome().equals("Especial")){
-                nome_profissao.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_especial));
-            }else{
-                nome_profissao.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_comum));
+        @NonNull
+        private String defineExperienciaMaxima(Profissao profissao) {
+            String expMaximo="";
+            if (profissao.getExperiencia()<20){
+                expMaximo="20";
+            } else if (profissao.getExperiencia()<200) {
+                expMaximo="200";
+            } else if (profissao.getExperiencia()<540) {
+                expMaximo="1250";
+            } else if (profissao.getExperiencia()<2550) {
+                expMaximo="2550";
+            } else if (profissao.getExperiencia()<4700) {
+                expMaximo="4700";
+            } else if (profissao.getExperiencia()<7990) {
+                expMaximo="7990";
+            } else if (profissao.getExperiencia()<12770) {
+                expMaximo="12770";
+            } else if (profissao.getExperiencia()<19440) {
+                expMaximo="19440";
+            } else if (profissao.getExperiencia()<28440) {
+                expMaximo="28440";
+            } else if (profissao.getExperiencia()<40270) {
+                expMaximo="40270";
+            } else if (profissao.getExperiencia()<55450) {
+                expMaximo="55450";
+            } else if (profissao.getExperiencia()<74570) {
+                expMaximo="74570";
+            } else if (profissao.getExperiencia()<98250) {
+                expMaximo="98250";
+            } else if (profissao.getExperiencia()<127180) {
+                expMaximo="127180";
+            } else if (profissao.getExperiencia()<156110) {
+                expMaximo="156110";
+            } else if (profissao.getExperiencia()<185040) {
+                expMaximo="185040";
+            } else if (profissao.getExperiencia()<215001) {
+                expMaximo="215001";
+            } else if (profissao.getExperiencia()<245000) {
+                expMaximo="245000";
+            } else if (profissao.getExperiencia()<300000) {
+                expMaximo="300000";
+            } else if (profissao.getExperiencia()<375000) {
+                expMaximo="375000";
+            } else if (profissao.getExperiencia()<470000) {
+                expMaximo="470000";
+            } else if (profissao.getExperiencia()<585000) {
+                expMaximo="585000";
+            } else if (profissao.getExperiencia()<720000) {
+                expMaximo="720000";
+            } else if (profissao.getExperiencia()<875000) {
+                expMaximo="875000";
+            } else if (profissao.getExperiencia()<105000) {
+                expMaximo = "105000";
             }
+            return expMaximo;
         }
+
     }
 }
