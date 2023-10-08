@@ -251,15 +251,6 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         }
     }
 
-    private boolean vericaConexaoInternet() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo infConexao = cm.getActiveNetworkInfo();
-        if(infConexao!=null && infConexao.isConnectedOrConnecting()){
-            return true;
-        }
-        return false;
-    }
-
     private void configuraDeslizeItem() {
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT) {
             @Override
@@ -480,6 +471,15 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
 
     public static String removerAcentos(String str) {
         return Normalizer.normalize(str, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+    }
+
+    private boolean vericaConexaoInternet() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo infConexao = cm.getActiveNetworkInfo();
+        if(infConexao!=null && infConexao.isConnectedOrConnecting()){
+            return true;
+        }
+        return false;
     }
 /*
     private void vaiParaFormularioNotaActivityAltera(Trabalho nota, int posicao) {

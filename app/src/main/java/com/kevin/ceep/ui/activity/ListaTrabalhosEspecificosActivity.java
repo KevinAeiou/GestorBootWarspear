@@ -164,19 +164,13 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
 
     private void atualizaListaTrabalhoEspecifico() {
         mostraDialogodeProresso();
-        if (verificaConexaoInternet()){
+        if (vericaConexaoInternet()){
             List<Trabalho> todosTrabalhos = pegaTodosTrabalhos();
             configuraRecyclerView(todosTrabalhos);
         }else{
             progressDialog.dismiss();
             Toast.makeText(this,"Erro na conexão...",Toast.LENGTH_LONG).show();
         }
-    }
-
-    private boolean verificaConexaoInternet() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo infConexao = cm.getActiveNetworkInfo();
-        return infConexao != null && infConexao.isConnectedOrConnecting();
     }
 
     private void recebeDadosIntent() {
@@ -265,5 +259,14 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private boolean vericaConexaoInternet() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo infConexao = cm.getActiveNetworkInfo();
+        if(infConexao!=null && infConexao.isConnectedOrConnecting()){
+            return true;
+        }
+        return false;
     }
 }
