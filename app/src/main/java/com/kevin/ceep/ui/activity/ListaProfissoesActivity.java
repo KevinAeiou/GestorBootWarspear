@@ -34,6 +34,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Personagem;
+import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaProfissaoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
@@ -48,7 +49,6 @@ public class ListaProfissoesActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private String personagemId,usuarioId;
     private RecyclerView recyclerView;
-    private FirebaseDatabase database;
     private DatabaseReference minhaReferencia;
     private List<Profissao> todasProfissoes;
     private Boolean CHAVE_ATUALIZA_LISTA_PROFISSOES = false;
@@ -89,7 +89,7 @@ public class ListaProfissoesActivity extends AppCompatActivity {
 
     private void inicializaComponentes() {
         recyclerView = findViewById(R.id.listaProfissoesRecyclerView);
-        database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
         minhaReferencia = database.getReference(CHAVE_USUARIOS);
         usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
@@ -220,7 +220,7 @@ public class ListaProfissoesActivity extends AppCompatActivity {
             public void onItemClick(Profissao profissao, int posicao) {
                 Intent dadosRecebidos = getIntent();
                 if (dadosRecebidos.hasExtra(CHAVE_NOME_RARIDADE)){
-                    Profissao raridade = (Profissao) dadosRecebidos
+                    Raridade raridade = (Raridade) dadosRecebidos
                             .getSerializableExtra(CHAVE_NOME_RARIDADE);
                     Intent iniciaTrabalhosActivity =
                             new Intent(ListaProfissoesActivity.this,
@@ -240,6 +240,11 @@ public class ListaProfissoesActivity extends AppCompatActivity {
 
             @Override
             public void onItemClick(Trabalho trabalho, int adapterPosition) {
+
+            }
+
+            @Override
+            public void onItemClick(Raridade raridade, int adapterPosition) {
 
             }
         });

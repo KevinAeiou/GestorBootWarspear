@@ -55,10 +55,12 @@ import com.kevin.ceep.R;
 import com.kevin.ceep.dao.NotaDAO;
 import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.model.Profissao;
+import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -391,6 +393,11 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
             public void onItemClick(Trabalho trabalho, int adapterPosition) {
                 vaiParaTrabalhoEspecificoActivity(trabalho);
             }
+
+            @Override
+            public void onItemClick(Raridade raridade, int adapterPosition) {
+
+            }
         });
     }
 
@@ -469,6 +476,10 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
 
     private boolean ehCodigoRequisicaoInsereNota(int requestCode) {
         return requestCode == CODIGO_REQUISICAO_INSERE_TRABALHO;
+    }
+
+    public static String removerAcentos(String str) {
+        return Normalizer.normalize(str, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
     }
 /*
     private void vaiParaFormularioNotaActivityAltera(Trabalho nota, int posicao) {

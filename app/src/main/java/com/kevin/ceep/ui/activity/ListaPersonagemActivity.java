@@ -1,6 +1,5 @@
 package com.kevin.ceep.ui.activity;
 
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_CONFIRMA_CADASTRO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PROFISSAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
@@ -11,7 +10,6 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,9 +17,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -32,16 +28,10 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -55,6 +45,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Personagem;
+import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaPersonagemAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
@@ -354,7 +345,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
 
         for (int i = 0; i< profissoes.length; i++){
             String novoIdProfissao = geraIdAleatorio();
-            Profissao profissao = new Profissao(profissoes[i]);
+            Profissao profissao = new Profissao(profissoes[i], 0);
             minhaReferencia.child(usuarioId)
                     .child(CHAVE_PERSONAGEM)
                     .child(idPersonagem)
@@ -447,6 +438,11 @@ public class ListaPersonagemActivity extends AppCompatActivity {
             @Override
             public void onItemClick(Trabalho trabalho, int adapterPosition) {
 
+            }
+
+            @Override
+            public void onItemClick(Raridade raridade, int adapterPosition) {
+                
             }
         });
     }

@@ -5,23 +5,23 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_RARID
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_RARIDADE;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.kevin.ceep.R;
-import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Personagem;
+import com.kevin.ceep.model.Profissao;
+import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
-import com.kevin.ceep.ui.recyclerview.adapter.ListaPersonagemAdapter;
-import com.kevin.ceep.ui.recyclerview.adapter.ListaProfissaoAdapter;
+import com.kevin.ceep.ui.recyclerview.adapter.ListaRaridadeAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.ArrayList;
@@ -29,7 +29,6 @@ import java.util.List;
 
 public class ListaRaridadeActivity extends AppCompatActivity {
 
-    private ListaProfissaoAdapter raridadeAdapter;
     private ProgressDialog progressDialog;
 
     @Override
@@ -52,7 +51,7 @@ public class ListaRaridadeActivity extends AppCompatActivity {
     }
 
     private void atualizarListaRaridade() {
-        List<Profissao> todasRaridades = pegaTodasRaridades();
+        List<Raridade> todasRaridades = pegaTodasRaridades();
         configuraRecyclerView(todasRaridades);
     }
 
@@ -63,7 +62,7 @@ public class ListaRaridadeActivity extends AppCompatActivity {
         Log.i(TAG_ACTIVITY,"onStopListaRaridade");
     }
 
-    private void configuraRecyclerView(List<Profissao> todasRaridades) {
+    private void configuraRecyclerView(List<Raridade> todasRaridades) {
         RecyclerView recyclerView = findViewById(R.id.listaRaridadeRecyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -71,12 +70,12 @@ public class ListaRaridadeActivity extends AppCompatActivity {
         configuraAdapter(todasRaridades,recyclerView);
     }
 
-    private void configuraAdapter(List<Profissao> todasRaridades, RecyclerView listaRaridades) {
-        raridadeAdapter = new ListaProfissaoAdapter(this, todasRaridades);
+    private void configuraAdapter(List<Raridade> todasRaridades, RecyclerView listaRaridades) {
+        ListaRaridadeAdapter raridadeAdapter = new ListaRaridadeAdapter(this, todasRaridades);
         listaRaridades.setAdapter(raridadeAdapter);
         raridadeAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(Profissao raridade, int posicao) {
+            public void onItemClick(Raridade raridade, int posicao) {
                 String personagemId = recebeDadosIntent();
                 Intent iniciaProfissoesActivity =
                         new Intent(ListaRaridadeActivity.this,
@@ -85,6 +84,11 @@ public class ListaRaridadeActivity extends AppCompatActivity {
                 iniciaProfissoesActivity.putExtra(CHAVE_NOME_RARIDADE, raridade);
                 startActivity(iniciaProfissoesActivity,
                         ActivityOptions.makeSceneTransitionAnimation(ListaRaridadeActivity.this).toBundle());
+            }
+
+            @Override
+            public void onItemClick(Profissao profissao, int posicao) {
+
             }
 
             @Override
@@ -103,16 +107,15 @@ public class ListaRaridadeActivity extends AppCompatActivity {
         if (dadosRecebidos.hasExtra(CHAVE_NOME_PERSONAGEM)){
             nomePersonagem = (String) dadosRecebidos.getSerializableExtra(CHAVE_NOME_PERSONAGEM);
         }
-        Log.d("PERSONAGEM", nomePersonagem);
         return nomePersonagem;
     }
 
-    private List<Profissao> pegaTodasRaridades() {
-        List<Profissao> raridades = new ArrayList<>();
-        raridades.add(new Profissao("Comum"));
-        raridades.add(new Profissao("Melhorado"));
-        raridades.add(new Profissao("Raro"));
-        raridades.add(new Profissao("Especial"));
+    private List<Raridade> pegaTodasRaridades() {
+        List<Raridade> raridades = new ArrayList<>();
+        raridades.add(new Raridade("Comum"));
+        raridades.add(new Raridade("Melhorado"));
+        raridades.add(new Raridade("Raro"));
+        raridades.add(new Raridade("Especial"));
         return raridades;
     }
 
@@ -122,6 +125,4 @@ public class ListaRaridadeActivity extends AppCompatActivity {
         progressDialog.setMessage("Carregando dados...");
         progressDialog.show();
     }
-
-
 }

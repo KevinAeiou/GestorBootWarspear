@@ -1,5 +1,6 @@
 package com.kevin.ceep.ui.activity;
 
+import static com.kevin.ceep.ui.activity.ListaTrabalhosActivity.removerAcentos;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PROFISSAO;
@@ -36,17 +37,20 @@ import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Personagem;
+import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
 
     private ListaTrabalhoEspecificoAdapter trabalhoAdapter;
-    private Profissao raridadeRecebido,profissaoRecebido;
+    private Profissao profissaoRecebido;
+    private Raridade raridadeRecebido;
     private ProgressDialog progressDialog;
     private AppCompatButton botaoNovoTrabalho;
     private RecyclerView recyclerView;
@@ -178,7 +182,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
     private void recebeDadosIntent() {
         Intent dadosRecebidos = getIntent();
         if (dadosRecebidos.hasExtra(CHAVE_NOME_PROFISSAO)) {
-            raridadeRecebido = (Profissao) dadosRecebidos
+            raridadeRecebido = (Raridade) dadosRecebidos
                     .getSerializableExtra(CHAVE_NOME_RARIDADE);
             profissaoRecebido = (Profissao) dadosRecebidos
                     .getSerializableExtra(CHAVE_NOME_PROFISSAO);
@@ -203,7 +207,9 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dn:dataSnapshot.getChildren()){
                     Trabalho trabalho = dn.getValue(Trabalho.class);
-                    if (trabalho != null && trabalho.getProfissao().equals(profissaoRecebido.getNome()) && trabalho.getRaridade().equals(raridadeRecebido.getNome())) {
+                    if (!(trabalho==null)&&
+                            removerAcentos(trabalho.getProfissao()).equals(removerAcentos(profissaoRecebido.getNome()))&&
+                            removerAcentos(trabalho.getRaridade()).equals(removerAcentos(raridadeRecebido.getNome()))){
                         trabalhos.add(trabalho);
                     }
                 }
@@ -251,6 +257,11 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
                 iniciaTrabalhosActivity.putExtra(CHAVE_NOME_PERSONAGEM, personagemId);
                 startActivity(iniciaTrabalhosActivity,
                         ActivityOptions.makeSceneTransitionAnimation(ListaTrabalhosEspecificosActivity.this).toBundle());
+
+            }
+
+            @Override
+            public void onItemClick(Raridade raridade, int adapterPosition) {
 
             }
         });
