@@ -131,9 +131,9 @@ public class ListaTrabalhoAdapter extends RecyclerView.Adapter<ListaTrabalhoAdap
             String raridade = trabalho.getRaridade();
             if (raridade.equals("Comum")){
                 nome_trabalho.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_comum));
-            } else if (raridade.equals("Raro")){
+            }else if (raridade.equals("Raro")||raridade.equals("Melhorado")){
                 nome_trabalho.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_raro));
-            }else{
+            }else if (raridade.equals("Especial")){
                 nome_trabalho.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_especial));
             }
         }

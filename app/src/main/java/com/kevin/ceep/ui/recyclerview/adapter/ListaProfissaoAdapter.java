@@ -1,18 +1,15 @@
 package com.kevin.ceep.ui.recyclerview.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kevin.ceep.R;
-import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
@@ -72,67 +69,68 @@ public class ListaProfissaoAdapter extends RecyclerView.Adapter<ListaProfissaoAd
         }
 
         private void preencheCampo(Profissao profissao) {
-            String expMaximo = defineExperienciaMaxima(profissao);
-            String exp= profissao.getExperiencia()+"/"+expMaximo;
+            String expMaximo = defineBarraExperiencia(profissao);
             nome_profissao.setText(profissao.getNome());
-            experiencia_profissao.setText(exp);
+            experiencia_profissao.setText(expMaximo);
         }
 
         @NonNull
-        private String defineExperienciaMaxima(Profissao profissao) {
-            String expMaximo="";
+        private String defineBarraExperiencia(Profissao profissao) {
+            String barraExperiencia="";
             if (profissao.getExperiencia()<20){
-                expMaximo="20";
+                barraExperiencia=profissao.getExperiencia()+"/"+"20";
             } else if (profissao.getExperiencia()<200) {
-                expMaximo="200";
+                barraExperiencia=(profissao.getExperiencia()-20)+"/"+"179";
             } else if (profissao.getExperiencia()<540) {
-                expMaximo="1250";
+                barraExperiencia=(profissao.getExperiencia()-200)+"/"+"339";
+            } else if (profissao.getExperiencia()<1250) {
+                barraExperiencia=(profissao.getExperiencia()-540)+"/"+"709";
             } else if (profissao.getExperiencia()<2550) {
-                expMaximo="2550";
+                barraExperiencia=(profissao.getExperiencia()-1250)+"/"+"1299";
             } else if (profissao.getExperiencia()<4700) {
-                expMaximo="4700";
+                barraExperiencia=(profissao.getExperiencia()-2550)+"/"+"2149";
             } else if (profissao.getExperiencia()<7990) {
-                expMaximo="7990";
+                barraExperiencia=(profissao.getExperiencia()-4700)+"/"+"3289";
             } else if (profissao.getExperiencia()<12770) {
-                expMaximo="12770";
+                barraExperiencia=(profissao.getExperiencia()-7990)+"/"+"4779";
             } else if (profissao.getExperiencia()<19440) {
-                expMaximo="19440";
+                barraExperiencia=(profissao.getExperiencia()-12770)+"/"+"6669";
             } else if (profissao.getExperiencia()<28440) {
-                expMaximo="28440";
+                barraExperiencia=(profissao.getExperiencia()-19440)+"/"+"8999";
             } else if (profissao.getExperiencia()<40270) {
-                expMaximo="40270";
+                barraExperiencia=(profissao.getExperiencia()-28440)+"/"+"11829";
             } else if (profissao.getExperiencia()<55450) {
-                expMaximo="55450";
+                barraExperiencia=(profissao.getExperiencia()-40270)+"/"+"15179";
             } else if (profissao.getExperiencia()<74570) {
-                expMaximo="74570";
+                barraExperiencia=(profissao.getExperiencia()-55450)+"/"+"19119";
             } else if (profissao.getExperiencia()<98250) {
-                expMaximo="98250";
+                barraExperiencia=(profissao.getExperiencia()-74570)+"/"+"23679";
             } else if (profissao.getExperiencia()<127180) {
-                expMaximo="127180";
+                barraExperiencia=(profissao.getExperiencia()-98250)+"/"+"28929";
             } else if (profissao.getExperiencia()<156110) {
-                expMaximo="156110";
+                barraExperiencia=(profissao.getExperiencia()-127180)+"/"+"28929";
             } else if (profissao.getExperiencia()<185040) {
-                expMaximo="185040";
+                barraExperiencia=(profissao.getExperiencia()-156110)+"/"+"28929";
             } else if (profissao.getExperiencia()<215001) {
-                expMaximo="215001";
+                barraExperiencia=(profissao.getExperiencia()-185040)+"/"+"29959";
             } else if (profissao.getExperiencia()<245000) {
-                expMaximo="245000";
+                barraExperiencia=(profissao.getExperiencia()-215001)+"/"+"29999";
             } else if (profissao.getExperiencia()<300000) {
-                expMaximo="300000";
+                barraExperiencia=(profissao.getExperiencia()-245000)+"/"+"54999";
             } else if (profissao.getExperiencia()<375000) {
-                expMaximo="375000";
+                barraExperiencia=(profissao.getExperiencia()-300000)+"/"+"74999";
             } else if (profissao.getExperiencia()<470000) {
-                expMaximo="470000";
+                barraExperiencia=(profissao.getExperiencia()-375000)+"/"+"94999";
             } else if (profissao.getExperiencia()<585000) {
-                expMaximo="585000";
+                barraExperiencia=(profissao.getExperiencia()-470000)+"/"+"114999";
             } else if (profissao.getExperiencia()<720000) {
-                expMaximo="720000";
+                barraExperiencia=(profissao.getExperiencia()-585000)+"/"+"134999";
             } else if (profissao.getExperiencia()<875000) {
-                expMaximo="875000";
+                barraExperiencia=(profissao.getExperiencia()-720000)+"/"+"154999";
             } else if (profissao.getExperiencia()<105000) {
-                expMaximo = "105000";
+                barraExperiencia=(profissao.getExperiencia()-875000)+"/"+"174999";
             }
-            return expMaximo;
+            return barraExperiencia;
         }
 
     }

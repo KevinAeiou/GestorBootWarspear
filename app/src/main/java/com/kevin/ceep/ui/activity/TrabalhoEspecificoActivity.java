@@ -37,6 +37,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Profissao;
+import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
 
 import java.util.Objects;
@@ -46,7 +47,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private FirebaseDatabase database;
     private DatabaseReference minhareferencia;
     private Trabalho trabalhoRecebido;
-    private Profissao raridadeRecebido,profissaoRecebido;
+    private Profissao profissaoRecebido;
+    private Raridade raridadeRecebido;
     private TextInputEditText edtNomeTrabalho,edtNivelTrabalho,edtExperienciaTrabalho;
     private TextInputLayout txtInputEstado, txtInputLicenca,txtInputNome,txtInputNivel,txtInputExperiencia;
     private CheckBox checkBoxTrabalhoEspecifico;
@@ -158,7 +160,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                         .getSerializableExtra(CHAVE_NOME_TRABALHO);
                 configuraComponentesAlteraTrabalho();
             }else if (codigoRequisicao== CODIGO_REQUISICAO_INSERE_TRABALHO){
-                raridadeRecebido=(Profissao) dadosRecebidos
+                raridadeRecebido=(Raridade) dadosRecebidos
                         .getSerializableExtra(CHAVE_NOME_RARIDADE);
                 profissaoRecebido=(Profissao) dadosRecebidos
                         .getSerializableExtra(CHAVE_NOME_PROFISSAO);
@@ -212,7 +214,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
             } else if (codigoRequisicao==CODIGO_REQUISICAO_INSERE_TRABALHO) {
                 nome=Objects.requireNonNull(edtNomeTrabalho.getText()).toString().trim();
                 nivel=Objects.requireNonNull(edtNivelTrabalho.getText()).toString().trim();
-                experiencia=Objects.requireNonNull(edtNivelTrabalho.getText()).toString().trim();
+                experiencia=Objects.requireNonNull(edtExperienciaTrabalho.getText()).toString().trim();
 
                 if (verificaCamposNovoTrabalho()) {
                     mostraDialogoDeProresso(CODIGO_REQUISICAO_INSERE_TRABALHO);
