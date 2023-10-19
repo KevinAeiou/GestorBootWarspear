@@ -77,7 +77,6 @@ public class ListaTrabalhoAdapter extends RecyclerView.Adapter<ListaTrabalhoAdap
 
         private final CardView cardview_trabalho;
         private final TextView nome_trabalho;
-        private final TextView tipo_licenca;
         private final TextView profissao_trabalho;
         private final TextView nivel_trabalho;
         private Trabalho trabalho;
@@ -86,7 +85,6 @@ public class ListaTrabalhoAdapter extends RecyclerView.Adapter<ListaTrabalhoAdap
             super(itemView);
             cardview_trabalho = itemView.findViewById(R.id.itemCardViewTrabalho);
             nome_trabalho = itemView.findViewById(R.id.itemNomeTrabalho);
-            tipo_licenca = itemView.findViewById(R.id.itemTipoLicenca);
             profissao_trabalho = itemView.findViewById(R.id.itemProfissaoTrabalho);
             nivel_trabalho = itemView.findViewById(R.id.itemNivelTrabalho);
             itemView.setOnClickListener(v -> onItemClickListener.onItemClick(trabalho, getAdapterPosition()));
@@ -98,33 +96,10 @@ public class ListaTrabalhoAdapter extends RecyclerView.Adapter<ListaTrabalhoAdap
         private void preencheCampo(Trabalho trabalho) {
             nome_trabalho.setText(trabalho.getNome());
             configuraCorNomeTrabalho(trabalho);
-            tipo_licenca.setText(trabalho.getTipo_licenca());
-            configuraCorLicencaTrabalho(trabalho);
             profissao_trabalho.setText(trabalho.getProfissao());
             profissao_trabalho.setTextColor(Color.WHITE);
             nivel_trabalho.setText(String.valueOf(trabalho.getNivel()));
             nivel_trabalho.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_nivel));
-            configuraCorCardViewTrabalho(trabalho);
-        }
-
-        private void configuraCorCardViewTrabalho(Trabalho trabalho) {
-            Integer estado = trabalho.getEstado();
-            if (estado==1){
-                cardview_trabalho.setCardBackgroundColor(ContextCompat.getColor(context,R.color.cor_background_produzindo));
-            }else if (estado==2){
-                cardview_trabalho.setCardBackgroundColor(ContextCompat.getColor(context,R.color.cor_background_feito));
-            }
-        }
-
-        private void configuraCorLicencaTrabalho(Trabalho trabalho) {
-            String licenca = trabalho.getTipo_licenca();
-            if (licenca.equals("Licença de produção do iniciante")){
-                tipo_licenca.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_iniciante));
-            }else if (licenca.equals("Licença de produção do aprendiz")){
-                tipo_licenca.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_aprediz));
-            }else{
-                tipo_licenca.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_mestre));
-            }
         }
 
         private void configuraCorNomeTrabalho(Trabalho trabalho) {

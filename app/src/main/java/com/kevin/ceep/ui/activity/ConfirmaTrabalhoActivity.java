@@ -10,8 +10,6 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_CON
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Color;
@@ -19,7 +17,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.CheckBox;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -32,7 +32,6 @@ import java.util.Objects;
 public class ConfirmaTrabalhoActivity extends AppCompatActivity {
 
     private AutoCompleteTextView autoCompleteLicenca,autoCompleteQuantidade;
-    private CheckBox checkBoxTrabalhoRecorrente;
     private String personagemId, licencaSelecionada;
     private Trabalho trabalho;
     private int quantidadeSelecionada;
@@ -44,7 +43,6 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         setTitle(CHAVE_TITULO_CONFIRMA);
 
         recebeDadosIntent();
-        checkBoxTrabalhoRecorrente=findViewById(R.id.checkBoxProducaoRec);
         configuraBotaoCadastraTrabalho();
 
         Log.i(TAG_ACTIVITY,"onCreateConfirma");
@@ -119,18 +117,13 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         String usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
 
         String novoId = geraIdAleatorio();
-        boolean recorrencia;
-        recorrencia= checkBoxTrabalhoRecorrente.isChecked();
         Trabalho novoTrabalho=new Trabalho(
                 novoId,
                 trabalho.getNome(),
                 trabalho.getProfissao(),
-                licencaSelecionada,
                 trabalho.getRaridade(),
-                0,
                 trabalho.getNivel(),
-                trabalho.getExperiencia(),
-                recorrencia);
+                trabalho.getExperiencia());
         minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
                 .child(personagemId).child(CHAVE_LISTA_DESEJO)
                 .child(novoId)

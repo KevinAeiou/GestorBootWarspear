@@ -39,6 +39,7 @@ import com.kevin.ceep.R;
 import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
+import com.kevin.ceep.model.TrabalhoProducao;
 
 import java.util.Objects;
 
@@ -46,7 +47,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private FirebaseDatabase database;
     private DatabaseReference minhareferencia;
-    private Trabalho trabalhoRecebido;
+    private TrabalhoProducao trabalhoRecebido;
     private Profissao profissaoRecebido;
     private Raridade raridadeRecebido;
     private TextInputEditText edtNomeTrabalho,edtNivelTrabalho,edtExperienciaTrabalho;
@@ -92,15 +93,9 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
             cadastraNovoTrabalho();
             vaiParaListaTrabalhosEspecificosActivity();
         }else if(codigoRequisicao==CODIGO_REQUISICAO_ALTERA_TRABALHO){
-            Trabalho trabalhoModificado=configuraTrabalho(
-                    trabalhoId,
-                    trabalhoRecebido.getNome(),
-                    trabalhoRecebido.getProfissao(),
+            TrabalhoProducao trabalhoModificado=new TrabalhoProducao(
                     licencaModificada,
-                    trabalhoRecebido.getRaridade(),
                     posicaoEstado,
-                    trabalhoRecebido.getNivel(),
-                    trabalhoRecebido.getExperiencia(),
                     recorrencia);
             modificaTrabalhoServidor(trabalhoModificado);
             vaiParaListaTrabalhosActivity();
@@ -156,7 +151,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                     .getSerializableExtra(CHAVE_TRABALHO);
             personagemId= (String) dadosRecebidos.getSerializableExtra(CHAVE_NOME_PERSONAGEM);
             if (codigoRequisicao== CODIGO_REQUISICAO_ALTERA_TRABALHO){
-                trabalhoRecebido= (Trabalho) dadosRecebidos
+                trabalhoRecebido= (TrabalhoProducao) dadosRecebidos
                         .getSerializableExtra(CHAVE_NOME_TRABALHO);
                 configuraComponentesAlteraTrabalho();
             }else if (codigoRequisicao== CODIGO_REQUISICAO_INSERE_TRABALHO){
@@ -189,7 +184,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         edtNomeTrabalho.setText(trabalhoRecebido.getNome());
         posicaoEstado=trabalhoRecebido.getEstado();
         licencaModificada=trabalhoRecebido.getTipo_licenca();
-        if (trabalhoRecebido.isRecorrencia()){
+        if (trabalhoRecebido.getRecorrencia()){
             checkBoxTrabalhoEspecifico.setChecked(true);
         }
     }
@@ -238,7 +233,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private boolean verificaCheckModificado() {
         configuraCheckBoxRecorrencia();
-        if (recorrencia!=trabalhoRecebido.isRecorrencia()){
+        if (recorrencia!=trabalhoRecebido.getRecorrencia()){
             return true;
         }
         return false;
@@ -250,11 +245,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         }else{
             recorrencia=false;
         }
-    }
-
-    @NonNull
-    private Trabalho configuraTrabalho(String id, String nome,String profissao, String licenca,String raridade, int estado, int nivel,int experiencia,boolean recorrencia) {
-        return new Trabalho(id,nome,profissao,licenca,raridade,estado,nivel, experiencia, recorrencia);
     }
 
     private void modificaTrabalhoServidor(Trabalho trabalhoModificado) {
@@ -277,7 +267,13 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private void cadastraNovoTrabalho() {
         DatabaseReference minhaReferencia = database.getReference(CHAVE_LISTA_TRABALHO);
         String novoId = geraIdAleatorio();
-        Trabalho novoTrabalho=configuraTrabalho(novoId,nome,profissaoRecebido.getNome(),"",raridadeRecebido.getNome(),0,Integer.parseInt(nivel),Integer.parseInt(experiencia),false);
+        Trabalho novoTrabalho = new Trabalho(
+                novoId,
+                nome,
+                trabalhoRecebido.getProfissao(),
+                trabalhoRecebido.getRaridade(),
+                Integer.parseInt(nivel),
+                Integer.parseInt(experiencia));
         minhaReferencia.child(novoId).setValue(novoTrabalho);
     }
 

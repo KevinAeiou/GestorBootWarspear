@@ -4,10 +4,10 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_CONFIRMA_C
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_POSICAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
@@ -30,8 +30,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -57,38 +55,35 @@ import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
-import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoAdapter;
+import com.kevin.ceep.model.TrabalhoProducao;
+import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoProducaoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ListaTrabalhosActivity extends AppCompatActivity {
 
     private static final String TAG="MainActivity";
     ActivityResultLauncher<Intent> activityLauncher=registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    Log.d(TAG,"onActivityResult");
-                    if (result.getResultCode()==1){
-                        Intent intent=result.getData();
-                        if (intent!=null){
-                            
-                        }
+            result -> {
+                Log.d(TAG,"onActivityResult");
+                if (result.getResultCode()==1){
+                    Intent intent=result.getData();
+                    if (intent!=null){
+
                     }
                 }
             }
     );
-    private FirebaseDatabase database;
     private DatabaseReference databaseReference;
-    private ListaTrabalhoAdapter trabalhoAdapter;
+    private ListaTrabalhoProducaoAdapter trabalhoAdapter;
     private ProgressDialog progressDialog;
     private RecyclerView recyclerView;
-    private List<Trabalho> trabalhos;
-    private SearchView busca;
+    private List<TrabalhoProducao> trabalhos;
     private Chip chipEstado;
     private Boolean isChecked=false;
     private String usuarioId, personagemId;
@@ -117,10 +112,10 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     private void configuraChipMudaEstadoPersonagem() {
         chipEstado.setOnCheckedChangeListener((compoundButton, b) -> {
             if (b){
-                chipEstado.setText("Ativo");
+                chipEstado.setText(R.string.stringAtivo);
                 modificaEstadoPersonagem(true);
             }else{
-                chipEstado.setText("Inativo");
+                chipEstado.setText(R.string.stringInativo);
                 modificaEstadoPersonagem(false);
             }
         });
@@ -132,17 +127,18 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Personagem personagem = dataSnapshot.getValue(Personagem.class);
+                        assert personagem != null;
                         if (personagem.getEstado()){
                             Log.d("SWITCH","Estado do personagem é ativo.");
                             isChecked=true;
-                            Log.d("SWITCH","O valor de ischeched é: ."+isChecked);
-                            chipEstado.setText("Ativo");
+                            Log.d("SWITCH", "O valor de ischeched é: ."+ true);
+                            chipEstado.setText(R.string.stringAtivo);
                             chipEstado.setChecked(isChecked);
                         }else{
                             Log.d("SWITCH","Estado do personagem é inativo.");
                             isChecked=false;
-                            Log.d("SWITCH","O valor de ischeched é: ."+isChecked);
-                            chipEstado.setText("Inativo");
+                            Log.d("SWITCH", "O valor de ischeched é: ."+ false);
+                            chipEstado.setText(R.string.stringInativo);
                             chipEstado.setChecked(isChecked);
                         }
                     }
@@ -154,14 +150,14 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     }
 
     private void inicializaComponentes() {
-        usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        database = FirebaseDatabase.getInstance();
+        usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference(CHAVE_USUARIOS);
         chipEstado=findViewById(R.id.chipEstadoPersonagem);
     }
 
     private void configuraCampoPesquisa() {
-        busca = findViewById(R.id.buscaTrabalho);
+        SearchView busca = findViewById(R.id.buscaTrabalho);
         busca.clearFocus();
         busca.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -178,8 +174,8 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     }
 
     private void listaBusca(String textoBusca) {
-        List<Trabalho> listaFiltro = new ArrayList<>();
-        for (Trabalho trabalho:trabalhos){
+        List<TrabalhoProducao> listaFiltro = new ArrayList<>();
+        for (TrabalhoProducao trabalho:trabalhos){
             if (removerAcentos(trabalho.getNome().toLowerCase()).contains(removerAcentos(textoBusca.toLowerCase()))||
                     removerAcentos(trabalho.getProfissao().toLowerCase()).contains(removerAcentos(textoBusca.toLowerCase()))||
                     removerAcentos(trabalho.getTipo_licenca().toLowerCase()).contains(removerAcentos(textoBusca.toLowerCase()))){
@@ -243,7 +239,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     private void atualizaListaTrabalho() {
         mostraDialogodeProresso();
         if (vericaConexaoInternet()) {
-            List<Trabalho> todosTrabalhos = pegaTodosTrabalhos();
+            List<TrabalhoProducao> todosTrabalhos = pegaTodosTrabalhos();
             configuraRecyclerView(todosTrabalhos);
         }else {
             progressDialog.dismiss();
@@ -261,9 +257,11 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int posicaoDeslize = viewHolder.getAdapterPosition();
-                ListaTrabalhoAdapter trabalhoAdapter = (ListaTrabalhoAdapter)recyclerView.getAdapter();
+                ListaTrabalhoProducaoAdapter trabalhoAdapter = (ListaTrabalhoProducaoAdapter) recyclerView.getAdapter();
                 removeTrabalhoLista(posicaoDeslize);
-                trabalhoAdapter.remove(posicaoDeslize);
+                if (trabalhoAdapter != null) {
+                    trabalhoAdapter.remove(posicaoDeslize);
+                }
             }
         };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
@@ -284,7 +282,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         }
         if (dadosRecebidos.hasExtra(CHAVE_CONFIRMA_CADASTRO)) {
             Boolean confirmaCadastro= (Boolean) dadosRecebidos.getSerializableExtra(CHAVE_CONFIRMA_CADASTRO);
-            if (confirmaCadastro){
+            if (Boolean.TRUE.equals(confirmaCadastro)){
                 final Toast toast = configuraToastCustomizado();
                 toast.show();
                 dadosRecebidos.removeExtra(CHAVE_CONFIRMA_CADASTRO);
@@ -307,7 +305,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     private void mostraDialogodeProresso(){
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
-        progressDialog.setMessage("Carregando dados...");
+        progressDialog.setMessage(getString(R.string.stringCarregandoDados));
         progressDialog.show();
     }
 
@@ -326,7 +324,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         //startActivityForResult(iniciaFormularioNota, CODIGO_REQUISICAO_INSERE_NOTA);
     }
 
-    private List<Trabalho> pegaTodosTrabalhos() {
+    private List<TrabalhoProducao> pegaTodosTrabalhos() {
         trabalhos = new ArrayList<>();
         Log.d("USUARIO", usuarioId);
         databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM).
@@ -336,7 +334,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         trabalhos.clear();
                         for (DataSnapshot dn:dataSnapshot.getChildren()){
-                            Trabalho trabalho = dn.getValue(Trabalho.class);
+                            TrabalhoProducao trabalho = dn.getValue(TrabalhoProducao.class);
                             filtraListaTrabalho(trabalho);
                         }
                         trabalhoAdapter.notifyDataSetChanged();
@@ -351,23 +349,23 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         return trabalhos;
     }
 
-    private void filtraListaTrabalho(Trabalho trabalho) {
+    private void filtraListaTrabalho(TrabalhoProducao trabalho) {
         if (estado==3){
             trabalhos.add(trabalho);
-        }else if (trabalho.getEstado()==estado){
+        }else if (trabalho.getEstado().equals(estado)){
             trabalhos.add(trabalho);
         }
     }
 
-    private void configuraRecyclerView(List<Trabalho> todosTrabalhos) {
+    private void configuraRecyclerView(List<TrabalhoProducao> todosTrabalhos) {
         recyclerView = findViewById(R.id.listaTrabalhoRecyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         configuraAdapter(todosTrabalhos, recyclerView);
     }
 
-    private void configuraAdapter(List<Trabalho> todosTrabalhos, RecyclerView listaTrabalhos) {
-        trabalhoAdapter = new ListaTrabalhoAdapter(this,todosTrabalhos);
+    private void configuraAdapter(List<TrabalhoProducao> todosTrabalhos, RecyclerView listaTrabalhos) {
+        trabalhoAdapter = new ListaTrabalhoProducaoAdapter(this,todosTrabalhos);
         listaTrabalhos.setAdapter(trabalhoAdapter);
         trabalhoAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -399,9 +397,6 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_TRABALHO, trabalho);
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_PERSONAGEM, personagemId);
         activityLauncher.launch(iniciaTrabalhoEspecificoActivity);
-        /*startActivity(iniciaTrabalhoEspecificoActivity,
-                ActivityOptions.makeSceneTransitionAnimation(ListaTrabalhosActivity.this).toBundle());
-        finish();*/
     }
 
     @Override
@@ -409,14 +404,14 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (ehResultadoInsereNota(requestCode, data)) {
             if (resultadoOk(resultCode)){
-                Trabalho notaRecebida = (Trabalho) data.getSerializableExtra(CHAVE_TRABALHO);
+                TrabalhoProducao notaRecebida = (TrabalhoProducao) Objects.requireNonNull(data).getSerializableExtra(CHAVE_TRABALHO);
                 adiciona(notaRecebida);
             }
         }
 
         if (ehResultadoAlteraNota(requestCode, data)) {
             if (resultadoOk(resultCode)){
-                Trabalho notaRecebida = (Trabalho) data.getSerializableExtra(CHAVE_TRABALHO);
+                TrabalhoProducao notaRecebida = (TrabalhoProducao) Objects.requireNonNull(data).getSerializableExtra(CHAVE_TRABALHO);
                 int posicaoRecebida = data.getIntExtra(CHAVE_POSICAO, POSICAO_INVALIDA);
                 if (ehPosicaoValida(posicaoRecebida)){
                     altera(notaRecebida, posicaoRecebida);
@@ -429,9 +424,9 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         }
     }
 
-    private void altera(Trabalho nota, int posicao) {
-        new NotaDAO().altera(posicao, nota);
-        trabalhoAdapter.altera(posicao, nota);
+    private void altera(TrabalhoProducao trabalhoProducao, int posicao) {
+        new NotaDAO().altera(posicao, trabalhoProducao);
+        trabalhoAdapter.altera(posicao, trabalhoProducao);
     }
 
     private boolean ehPosicaoValida(int posicaoRecebida) {
@@ -447,7 +442,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         return requestCode == CODIGO_REQUISICAO_ALTERA_TRABALHO;
     }
 
-    private void adiciona(Trabalho nota) {
+    private void adiciona(TrabalhoProducao nota) {
         new NotaDAO().insere(nota);
         trabalhoAdapter.adiciona(nota);
     }
@@ -458,7 +453,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     }
 
     private boolean temNota(@Nullable Intent data) {
-        return data.hasExtra(CHAVE_TRABALHO);
+        return Objects.requireNonNull(data).hasExtra(CHAVE_TRABALHO);
     }
 
     private boolean resultadoOk(int resultCode) {
@@ -476,18 +471,6 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     private boolean vericaConexaoInternet() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo infConexao = cm.getActiveNetworkInfo();
-        if(infConexao!=null && infConexao.isConnectedOrConnecting()){
-            return true;
-        }
-        return false;
+        return infConexao != null && infConexao.isConnectedOrConnecting();
     }
-/*
-    private void vaiParaFormularioNotaActivityAltera(Trabalho nota, int posicao) {
-        Intent abreFormularioComNota = new Intent(ListaTrabalhosActivity.this,
-                FormularioNotaActivity.class);
-        abreFormularioComNota.putExtra(CHAVE_NOTA, nota);
-        abreFormularioComNota.putExtra(CHAVE_POSICAO, posicao);
-        startActivityForResult(abreFormularioComNota, CODIGO_REQUISICAO_ALTERA_NOTA);
-    }
-*/
 }
