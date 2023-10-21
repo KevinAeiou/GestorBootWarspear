@@ -239,18 +239,11 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private boolean verificaCheckModificado() {
         configuraCheckBoxRecorrencia();
-        if (recorrencia!=trabalhoRecebido.getRecorrencia()){
-            return true;
-        }
-        return false;
+        return recorrencia != trabalhoRecebido.getRecorrencia();
     }
 
     private void configuraCheckBoxRecorrencia() {
-        if (checkBoxTrabalhoEspecifico.isChecked()){
-            recorrencia=true;
-        }else{
-            recorrencia=false;
-        }
+        recorrencia = checkBoxTrabalhoEspecifico.isChecked();
     }
 
     private void modificaTrabalhoServidor(Trabalho trabalhoModificado) {
@@ -276,8 +269,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         Trabalho novoTrabalho = new Trabalho(
                 novoId,
                 nome,
-                trabalhoRecebido.getProfissao(),
-                trabalhoRecebido.getRaridade(),
+                profissaoRecebido.getNome(),
+                raridadeRecebido.getNome(),
                 Integer.parseInt(nivel),
                 Integer.parseInt(experiencia));
         minhaReferencia.child(novoId).setValue(novoTrabalho);
