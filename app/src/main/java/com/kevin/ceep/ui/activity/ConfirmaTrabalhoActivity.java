@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.CheckBox;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
@@ -26,6 +27,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Trabalho;
+import com.kevin.ceep.model.TrabalhoProducao;
 
 import java.util.Objects;
 
@@ -33,7 +35,8 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
 
     private AutoCompleteTextView autoCompleteLicenca,autoCompleteQuantidade;
     private String personagemId, licencaSelecionada;
-    private Trabalho trabalho;
+    private Trabalho trabalhoRecebido;
+    private CheckBox checkRecorrencia;
     private int quantidadeSelecionada;
 
     @Override
@@ -51,10 +54,10 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
     private void recebeDadosIntent() {
         Intent dadosRecebidos = getIntent();
         if (dadosRecebidos.hasExtra(CHAVE_NOME_TRABALHO)) {
-            trabalho = (Trabalho) dadosRecebidos
+            trabalhoRecebido = (Trabalho) dadosRecebidos
                     .getSerializableExtra(CHAVE_NOME_TRABALHO);
-            if (trabalho != null) {
-                setTitle(trabalho.getNome());
+            if (trabalhoRecebido != null) {
+                setTitle(trabalhoRecebido.getNome());
             }
             personagemId = (String) dadosRecebidos.
                     getSerializableExtra(CHAVE_NOME_PERSONAGEM);
@@ -117,13 +120,18 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         String usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
 
         String novoId = geraIdAleatorio();
-        Trabalho novoTrabalho=new Trabalho(
+        checkRecorrencia=findViewById(R.id.checkBoxProducaoRec);
+        boolean recorrencia = checkRecorrencia.isChecked();
+        TrabalhoProducao novoTrabalho=new TrabalhoProducao(
                 novoId,
-                trabalho.getNome(),
-                trabalho.getProfissao(),
-                trabalho.getRaridade(),
-                trabalho.getNivel(),
-                trabalho.getExperiencia());
+                trabalhoRecebido.getNome(),
+                trabalhoRecebido.getProfissao(),
+                trabalhoRecebido.getRaridade(),
+                trabalhoRecebido.getNivel(),
+                trabalhoRecebido.getExperiencia(),
+                licencaSelecionada,
+                0,
+                recorrencia);
         minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
                 .child(personagemId).child(CHAVE_LISTA_DESEJO)
                 .child(novoId)

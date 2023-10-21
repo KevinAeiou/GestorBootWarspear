@@ -94,6 +94,12 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
             vaiParaListaTrabalhosEspecificosActivity();
         }else if(codigoRequisicao==CODIGO_REQUISICAO_ALTERA_TRABALHO){
             TrabalhoProducao trabalhoModificado=new TrabalhoProducao(
+                    trabalhoRecebido.getId(),
+                    trabalhoRecebido.getNome(),
+                    trabalhoRecebido.getProfissao(),
+                    trabalhoRecebido.getRaridade(),
+                    trabalhoRecebido.getNivel(),
+                    trabalhoRecebido.getExperiencia(),
                     licencaModificada,
                     posicaoEstado,
                     recorrencia);
