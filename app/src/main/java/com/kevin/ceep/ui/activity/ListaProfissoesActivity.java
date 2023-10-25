@@ -184,19 +184,17 @@ public class ListaProfissoesActivity extends AppCompatActivity {
 
     private List<Profissao> pegaTodasProfissoes(){
         List<Profissao> profissoes = new ArrayList<>();
-
         minhaReferencia.child(usuarioId).child(CHAVE_PERSONAGEM).child(personagemId).child(CHAVE_LISTA_PROFISSAO).
-                addListenerForSingleValueEvent(new ValueEventListener() {
+                addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        profissoes.clear();
                         for (DataSnapshot dn:dataSnapshot.getChildren()){
                             Profissao profissao = dn.getValue((Profissao.class));
                             profissoes.add(profissao);
                         }
-
                         profissaoAdapter.notifyDataSetChanged();
                     }
-
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
