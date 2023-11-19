@@ -345,7 +345,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
 
         for (int i = 0; i< profissoes.length; i++){
             String novoIdProfissao = geraIdAleatorio();
-            Profissao profissao = new Profissao(profissoes[i], 0);
+            Profissao profissao = new Profissao(profissoes[i], 0, false);
             minhaReferencia.child(usuarioId)
                     .child(CHAVE_PERSONAGEM)
                     .child(idPersonagem)
