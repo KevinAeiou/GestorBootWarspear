@@ -29,6 +29,7 @@ import com.kevin.ceep.R;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoProducao;
 
+import java.util.Locale;
 import java.util.Objects;
 
 public class ConfirmaTrabalhoActivity extends AppCompatActivity {
@@ -122,13 +123,17 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         String novoId = geraIdAleatorio();
         checkRecorrencia=findViewById(R.id.checkBoxProducaoRec);
         boolean recorrencia = checkRecorrencia.isChecked();
+        int experiencia = trabalhoRecebido.getExperiencia();
+        if (licencaSelecionada.toLowerCase(Locale.ROOT).equals("licença de produção do principiante")){
+            experiencia = (int) (experiencia * 1.5);
+        }
         TrabalhoProducao novoTrabalho=new TrabalhoProducao(
                 novoId,
                 trabalhoRecebido.getNome(),
                 trabalhoRecebido.getProfissao(),
                 trabalhoRecebido.getRaridade(),
                 trabalhoRecebido.getNivel(),
-                trabalhoRecebido.getExperiencia(),
+                experiencia,
                 licencaSelecionada,
                 0,
                 recorrencia);
