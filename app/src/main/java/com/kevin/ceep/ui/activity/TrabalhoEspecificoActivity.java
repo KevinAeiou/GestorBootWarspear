@@ -23,9 +23,11 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
@@ -41,6 +43,7 @@ import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoProducao;
 
+import java.util.Locale;
 import java.util.Objects;
 
 public class TrabalhoEspecificoActivity extends AppCompatActivity {
@@ -58,7 +61,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private final String[] mensagemErro={"Campo requerido!","Inválido!"};
     private String usuarioId,personagemId,trabalhoId,licencaModificada,nome,nivel,experiencia;
     private int codigoRequisicao,posicaoEstado=0;
-    private boolean recorrencia=true;
+    private boolean recorrencia=true, acrescimo = false;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +77,21 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private void modificaEstado() {
         autoCompleteEstado.setOnItemClickListener((adapterView, view, i, l) -> posicaoEstado=i);
-        autoCompleteLicenca.setOnItemClickListener((adapterView, view, i, l) -> licencaModificada=licencasTrabalho[i]);
+        autoCompleteLicenca.setOnItemClickListener((adapterView, view, i, l) -> {
+            licencaModificada = licencasTrabalho[i];
+            if (licencaModificada.toLowerCase(Locale.ROOT).equals("licença de produção do principiante")){
+                Log.d("LICENCA", licencaModificada);
+                int novaExperiencia = (int) (1.50 * Integer.parseInt(edtExperienciaTrabalho.getText().toString()));
+                Log.d("LICENCA", String.valueOf(novaExperiencia));
+                edtExperienciaTrabalho.setText(String.valueOf(novaExperiencia));
+                acrescimo = true;
+            } else if (acrescimo) {
+                int novaExperiencia = (int) ((Integer.parseInt(edtExperienciaTrabalho.getText().toString())) / 1.5);
+                Log.d("LICENCA", String.valueOf(novaExperiencia));
+                edtExperienciaTrabalho.setText(String.valueOf(novaExperiencia));
+                acrescimo = false;
+            }
+        });
     }
 
     private void mostraDialogoDeProresso(int codigoRequisicao){
@@ -99,7 +116,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                     trabalhoRecebido.getProfissao(),
                     trabalhoRecebido.getRaridade(),
                     trabalhoRecebido.getNivel(),
-                    trabalhoRecebido.getExperiencia(),
+                    Integer.parseInt(edtExperienciaTrabalho.getText().toString()),
                     licencaModificada,
                     posicaoEstado,
                     recorrencia);
@@ -159,6 +176,9 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
             if (codigoRequisicao== CODIGO_REQUISICAO_ALTERA_TRABALHO){
                 trabalhoRecebido= (TrabalhoProducao) dadosRecebidos
                         .getSerializableExtra(CHAVE_NOME_TRABALHO);
+                if (trabalhoRecebido.getTipo_licenca().toLowerCase(Locale.ROOT).equals("licença de produção do principiante")){
+                    acrescimo = true;
+                }
                 configuraComponentesAlteraTrabalho();
             }else if (codigoRequisicao== CODIGO_REQUISICAO_INSERE_TRABALHO){
                 raridadeRecebido=(Raridade) dadosRecebidos
