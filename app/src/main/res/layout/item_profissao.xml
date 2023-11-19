@@ -40,7 +40,7 @@
             app:layout_constraintEnd_toEndOf="@id/itemNomeProfissao"
             app:layout_constraintStart_toStartOf="@id/itemNomeProfissao"
             app:layout_constraintTop_toBottomOf="@id/itemNomeProfissao"
-            tools:text="Exp" />
+            tools:text="Barra experiência" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

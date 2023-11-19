@@ -42,6 +42,7 @@ import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ListaProfissoesActivity extends AppCompatActivity {
 
@@ -81,17 +82,14 @@ public class ListaProfissoesActivity extends AppCompatActivity {
     private boolean verificaConexaoInternet() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo infConexao = cm.getActiveNetworkInfo();
-        if(infConexao!=null && infConexao.isConnectedOrConnecting()){
-            return true;
-        }
-        return false;
+        return infConexao != null && infConexao.isConnectedOrConnecting();
     }
 
     private void inicializaComponentes() {
         recyclerView = findViewById(R.id.listaProfissoesRecyclerView);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         minhaReferencia = database.getReference(CHAVE_USUARIOS);
-        usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
     }
 
     private void configuraDeslizeItem() {
@@ -102,7 +100,7 @@ public class ListaProfissoesActivity extends AppCompatActivity {
                 int daqui = viewHolder.getAdapterPosition();
                 int praca = target.getAdapterPosition();
                 Collections.swap(todasProfissoes,daqui,praca);
-                recyclerView.getAdapter().notifyItemMoved(daqui,praca);
+                Objects.requireNonNull(recyclerView.getAdapter()).notifyItemMoved(daqui,praca);
                 CHAVE_ATUALIZA_LISTA_PROFISSOES = true;
                 return false;
             }
@@ -184,19 +182,17 @@ public class ListaProfissoesActivity extends AppCompatActivity {
 
     private List<Profissao> pegaTodasProfissoes(){
         List<Profissao> profissoes = new ArrayList<>();
-
         minhaReferencia.child(usuarioId).child(CHAVE_PERSONAGEM).child(personagemId).child(CHAVE_LISTA_PROFISSAO).
-                addListenerForSingleValueEvent(new ValueEventListener() {
+                addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        profissoes.clear();
                         for (DataSnapshot dn:dataSnapshot.getChildren()){
                             Profissao profissao = dn.getValue((Profissao.class));
                             profissoes.add(profissao);
                         }
-
                         profissaoAdapter.notifyDataSetChanged();
                     }
-
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
