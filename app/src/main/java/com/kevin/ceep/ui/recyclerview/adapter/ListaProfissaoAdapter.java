@@ -14,6 +14,7 @@ import com.kevin.ceep.R;
 import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListaProfissaoAdapter extends RecyclerView.Adapter<ListaProfissaoAdapter.ProfissaoViewHolder> {
@@ -70,71 +71,59 @@ public class ListaProfissaoAdapter extends RecyclerView.Adapter<ListaProfissaoAd
         }
 
         private void preencheCampo(Profissao profissao) {
-            Integer expMaximo = defineExperienciaMaxima(profissao);
-            int porcentagem=profissao.getExperiencia()*100/expMaximo;
-            String exp= profissao.getExperiencia()+"/"+expMaximo+"/"+porcentagem+"%";
+            defineBarraExperiencia(profissao);
             nome_profissao.setText(profissao.getNome());
-            experiencia_profissao.setText(exp);
         }
 
         @NonNull
-        private Integer defineExperienciaMaxima(Profissao profissao) {
-            int expMaximo=0;
-            if (profissao.getExperiencia()<=20){
-                expMaximo=20;
-            } else if (profissao.getExperiencia()<=200 && profissao.getExperiencia()>20) {
-                expMaximo=200;
-            } else if (profissao.getExperiencia()<=540 && profissao.getExperiencia()>200) {
-                expMaximo=1250;
-            } else if (profissao.getExperiencia()<=1250 && profissao.getExperiencia()>540) {
-                expMaximo=1250;
-            } else if (profissao.getExperiencia()<=2550 && profissao.getExperiencia()>1250) {
-                expMaximo=2550;
-            } else if (profissao.getExperiencia()<=4700 && profissao.getExperiencia()>2550) {
-                expMaximo=4700;
-            } else if (profissao.getExperiencia()<=7990 && profissao.getExperiencia()>4700) {
-                expMaximo=7990;
-            } else if (profissao.getExperiencia()<=12770 && profissao.getExperiencia()>7990) {
-                expMaximo=12770;
-            } else if (profissao.getExperiencia()<=19440 && profissao.getExperiencia()>12770) {
-                expMaximo=19440;
-            } else if (profissao.getExperiencia()<=28440 && profissao.getExperiencia()>19440) {
-                expMaximo=28440;
-            } else if (profissao.getExperiencia()<=40270 && profissao.getExperiencia()>28440) {
-                expMaximo=40270;
-            } else if (profissao.getExperiencia()<=55450 && profissao.getExperiencia()>40270) {
-                expMaximo=55450;
-            } else if (profissao.getExperiencia()<=74570 && profissao.getExperiencia()>55450) {
-                expMaximo=74570;
-            } else if (profissao.getExperiencia()<=98250 && profissao.getExperiencia()>74570) {
-                expMaximo=98250;
-            } else if (profissao.getExperiencia()<=127180 && profissao.getExperiencia()>98250) {
-                expMaximo=127180;
-            } else if (profissao.getExperiencia()<=156110 && profissao.getExperiencia()>127180) {
-                expMaximo=156110;
-            } else if (profissao.getExperiencia()<=185040 && profissao.getExperiencia()>156110) {
-                expMaximo=185040;
-            } else if (profissao.getExperiencia()<=215001 && profissao.getExperiencia()>185040) {
-                expMaximo=215001;
-            } else if (profissao.getExperiencia()<=245000 && profissao.getExperiencia()>215001) {
-                expMaximo=245000;
-            } else if (profissao.getExperiencia()<=300000 && profissao.getExperiencia()>245000) {
-                expMaximo=300000;
-            } else if (profissao.getExperiencia()<=375000 && profissao.getExperiencia()>300000) {
-                expMaximo=375000;
-            } else if (profissao.getExperiencia()<=470000 && profissao.getExperiencia()>375000) {
-                expMaximo=470000;
-            } else if (profissao.getExperiencia()<=585000 && profissao.getExperiencia()>470000) {
-                expMaximo=585000;
-            } else if (profissao.getExperiencia()<=720000 && profissao.getExperiencia()>585000) {
-                expMaximo=720000;
-            } else if (profissao.getExperiencia()<=875000 && profissao.getExperiencia()>720000) {
-                expMaximo=875000;
-            }else if (profissao.getExperiencia()<=1050000 && profissao.getExperiencia()>875000) {
-                expMaximo = 1050000;
+        private void defineBarraExperiencia(Profissao profissao) {
+            int xpNecessario = 0;
+            int xpRestante = 0;
+            int xpMaximo = 0;
+            int xpAtual = profissao.getExperiencia();
+
+            ArrayList<Integer> xpNiveis = new ArrayList<>();
+            xpNiveis.add(20);
+            xpNiveis.add(200);
+            xpNiveis.add(540);
+            xpNiveis.add(1250);
+            xpNiveis.add(2550);
+            xpNiveis.add(4700);
+            xpNiveis.add(7990);
+            xpNiveis.add(12770);
+            xpNiveis.add(19440);
+            xpNiveis.add(28440);
+            xpNiveis.add(40270);
+            xpNiveis.add(55450);
+            xpNiveis.add(74570);
+            xpNiveis.add(98250);
+            xpNiveis.add(127180);
+            xpNiveis.add(156110);
+            xpNiveis.add(185040);
+            xpNiveis.add(215000);
+            xpNiveis.add(245000);
+            xpNiveis.add(300000);
+            xpNiveis.add(375000);
+            xpNiveis.add(470000);
+            xpNiveis.add(585000);
+            xpNiveis.add(720000);
+            xpNiveis.add(875000);
+            xpNiveis.add(1050000);
+
+            for (int i=0; i<xpNiveis.size();i++){
+                if (i==0 && xpAtual<xpNiveis.get(i)){
+                    xpMaximo = xpNiveis.get(i);
+                    xpNecessario = xpNiveis.get(i);
+                    xpRestante = xpAtual;
+                }else if (i>=1 && xpAtual>=xpNiveis.get(i-1) && xpAtual<xpNiveis.get(i)){
+                    xpMaximo = xpNiveis.get(i);
+                    xpNecessario = xpMaximo - xpNiveis.get(i-1);
+                    xpRestante = xpNecessario-(xpAtual-xpNiveis.get(i-1));
+                }
             }
-            Log.d("CHAVE_EXP", String.valueOf(expMaximo));
-            return expMaximo;
+            int porcentagem = 100 - ((100 * xpRestante) / xpNecessario);
+            String exp = xpAtual+"/"+xpMaximo+"/"+porcentagem+"%";
+            experiencia_profissao.setText(exp);
         }
 
     }
