@@ -1,7 +1,6 @@
 package com.kevin.ceep.ui.recyclerview.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,7 +74,6 @@ public class ListaProfissaoAdapter extends RecyclerView.Adapter<ListaProfissaoAd
             nome_profissao.setText(profissao.getNome());
         }
 
-        @NonNull
         private void defineBarraExperiencia(Profissao profissao) {
             int xpNecessario = 0;
             int xpRestante = 0;
