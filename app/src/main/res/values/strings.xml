@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Produzir</string>
-    <string name="teste">#00ff00</string>
-    <string name="string_desfazer">Defacer</string>
+    <string name="string_desfazer">Desfacer</string>
+    <string name="personagens">Personagens</string>
+    <string name="sair">Sair</string>
+    <string name="estoque">Estoque</string>
     <string name="cadastrar_novo_trabalho">Cadastrar novo trabalho</string>
     <string-array name="estados">
         <item>Produzir</item>
@@ -69,4 +71,7 @@
     <string name="stringAtivo">Ativo</string>
     <string name="stringInativo">Inativo</string>
     <string name="stringCarregandoDados">Carregando dados...</string>
+    
+    <string name="abre_menu_navegacao">Abre menu de navegação</string>
+    <string name="fecha_menu_navegacao">Fecha menu de navegação</string>
 </resources>

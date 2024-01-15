@@ -79,7 +79,6 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         atualizaListaPersonagem();
         configuraCampoNovoPersonagem();
 
-        configuraBotaoDeslogaUsuario();
         configuraBotaoNovoPersonagem();
         configuraDeslizeItem();
         configuraSwipeRefreshLayout();
@@ -158,21 +157,6 @@ public class ListaPersonagemActivity extends AppCompatActivity {
             //finish();
             //progressDialog.dismiss();
         }
-    }
-
-    private void configuraBotaoDeslogaUsuario() {
-        TextView txtDeslogaUsuario = findViewById(R.id.txtSairUsuario);
-        txtDeslogaUsuario.setOnClickListener(view -> {
-            FirebaseAuth.getInstance().signOut();
-            vaiParaEntraActivity();
-            finish();
-        });
-    }
-
-    private void vaiParaEntraActivity() {
-        Intent vaiParaEntraActivity = new Intent(getApplicationContext(),
-                EntrarUsuarioActivity.class);
-        startActivity(vaiParaEntraActivity, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
     }
 
     @Override
@@ -333,7 +317,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
 
     private void adicionaNovoPersonagem() {
         String novoIdPersonagem = geraIdAleatorio();
-        Personagem personagem = new Personagem(novoIdPersonagem,nomePersonagem,emailPersonagem,senhaPersonagem,false,false,true);
+        Personagem personagem = new Personagem(novoIdPersonagem,nomePersonagem,emailPersonagem,senhaPersonagem,false,false,2);
         minhaReferencia.child(usuarioId).child(CHAVE_PERSONAGEM).child(novoIdPersonagem).setValue(personagem).addOnSuccessListener(unused -> {
             Log.d("AdicionaNovoPersonagem", String.valueOf(personagem.getId()));
             adicionaNovaListaProfissoes(personagem.getId());

@@ -17,6 +17,10 @@
             android:name=".ui.activity.ListaPersonagemActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.activity.MenuNavegacaoLateral"
+            android:theme="@style/Theme.Ceep.NoActionBar"
+            android:exported="false" />
+        <activity
             android:name=".ui.activity.RecuperarSenhaActivity"
             android:exported="false" />
         <activity

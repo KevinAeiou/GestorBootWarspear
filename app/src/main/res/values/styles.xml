@@ -32,6 +32,27 @@
         <item name="android:layout_marginTop">15dp</item>
     </style>
 
+    <style name="txtTituloCard">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_margin">16dp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="txtSubtituloCard">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:maxLines">1</item>
+
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
     <style name="txtSubTitulo">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -43,12 +64,14 @@
     <style name="card">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="cardMaxElevation">6dp</item>
-        <item name="cardCornerRadius">20dp</item>
+        <item name="cardMaxElevation">1dp</item>
+        <item name="cardCornerRadius">12dp</item>
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_marginTop">8dp</item>
         <item name="cardPreventCornerOverlap">true</item>
-        <item name="cardUseCompatPadding">true</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
         <item name="cardBackgroundColor">@color/cor_background_card</item>
     </style>
 

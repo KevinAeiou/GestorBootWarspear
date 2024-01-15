@@ -10,11 +10,11 @@ public class Personagem implements Serializable {
     private String senha;
     private boolean estado;
     private boolean  uso;
-    private boolean espacoProducao;
+    private int espacoProducao;
 
     public Personagem(){}
 
-    public Personagem(String id, String nome, String email, String senha, boolean estado, boolean uso, boolean espacoProducao) {
+    public Personagem(String id, String nome, String email, String senha, boolean estado, boolean uso, int espacoProducao) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -48,7 +48,7 @@ public class Personagem implements Serializable {
         return uso;
     }
 
-    public boolean isEspacoProducao() {
+    public int getEspacoProducao() {
         return espacoProducao;
     }
 }

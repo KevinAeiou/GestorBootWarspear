@@ -96,7 +96,7 @@ public class EntrarUsuarioActivity extends AppCompatActivity implements View.OnC
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email,senha)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()){
-                        new Handler().postDelayed(() -> vaiParaListaTrabalhos(), 3000);
+                        new Handler().postDelayed(() -> vaiParaMenuNavegacao(), 3000);
                     }else {
                         String erro;
                         try{
@@ -114,9 +114,9 @@ public class EntrarUsuarioActivity extends AppCompatActivity implements View.OnC
                 });
     }
 
-    private void vaiParaListaTrabalhos() {
-        Intent vaiParaListaTrabalho =  new Intent(getApplicationContext(), ListaPersonagemActivity.class);
-        startActivity(vaiParaListaTrabalho,
+    private void vaiParaMenuNavegacao() {
+        Intent vaiParaMenuNavegacao =  new Intent(getApplicationContext(), MenuNavegacaoLateral.class);
+        startActivity(vaiParaMenuNavegacao,
                 ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
         finish();
     }
@@ -128,7 +128,7 @@ public class EntrarUsuarioActivity extends AppCompatActivity implements View.OnC
         FirebaseUser usuarioAtual = FirebaseAuth.getInstance().getCurrentUser();
 
         if (usuarioAtual != null){
-            vaiParaListaTrabalhos();
+            vaiParaMenuNavegacao();
         }
     }
 }

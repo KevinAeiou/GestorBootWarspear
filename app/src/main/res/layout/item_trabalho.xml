@@ -12,13 +12,8 @@
 
         <TextView
             android:id="@+id/itemNomeTrabalho"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:maxLines="1"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            style="@style/txtTituloCard"
+            android:gravity="start"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Trabalho" />
@@ -29,18 +24,15 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:maxLines="1"
-            android:textSize="16sp"
+            android:textSize="20sp"
             app:layout_constraintStart_toStartOf="@id/itemNomeTrabalho"
             app:layout_constraintTop_toBottomOf="@id/itemNomeTrabalho"
             tools:text="Licença" />
 
         <TextView
             android:id="@+id/itemProfissaoTrabalho"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:layout_marginTop="8dp"
+            style="@style/txtSubtituloCard"
             android:layout_marginBottom="16dp"
-            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/itemTipoLicenca"
             app:layout_constraintTop_toBottomOf="@+id/itemTipoLicenca"
@@ -48,10 +40,8 @@
 
         <TextView
             android:id="@+id/itemNivelTrabalho"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/txtSubtituloCard"
             android:layout_marginEnd="16dp"
-            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/itemProfissaoTrabalho"
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="Nível" />
