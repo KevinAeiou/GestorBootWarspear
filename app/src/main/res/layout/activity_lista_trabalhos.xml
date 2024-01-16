@@ -31,10 +31,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/buscaTrabalho">
 
+        <include layout="@layout/skeleton_shimmer_layout"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listaTrabalhoRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="gone"
             tools:listitem="@layout/item_trabalho" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

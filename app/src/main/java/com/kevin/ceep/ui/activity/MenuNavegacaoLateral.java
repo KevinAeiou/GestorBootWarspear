@@ -1,10 +1,15 @@
 package com.kevin.ceep.ui.activity;
 
 import android.app.ActivityOptions;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,6 +24,8 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.kevin.ceep.R;
 
+import io.supercharge.shimmerlayout.ShimmerLayout;
+
 public class MenuNavegacaoLateral extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -32,6 +39,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navegacao_view);
         toolbar = findViewById(R.id.toolbar);
+
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(view -> drawerLayout.openDrawer(GravityCompat.START));
 
@@ -78,5 +86,15 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         Intent vaiParaEntraActivity = new Intent(getApplicationContext(),
                 EntrarUsuarioActivity.class);
         startActivity(vaiParaEntraActivity, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+    }
+    public int retornaContadorLinhaEsqueleto(Context context){
+        int pxAltura = retornaAlturaDispositivo(context);
+        int alturaLinhaEsqueleto = (int) getResources().getDimension(R.dimen.row_layout_height);
+        return (int) Math.ceil(pxAltura/alturaLinhaEsqueleto);
+    }
+    public int retornaAlturaDispositivo(Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        return metrics.heightPixels;
     }
 }

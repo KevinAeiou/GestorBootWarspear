@@ -28,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -64,6 +65,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import io.supercharge.shimmerlayout.ShimmerLayout;
+
 public class ListaTrabalhosActivity extends AppCompatActivity {
 
     private static final String TAG="MainActivity";
@@ -89,6 +92,10 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     private String usuarioId, personagemId;
     private Integer estado=0;
 
+    public LinearLayout skeletonLayout;
+    public ShimmerLayout shimmerLayout;
+    public LayoutInflater inflater;
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +105,9 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
 
         recebeDadosIntent();
         inicializaComponentes();
+
+        skeletonLayout = findViewById(R.id.skeletonLayout);
+        shimmerLayout = findViewById(R.id.shimmerSkeleton);
 
         atualizaListaTrabalho();
         configuraEstadoPersonagem();
