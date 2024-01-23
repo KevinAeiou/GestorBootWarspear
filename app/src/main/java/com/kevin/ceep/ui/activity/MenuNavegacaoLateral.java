@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -54,7 +55,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
     private NavigationView navigationView;
     private Toolbar toolbar;
     private String usuarioId, personagemId;
-    private Menu menuItem;
+    private Menu itemMenuPersonagem;
     private final String[] mensagens={"Carregando dados...","Erro de conexão..."};
 
     @Override
@@ -69,17 +70,6 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         personagens = new ArrayList<>();
         Log.d("listaPersonagens", "Criou ArrayList");
-
-        configuraDialogoProgresso(0);
-        if (vericaConexaoInternet()) {
-            Log.d("conexaoInternet", "Possui conexão.");
-            pegaTodosPersonagens();
-
-        }else{
-            Log.d("conexaoInternet", "Não possui conexão.");
-            progressDialog.dismiss();
-            Toast.makeText(this,"Erro na conexão...",Toast.LENGTH_LONG).show();
-        }
         Log.d("USUARIO", usuarioId);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(view -> drawerLayout.openDrawer(GravityCompat.START));
@@ -108,7 +98,31 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_personagem, menu);
-        menuItem = menu;
+        configuraDialogoProgresso(0);
+        itemMenuPersonagem = menu;
+        SearchView viewBusca = (SearchView) menu.findItem(R.id.itemMenuBusca).getActionView();
+        viewBusca.setQueryHint("Buscar");
+        viewBusca.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //arrayAdapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+        if (vericaConexaoInternet()) {
+            Log.d("conexaoInternet", "Possui conexão.");
+            pegaTodosPersonagens();
+
+        }else{
+            Log.d("conexaoInternet", "Não possui conexão.");
+            progressDialog.dismiss();
+            Toast.makeText(this,"Erro na conexão...",Toast.LENGTH_LONG).show();
+        }
         return super.onCreateOptionsMenu(menu);
     }
     @Override
@@ -137,17 +151,16 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = database.getReference(CHAVE_USUARIOS);
         databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM).
-                addValueEventListener(new ValueEventListener() {
+                addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         personagens.clear();
                         Log.d("listaPersonagens", "Limpou a lista de personagens");
-                        menuItem.clear();
                         for (DataSnapshot dn:dataSnapshot.getChildren()){
                             Personagem personagem = dn.getValue(Personagem.class);
                             personagens.add(personagem);
                             Log.d("listaPersonagens", "Personagem adicionado: " + personagem.getNome());
-                            menuItem.add(personagem.getNome());
+                            itemMenuPersonagem.add(personagem.getNome());
                         }
                         progressDialog.dismiss();
                         Log.d("listaPersonagens", "Personagens na lista: ");
