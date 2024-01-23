@@ -7,34 +7,23 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_PER
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
 
+import android.app.ActivityOptions;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.annotation.SuppressLint;
-import android.app.ActivityOptions;
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.util.Patterns;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -43,8 +32,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
-import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Personagem;
+import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaPersonagemAdapter;
@@ -53,49 +42,39 @@ import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ListaPersonagemActivity extends AppCompatActivity {
 
     private ListaPersonagemAdapter personagemAdapter;
     private List<Personagem> personagens;
     private ProgressDialog progressDialog;
-    private TextInputLayout txtEmailPersonagem, txtSenhaPersonagem;
-    private TextInputEditText edtNovoPersonagem, edtEmailPersonagem,edtSenhaPersonagem;
-    private AppCompatButton botaoNovoPersonagem;
     private FirebaseAuth minhaAutenticacao;
     private RecyclerView recyclerView;
-    private FirebaseDatabase database;
     private DatabaseReference minhaReferencia;
-    private String usuarioId,nomePersonagem,emailPersonagem,senhaPersonagem;
-    private String[] mensagens={"Carregando dados...","Erro de conexão..."};
+    private String usuarioId;
+    private final String[] mensagens={"Carregando dados...","Erro de conexão..."};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_personagem);
-        setTitle(CHAVE_TITULO_PERSONAGEM);
 
         inicializaComponentes();
         atualizaListaPersonagem();
-        configuraCampoNovoPersonagem();
 
-        configuraBotaoNovoPersonagem();
         configuraDeslizeItem();
         configuraSwipeRefreshLayout();
         Log.i(TAG_ACTIVITY,"onCreateListaPersonagem");
     }
 
     private void inicializaComponentes() {
+        setTitle(CHAVE_TITULO_PERSONAGEM);
         minhaAutenticacao = FirebaseAuth.getInstance();
-        usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        database = FirebaseDatabase.getInstance();
+        usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
         minhaReferencia = database.getReference(CHAVE_USUARIOS);
         recyclerView = findViewById(R.id.listaPersonagensRecyclerView);
-        txtEmailPersonagem = findViewById(R.id.txtEmailPersonagem);
-        txtSenhaPersonagem = findViewById(R.id.txtSenhaPersonagem);
-        edtNovoPersonagem = findViewById(R.id.edtNovoPersonagem);
-        edtEmailPersonagem = findViewById(R.id.edtEmailPersonagem);
-        edtSenhaPersonagem = findViewById(R.id.edtSenhaPersonagem);
     }
 
     private void configuraDeslizeItem() {
@@ -110,8 +89,12 @@ public class ListaPersonagemActivity extends AppCompatActivity {
                 int posicaoDeslize = viewHolder.getAdapterPosition();
                 ListaPersonagemAdapter personagemAdapter = (ListaPersonagemAdapter) recyclerView.getAdapter();
                 Personagem personagemDeletado = personagens.get(viewHolder.getAdapterPosition());
-                personagemAdapter.remove(posicaoDeslize);
-                personagemAdapter.notifyItemRemoved(posicaoDeslize);
+                if (personagemAdapter != null) {
+                    personagemAdapter.remove(posicaoDeslize);
+                }
+                if (personagemAdapter != null) {
+                    personagemAdapter.notifyItemRemoved(posicaoDeslize);
+                }
 
                 configuraSnackBar(posicaoDeslize, personagemAdapter, personagemDeletado);
                 //removePersonagemLista(posicaoDeslize);
@@ -163,165 +146,10 @@ public class ListaPersonagemActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         FirebaseUser currentUser = minhaAutenticacao.getCurrentUser();
-        minhaAutenticacao.updateCurrentUser(currentUser);
+        if (currentUser != null) {
+            minhaAutenticacao.updateCurrentUser(currentUser);
+        }
         Log.i(TAG_ACTIVITY,"onStartListaPersonagem");
-    }
-
-    private void configuraCampoNovoPersonagem() {
-        edtNovoPersonagem.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                nomePersonagem = edtNovoPersonagem.getText().toString();
-                emailPersonagem = edtEmailPersonagem.getText().toString();
-                senhaPersonagem = edtSenhaPersonagem.getText().toString();
-
-                if(verificaEdtPersonagem(nomePersonagem,emailPersonagem,senhaPersonagem)){
-                    if(verificaEmailValido(emailPersonagem)&!nomePersonagem.isEmpty()&!senhaPersonagem.isEmpty()){
-                        habilitaBotaoRecuperaSenha();
-                    }else{
-                        botaoNovoPersonagem.setEnabled(false);
-                    }
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-        edtEmailPersonagem.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                nomePersonagem = edtNovoPersonagem.getText().toString();
-                emailPersonagem = edtEmailPersonagem.getText().toString();
-                senhaPersonagem = edtSenhaPersonagem.getText().toString();
-
-                if(verificaEdtPersonagem(nomePersonagem,emailPersonagem,senhaPersonagem)){
-                    if(verificaEmailValido(emailPersonagem)&!nomePersonagem.isEmpty()&!senhaPersonagem.isEmpty()){
-                        habilitaBotaoRecuperaSenha();
-                    }else{
-                        botaoNovoPersonagem.setEnabled(false);
-                    }
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-        edtSenhaPersonagem.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                nomePersonagem = edtNovoPersonagem.getText().toString();
-                emailPersonagem = edtEmailPersonagem.getText().toString();
-                senhaPersonagem = edtSenhaPersonagem.getText().toString();
-
-                if(verificaEdtPersonagem(nomePersonagem,emailPersonagem,senhaPersonagem)){
-                    if(verificaEmailValido(emailPersonagem)&!nomePersonagem.isEmpty()&!senhaPersonagem.isEmpty()){
-                        habilitaBotaoRecuperaSenha();
-                    }else{
-                        botaoNovoPersonagem.setEnabled(false);
-                    }
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-    }
-
-    private boolean verificaEmailValido(String email) {
-        if(configuraEditEmail(!email.isEmpty()) & configuraEditEmail(Patterns.EMAIL_ADDRESS.matcher(email).matches())){
-            return true;
-        }else {
-            configuraMenssagemAjuda(email);
-        }
-        return false;
-    }
-
-    private void habilitaBotaoRecuperaSenha() {
-        txtEmailPersonagem.setHintTextColor(ColorStateList.valueOf(Color.parseColor("#007FFF")));
-        txtEmailPersonagem.setBoxStrokeColor(Color.parseColor("#007FFF"));
-        txtEmailPersonagem.setHelperTextEnabled(false);
-        botaoNovoPersonagem.setEnabled(true);
-    }
-
-    private void configuraMenssagemAjuda(String email) {
-
-        if (!configuraEditEmail(Patterns.EMAIL_ADDRESS.matcher(email).matches())){
-            txtEmailPersonagem.setHelperText("Por favor, informe um email válido!");
-        }
-        if (!configuraEditEmail(!email.isEmpty()) & email.length()<1){
-            txtEmailPersonagem.setHelperText("Campo requerido!");
-        }
-    }
-
-    @SuppressLint("NewApi")
-    private boolean configuraEditEmail(boolean email) {
-        if (!email){
-            txtEmailPersonagem.setHintTextColor(ColorStateList.valueOf(getColor(R.color.cor_background_bordo)));
-            txtEmailPersonagem.setBoxStrokeColor(Color.parseColor("#A71500"));
-            txtEmailPersonagem.setHelperTextColor(ColorStateList.valueOf(getColor(R.color.cor_background_bordo)));
-            txtEmailPersonagem.setHelperTextEnabled(true);
-            botaoNovoPersonagem.setEnabled(false);
-            return false;
-        }
-        return true;
-    }
-
-    private Boolean verificaEdtPersonagem(String novoPersonagem, String emailPersonagem, String senhaPersonagem) {
-        if (!novoPersonagem.isEmpty()||!emailPersonagem.isEmpty()||!senhaPersonagem.isEmpty()){
-            txtEmailPersonagem.setVisibility(View.VISIBLE);
-            txtSenhaPersonagem.setVisibility(View.VISIBLE);
-            botaoNovoPersonagem.setVisibility(View.VISIBLE);
-            return true;
-        }else {
-            txtEmailPersonagem.setVisibility(View.GONE);
-            txtSenhaPersonagem.setVisibility(View.GONE);
-            botaoNovoPersonagem.setVisibility(View.GONE);
-        }
-        return false;
-    }
-
-    private void configuraBotaoNovoPersonagem() {
-        botaoNovoPersonagem = findViewById(R.id.botaoNovoPersonagem);
-        botaoNovoPersonagem.setOnClickListener(view -> {
-            adicionaNovoPersonagem();
-            atualizaListaPersonagem();
-            edtNovoPersonagem.setText(null);
-            edtEmailPersonagem.setText(null);
-            edtSenhaPersonagem.setText(null);
-            botaoNovoPersonagem.setEnabled(false);
-        });
-    }
-
-    private void adicionaNovoPersonagem() {
-        String novoIdPersonagem = geraIdAleatorio();
-        Personagem personagem = new Personagem(novoIdPersonagem,nomePersonagem,emailPersonagem,senhaPersonagem,false,false,2);
-        minhaReferencia.child(usuarioId).child(CHAVE_PERSONAGEM).child(novoIdPersonagem).setValue(personagem).addOnSuccessListener(unused -> {
-            Log.d("AdicionaNovoPersonagem", String.valueOf(personagem.getId()));
-            adicionaNovaListaProfissoes(personagem.getId());
-        }).addOnFailureListener(e -> Log.d("AdicionaNovoPersonagem", String.valueOf(e)));
     }
     private void adicionaNovaListaProfissoes(String idPersonagem) {
 
@@ -383,10 +211,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
     private Boolean vericaConexaoInternet(){
         ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo infConexao = cm.getActiveNetworkInfo();
-        if(infConexao!=null && infConexao.isConnectedOrConnecting()){
-            return true;
-        }
-        return false;
+        return infConexao != null && infConexao.isConnectedOrConnecting();
     }
 
     private void configuraRecyclerView(List<Personagem> todosPersonagens) {
@@ -434,7 +259,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
     private List<Personagem> pegaTodosPersonagens() {
         personagens = new ArrayList<>();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        Log.d("PERSONAGEM", String.valueOf(personagens));
+        Log.d("PERSONAGEMINICIO", String.valueOf(personagens.size()));
         DatabaseReference databaseReference = database.getReference(CHAVE_USUARIOS);
         databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM).
                 addValueEventListener(new ValueEventListener() {
@@ -454,7 +279,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
 
                     }
                 });
-        Log.d("PERSONAGEM", String.valueOf(personagens));
+        Log.d("PERSONAGEMFIM", String.valueOf(personagens.size()));
         return personagens;
     }
 }

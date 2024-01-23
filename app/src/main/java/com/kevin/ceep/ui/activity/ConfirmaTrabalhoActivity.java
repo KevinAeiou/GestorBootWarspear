@@ -105,7 +105,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         AppCompatButton botaoCadastraTrabalho = findViewById(R.id.botao_cadastrar);
         botaoCadastraTrabalho.setOnClickListener(view -> {
             cadastraNovoTrabalho();
-            vaiParaListaTrabalhosActivity();
+            vaiParaListaTrabalhosFragmento();
         });
     }
 
@@ -170,11 +170,10 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         });
     }
 
-    private void vaiParaListaTrabalhosActivity() {
+    private void vaiParaListaTrabalhosFragmento() {
         Intent iniciaListaTrabalho =
                 new Intent(ConfirmaTrabalhoActivity.this,
-                        ListaTrabalhosActivity.class);
-        iniciaListaTrabalho.putExtra(CHAVE_CONFIRMA_CADASTRO,true);
+                        MenuNavegacaoLateral.class);
         iniciaListaTrabalho.putExtra(CHAVE_NOME_PERSONAGEM,personagemId);
         startActivity(iniciaListaTrabalho,
                 ActivityOptions.makeSceneTransitionAnimation(ConfirmaTrabalhoActivity.this).toBundle());

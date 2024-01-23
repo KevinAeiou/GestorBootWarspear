@@ -2,13 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/chip"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.activity.ListaTrabalhosActivity">
 
     <androidx.appcompat.widget.SearchView
-        android:id="@+id/buscaTrabalho"
+        android:id="@+id/buscaTrabalhoEstoque"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
@@ -26,45 +25,15 @@
         android:id="@+id/swipeRefreshLayoutTrabalhos"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/chipEstadoPersonagem"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/buscaTrabalho">
+        app:layout_constraintTop_toBottomOf="@id/buscaTrabalhoEstoque">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listaTrabalhoRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listitem="@layout/item_trabalho" />
-
+            tools:listitem="@layout/item_trabalho_especifico" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <com.google.android.material.chip.Chip
-        android:id="@+id/chipEstadoPersonagem"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Inativo"
-        android:checkable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:clickable="true"
-        android:contentDescription="@string/cadastrar_novo_trabalho"
-        android:focusable="true"
-        android:foregroundGravity="center"
-        app:backgroundTint="@color/cor_background_laranja"
-        app:elevation="20dp"
-        app:fabSize="auto"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_adiciona"
-        tools:ignore="SpeakableTextPresentCheck" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
