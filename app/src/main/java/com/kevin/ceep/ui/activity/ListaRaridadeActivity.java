@@ -1,6 +1,6 @@
 package com.kevin.ceep.ui.activity;
 
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_RARIDADE;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_RARIDADE;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
@@ -80,7 +80,7 @@ public class ListaRaridadeActivity extends AppCompatActivity {
                 Intent iniciaProfissoesActivity =
                         new Intent(ListaRaridadeActivity.this,
                                 ListaProfissoesActivity.class);
-                iniciaProfissoesActivity.putExtra(CHAVE_NOME_PERSONAGEM,personagemId);
+                iniciaProfissoesActivity.putExtra(CHAVE_PERSONAGEM,personagemId);
                 iniciaProfissoesActivity.putExtra(CHAVE_NOME_RARIDADE, raridade);
                 startActivity(iniciaProfissoesActivity,
                         ActivityOptions.makeSceneTransitionAnimation(ListaRaridadeActivity.this).toBundle());
@@ -104,8 +104,8 @@ public class ListaRaridadeActivity extends AppCompatActivity {
     private String recebeDadosIntent() {
         String nomePersonagem = "";
         Intent dadosRecebidos = getIntent();
-        if (dadosRecebidos.hasExtra(CHAVE_NOME_PERSONAGEM)){
-            nomePersonagem = (String) dadosRecebidos.getSerializableExtra(CHAVE_NOME_PERSONAGEM);
+        if (dadosRecebidos.hasExtra(CHAVE_PERSONAGEM)){
+            nomePersonagem = (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
         }
         return nomePersonagem;
     }

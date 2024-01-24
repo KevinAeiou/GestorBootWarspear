@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.activity.AtributosPersonagemActivity">
+
+    <EditText
+        android:id="@+id/edtNomePersonagem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:inputType="text"
+        android:textSize="20sp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Nome"
+        android:hint="@string/string_nome"
+        android:autofillHints="name"
+        />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/swUsoPersonagem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:minHeight="48dp"
+        android:textSize="20sp"
+        android:text="@string/string_uso"
+        app:switchPadding="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/edtNomePersonagem"
+        app:layout_constraintStart_toStartOf="@+id/edtNomePersonagem"
+        app:layout_constraintTop_toBottomOf="@+id/edtNomePersonagem" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/swEstadoPersonagem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:minHeight="48dp"
+        android:textSize="20sp"
+        android:text="@string/string_estado"
+        app:switchPadding="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/swUsoPersonagem"
+        app:layout_constraintStart_toStartOf="@+id/swUsoPersonagem"
+        app:layout_constraintTop_toBottomOf="@+id/swUsoPersonagem" />
+
+    <EditText
+        android:id="@+id/edtEspacoProducaoPersonagem"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:inputType="numberSigned"
+        android:text="0"
+        app:layout_constraintEnd_toEndOf="@+id/edtNomePersonagem"
+        app:layout_constraintStart_toStartOf="@+id/edtNomePersonagem"
+        app:layout_constraintTop_toBottomOf="@+id/swEstadoPersonagem"
+        android:hint="@string/string_espaco_producao"
+        android:autofillHints=""
+        />
+
+    <EditText
+        android:id="@+id/edtEmailPersonagem"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:inputType="textEmailAddress"
+        app:layout_constraintEnd_toEndOf="@+id/edtNomePersonagem"
+        app:layout_constraintStart_toStartOf="@+id/edtNomePersonagem"
+        app:layout_constraintTop_toBottomOf="@+id/edtEspacoProducaoPersonagem"
+        android:hint="@string/string_email"
+        android:autofillHints="emailAddress"
+        />
+
+    <EditText
+        android:id="@+id/edtSenhaPersonagem"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:autofillHints="password"
+        android:gravity="center"
+        android:hint="@string/string_senha"
+        android:inputType="textPassword"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/edtEmailPersonagem"
+        app:layout_constraintStart_toStartOf="@+id/edtEmailPersonagem"
+        app:layout_constraintTop_toBottomOf="@+id/edtEmailPersonagem" />
+</androidx.constraintlayout.widget.ConstraintLayout>

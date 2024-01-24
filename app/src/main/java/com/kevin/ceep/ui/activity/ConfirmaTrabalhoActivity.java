@@ -1,11 +1,10 @@
 package com.kevin.ceep.ui.activity;
 
 import static com.kevin.ceep.ui.activity.ListaPersonagemActivity.geraIdAleatorio;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_CONFIRMA_CADASTRO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_CONFIRMA;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
@@ -61,7 +60,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
                 setTitle(trabalhoRecebido.getNome());
             }
             personagemId = (String) dadosRecebidos.
-                    getSerializableExtra(CHAVE_NOME_PERSONAGEM);
+                    getSerializableExtra(CHAVE_PERSONAGEM);
         }
     }
     @Override
@@ -137,7 +136,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
                 licencaSelecionada,
                 0,
                 recorrencia);
-        minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
+        minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
                 .child(personagemId).child(CHAVE_LISTA_DESEJO)
                 .child(novoId)
                 .setValue(novoTrabalho);
@@ -174,7 +173,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         Intent iniciaListaTrabalho =
                 new Intent(ConfirmaTrabalhoActivity.this,
                         MenuNavegacaoLateral.class);
-        iniciaListaTrabalho.putExtra(CHAVE_NOME_PERSONAGEM,personagemId);
+        iniciaListaTrabalho.putExtra(CHAVE_PERSONAGEM,personagemId);
         startActivity(iniciaListaTrabalho,
                 ActivityOptions.makeSceneTransitionAnimation(ConfirmaTrabalhoActivity.this).toBundle());
     }

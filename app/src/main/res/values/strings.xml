@@ -50,6 +50,7 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="string_ola">Olá</string>
     <string name="string_entre_em_sua_conta">Entre em sua conta</string>
+    <string name="string_nome">Nome</string>
     <string name="string_email">Email</string>
     <string name="string_senha">Senha</string>
     <string name="string_esqueceu_sua_senha">Esqueceu sua senha?</string>
@@ -75,4 +76,7 @@
 
     <string name="abre_menu_navegacao">Abre menu de navegação</string>
     <string name="fecha_menu_navegacao">Fecha menu de navegação</string>
+    <string name="string_espaco_producao">Espaço de produção</string>
+    <string name="string_estado">Estado</string>
+    <string name="string_uso">Uso</string>
 </resources>

@@ -1,10 +1,9 @@
 package com.kevin.ceep.ui.fragment;
 
 import static com.kevin.ceep.ui.activity.ListaTrabalhosActivity.removerAcentos;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_ESTOQUE;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 
 import android.os.Bundle;
@@ -16,7 +15,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,9 +31,7 @@ import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
-import com.kevin.ceep.model.TrabalhoProducao;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoAdapter;
-import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoProducaoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.ArrayList;
@@ -87,7 +83,7 @@ public class EstoqueFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle argumento = getArguments();
         if (argumento != null) {
-            if (argumento.containsKey(CHAVE_NOME_PERSONAGEM)){
+            if (argumento.containsKey(CHAVE_PERSONAGEM)){
                 personagemId = argumento.toString();
             }
         }
@@ -150,7 +146,7 @@ public class EstoqueFragment extends Fragment {
     }
     private List<Trabalho> pegaTodosTrabalhosEstoque() {
         trabalhos = new ArrayList<>();
-        databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM).
+        databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 child(personagemId).child(CHAVE_LISTA_ESTOQUE).
                 addValueEventListener(new ValueEventListener() {
                     @Override

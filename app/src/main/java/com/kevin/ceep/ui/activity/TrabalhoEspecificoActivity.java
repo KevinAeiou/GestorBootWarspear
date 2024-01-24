@@ -3,12 +3,12 @@ package com.kevin.ceep.ui.activity;
 import static com.kevin.ceep.ui.activity.ListaPersonagemActivity.geraIdAleatorio;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PROFISSAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_RARIDADE;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_NOVO_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO;
@@ -27,7 +27,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
@@ -172,7 +171,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         if (dadosRecebidos.hasExtra(CHAVE_TRABALHO)){
             codigoRequisicao= (int) dadosRecebidos
                     .getSerializableExtra(CHAVE_TRABALHO);
-            personagemId= (String) dadosRecebidos.getSerializableExtra(CHAVE_NOME_PERSONAGEM);
+            personagemId= (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
             if (codigoRequisicao== CODIGO_REQUISICAO_ALTERA_TRABALHO){
                 trabalhoRecebido= (TrabalhoProducao) dadosRecebidos
                         .getSerializableExtra(CHAVE_NOME_TRABALHO);
@@ -267,7 +266,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     }
 
     private void modificaTrabalhoServidor(Trabalho trabalhoModificado) {
-        minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM)
+        minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
                 .child(personagemId).child(CHAVE_LISTA_DESEJO)
                 .child(trabalhoId).setValue(trabalhoModificado);
     }
@@ -300,7 +299,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         Intent vaiParaListaTrabalhos=
                 new Intent(getApplicationContext()
                         ,ListaTrabalhosEspecificosActivity.class);
-        vaiParaListaTrabalhos.putExtra(CHAVE_NOME_PERSONAGEM,personagemId);
+        vaiParaListaTrabalhos.putExtra(CHAVE_PERSONAGEM,personagemId);
         vaiParaListaTrabalhos.putExtra(CHAVE_NOME_PROFISSAO,profissaoRecebido);
         vaiParaListaTrabalhos.putExtra(CHAVE_NOME_RARIDADE,raridadeRecebido);
         setResult(1,vaiParaListaTrabalhos);
@@ -311,7 +310,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         Intent vaiParaListaTrabalhos=
                 new Intent(getApplicationContext()
                         ,ListaTrabalhosActivity.class);
-        vaiParaListaTrabalhos.putExtra(CHAVE_NOME_PERSONAGEM,personagemId);
+        vaiParaListaTrabalhos.putExtra(CHAVE_PERSONAGEM,personagemId);
         setResult(1,vaiParaListaTrabalhos);
         TrabalhoEspecificoActivity.super.onBackPressed();
     }

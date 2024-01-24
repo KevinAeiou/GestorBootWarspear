@@ -2,9 +2,9 @@ package com.kevin.ceep.ui.activity;
 
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_CONFIRMA_CADASTRO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_POSICAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
@@ -132,7 +132,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     }
 
     private void configuraEstadoPersonagem() {
-        databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM).
+        databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 child(personagemId).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -233,7 +233,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     }
 
     private void modificaEstadoPersonagem(boolean estadoPersonagem) {
-        databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM)
+        databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
                 .child(personagemId).child("estado").setValue(estadoPersonagem);
         Log.d("SWITCH","Estado do personagem modificado para: "+estadoPersonagem);
     }
@@ -280,15 +280,15 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
 
     private void removeTrabalhoLista(int swipePosicao) {
         String idTrabalho = trabalhos.get(swipePosicao).getId();
-        databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM).
+        databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 child(personagemId).child(CHAVE_LISTA_DESEJO).
                 child(idTrabalho).removeValue();
     }
 
     private void recebeDadosIntent() {
         Intent dadosRecebidos = getIntent();
-        if (dadosRecebidos.hasExtra(CHAVE_NOME_PERSONAGEM)){
-            personagemId=(String) dadosRecebidos.getSerializableExtra(CHAVE_NOME_PERSONAGEM);
+        if (dadosRecebidos.hasExtra(CHAVE_PERSONAGEM)){
+            personagemId=(String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
         }
         if (dadosRecebidos.hasExtra(CHAVE_CONFIRMA_CADASTRO)) {
             Boolean confirmaCadastro= (Boolean) dadosRecebidos.getSerializableExtra(CHAVE_CONFIRMA_CADASTRO);
@@ -328,7 +328,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
         Intent iniciaListaRaridade =
                 new Intent(ListaTrabalhosActivity.this,
                         ListaRaridadeActivity.class);
-        iniciaListaRaridade.putExtra(CHAVE_NOME_PERSONAGEM, personagemId);
+        iniciaListaRaridade.putExtra(CHAVE_PERSONAGEM, personagemId);
         startActivity(iniciaListaRaridade,
                 ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
         //startActivityForResult(iniciaFormularioNota, CODIGO_REQUISICAO_INSERE_NOTA);
@@ -337,7 +337,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
     private List<TrabalhoProducao> pegaTodosTrabalhos() {
         trabalhos = new ArrayList<>();
         Log.d("USUARIO", usuarioId);
-        databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM).
+        databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 child(personagemId).child(CHAVE_LISTA_DESEJO).
                 addValueEventListener(new ValueEventListener() {
                     @Override
@@ -405,7 +405,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
                 new Intent(getApplicationContext(),TrabalhoEspecificoActivity.class);
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_TRABALHO, CODIGO_REQUISICAO_ALTERA_TRABALHO);
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_TRABALHO, trabalho);
-        iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_PERSONAGEM, personagemId);
+        iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_PERSONAGEM, personagemId);
         activityLauncher.launch(iniciaTrabalhoEspecificoActivity);
     }
 

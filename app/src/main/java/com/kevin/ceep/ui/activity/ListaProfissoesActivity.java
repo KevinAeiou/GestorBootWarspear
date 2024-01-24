@@ -1,10 +1,10 @@
 package com.kevin.ceep.ui.activity;
 
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PROFISSAO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PROFISSAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_RARIDADE;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_PROFISSAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
@@ -119,7 +119,7 @@ public class ListaProfissoesActivity extends AppCompatActivity {
         for (int i = 0; i<todasProfissoes.size(); i++){
             String novoIdProfissao = geraIdAleatorio();
             minhaReferencia.child(usuarioId)
-                    .child(CHAVE_PERSONAGEM)
+                    .child(CHAVE_LISTA_PERSONAGEM)
                     .child(personagemId)
                     .child(CHAVE_LISTA_PROFISSAO)
                     .child(i+novoIdProfissao)
@@ -149,9 +149,9 @@ public class ListaProfissoesActivity extends AppCompatActivity {
 
     private void recebeDadosIntent() {
         Intent dadosRecebidos = getIntent();
-        if (dadosRecebidos.hasExtra(CHAVE_NOME_PERSONAGEM)){
+        if (dadosRecebidos.hasExtra(CHAVE_PERSONAGEM)){
             personagemId = (String) dadosRecebidos
-                    .getSerializableExtra(CHAVE_NOME_PERSONAGEM);
+                    .getSerializableExtra(CHAVE_PERSONAGEM);
         }
     }
 
@@ -167,7 +167,7 @@ public class ListaProfissoesActivity extends AppCompatActivity {
 
     private void limpaListaProfissoes() {
         minhaReferencia.child(usuarioId)
-                .child(CHAVE_PERSONAGEM)
+                .child(CHAVE_LISTA_PERSONAGEM)
                 .child(personagemId)
                 .child(CHAVE_LISTA_PROFISSAO)
                 .removeValue();
@@ -182,7 +182,7 @@ public class ListaProfissoesActivity extends AppCompatActivity {
 
     private List<Profissao> pegaTodasProfissoes(){
         List<Profissao> profissoes = new ArrayList<>();
-        minhaReferencia.child(usuarioId).child(CHAVE_PERSONAGEM).child(personagemId).child(CHAVE_LISTA_PROFISSAO).
+        minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).child(personagemId).child(CHAVE_LISTA_PROFISSAO).
                 addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -221,7 +221,7 @@ public class ListaProfissoesActivity extends AppCompatActivity {
                     Intent iniciaTrabalhosActivity =
                             new Intent(ListaProfissoesActivity.this,
                                     ListaTrabalhosEspecificosActivity.class);
-                    iniciaTrabalhosActivity.putExtra(CHAVE_NOME_PERSONAGEM,personagemId);
+                    iniciaTrabalhosActivity.putExtra(CHAVE_PERSONAGEM,personagemId);
                     iniciaTrabalhosActivity.putExtra(CHAVE_NOME_PROFISSAO,profissao);
                     iniciaTrabalhosActivity.putExtra(CHAVE_NOME_RARIDADE, raridade);
                     startActivity(iniciaTrabalhosActivity,

@@ -1,8 +1,8 @@
 package com.kevin.ceep.ui.activity;
 
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PROFISSAO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
@@ -122,7 +122,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference minhareferencia = database.getReference(CHAVE_USUARIOS);
         Log.d("Remove",idPersonagem);
-        minhareferencia.child(usuarioId).child(CHAVE_PERSONAGEM).
+        minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 child(idPersonagem).removeValue();
     }
 
@@ -159,7 +159,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
             String novoIdProfissao = geraIdAleatorio();
             Profissao profissao = new Profissao(profissoes[i], 0, false);
             minhaReferencia.child(usuarioId)
-                    .child(CHAVE_PERSONAGEM)
+                    .child(CHAVE_LISTA_PERSONAGEM)
                     .child(idPersonagem)
                     .child(CHAVE_LISTA_PROFISSAO)
                     .child(i+novoIdProfissao)
@@ -237,7 +237,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
                 Intent iniciaListaTrabalhoActivity =
                         new Intent(getApplicationContext(),
                                 ListaTrabalhosActivity.class);
-                iniciaListaTrabalhoActivity.putExtra(CHAVE_NOME_PERSONAGEM,
+                iniciaListaTrabalhoActivity.putExtra(CHAVE_PERSONAGEM,
                         personagem.getId());
                 startActivity(iniciaListaTrabalhoActivity,
                         ActivityOptions.makeSceneTransitionAnimation(
@@ -261,7 +261,7 @@ public class ListaPersonagemActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         Log.d("PERSONAGEMINICIO", String.valueOf(personagens.size()));
         DatabaseReference databaseReference = database.getReference(CHAVE_USUARIOS);
-        databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM).
+        databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

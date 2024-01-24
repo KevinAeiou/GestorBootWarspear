@@ -1,7 +1,7 @@
 package com.kevin.ceep.ui.activity;
 
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 
@@ -40,6 +40,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.ui.fragment.EstoqueFragment;
+import com.kevin.ceep.ui.fragment.ListaPersonagensFragment;
 import com.kevin.ceep.ui.fragment.ListaTrabalhosFragment;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Personagem;
@@ -137,7 +138,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
                 Log.d("itemMenuSelecionado", personagemId);
                 Bundle argumentos = new Bundle();
                 Log.d("itemMenuSelecionado33", personagemId);
-                argumentos.putString(CHAVE_NOME_PERSONAGEM, personagemId);
+                argumentos.putString(CHAVE_PERSONAGEM, personagemId);
                 ListaTrabalhosFragment trabalhosFragment =  new ListaTrabalhosFragment();
                 trabalhosFragment.setArguments(argumentos);
                 reposicionaFragmento(trabalhosFragment);
@@ -150,7 +151,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
     private void pegaTodosPersonagens() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = database.getReference(CHAVE_USUARIOS);
-        databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM).
+        databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -193,16 +194,17 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
             case R.id.nav_trabalhos:
                 Bundle argumentos = new Bundle();
                 Log.d("itemMenuSelecionado33", personagemId);
-                argumentos.putString(CHAVE_NOME_PERSONAGEM, personagemId);
+                argumentos.putString(CHAVE_PERSONAGEM, personagemId);
 
                 ListaTrabalhosFragment trabalhosFragment =  new ListaTrabalhosFragment();
                 trabalhosFragment.setArguments(argumentos);
                 reposicionaFragmento(trabalhosFragment);
                 break;
             case R.id.nav_personagem:
-                Intent vaiParaListaPersonagens =  new Intent(getApplicationContext(), ListaPersonagemActivity.class);
-                startActivity(vaiParaListaPersonagens,
-                        ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+                itemMenuPersonagem.clear();
+                reposicionaFragmento(new ListaPersonagensFragment());
+                //Intent vaiParaListaPersonagens =  new Intent(getApplicationContext(), ListaPersonagemActivity.class);
+                //startActivity(vaiParaListaPersonagens, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
                 break;
             case R.id.nav_estoque:
                 reposicionaFragmento(new EstoqueFragment());

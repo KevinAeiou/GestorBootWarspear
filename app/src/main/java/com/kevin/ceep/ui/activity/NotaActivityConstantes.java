@@ -4,7 +4,7 @@ public interface NotaActivityConstantes {
 
     String CHAVE_TRABALHO = "trabalho";
     String CHAVE_USUARIOS = "Usuarios";
-    String CHAVE_PERSONAGEM = "Lista_personagem";
+    String CHAVE_LISTA_PERSONAGEM = "Lista_personagem";
     String CHAVE_LISTA_DESEJO = "Lista_desejo";
     String CHAVE_LISTA_ESTOQUE = "Lista_estoque";
     String CHAVE_LISTA_PROFISSAO = "Lista_profissoes";
@@ -13,7 +13,7 @@ public interface NotaActivityConstantes {
     String CHAVE_NOME_RARIDADE = "nome_raridade";
     String CHAVE_NOME_PROFISSAO = "nome_profissao";
     String CHAVE_NOME_TRABALHO = "nome_trabalho";
-    String CHAVE_NOME_PERSONAGEM = "nome_personagem";
+    String CHAVE_PERSONAGEM = "classe_personagem";
     String CHAVE_POSICAO = "posicao";
     String CHAVE_CONFIRMA_CADASTRO = "confirma_cadastro";
     String CHAVE_TITULO_TRABALHO = "Trabalhos";

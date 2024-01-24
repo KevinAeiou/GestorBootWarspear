@@ -1,10 +1,9 @@
 package com.kevin.ceep.ui.fragment;
 
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_CONFIRMA_CADASTRO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO;
@@ -27,7 +26,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,7 +41,6 @@ import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoProducao;
 import com.kevin.ceep.ui.activity.ListaRaridadeActivity;
-import com.kevin.ceep.ui.activity.ListaTrabalhosActivity;
 import com.kevin.ceep.ui.activity.TrabalhoEspecificoActivity;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoProducaoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
@@ -79,8 +76,8 @@ public class ListaTrabalhosFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle dadosRecebidos = getArguments();
         if (dadosRecebidos != null) {
-            if (dadosRecebidos.containsKey(CHAVE_NOME_PERSONAGEM)){
-                personagemId = getArguments().getString(CHAVE_NOME_PERSONAGEM);
+            if (dadosRecebidos.containsKey(CHAVE_PERSONAGEM)){
+                personagemId = getArguments().getString(CHAVE_PERSONAGEM);
             }
         }
     }
@@ -124,7 +121,7 @@ public class ListaTrabalhosFragment extends Fragment {
 
     private void removeTrabalhoLista(int swipePosicao) {
         String idTrabalho = trabalhos.get(swipePosicao).getId();
-        databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM).
+        databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 child(personagemId).child(CHAVE_LISTA_DESEJO).
                 child(idTrabalho).removeValue();
     }
@@ -143,7 +140,7 @@ public class ListaTrabalhosFragment extends Fragment {
         Intent iniciaListaRaridade =
                 new Intent(getContext(),
                         ListaRaridadeActivity.class);
-        iniciaListaRaridade.putExtra(CHAVE_NOME_PERSONAGEM, personagemId);
+        iniciaListaRaridade.putExtra(CHAVE_PERSONAGEM, personagemId);
         startActivity(iniciaListaRaridade,
                 ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
         //startActivityForResult(iniciaFormularioNota, CODIGO_REQUISICAO_INSERE_NOTA);
@@ -194,13 +191,13 @@ public class ListaTrabalhosFragment extends Fragment {
                 new Intent(getActivity(), TrabalhoEspecificoActivity.class);
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_TRABALHO, CODIGO_REQUISICAO_ALTERA_TRABALHO);
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_TRABALHO, trabalho);
-        iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_PERSONAGEM, personagemId);
+        iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_PERSONAGEM, personagemId);
         activityLauncher.launch(iniciaTrabalhoEspecificoActivity);
     }
     private List<TrabalhoProducao> pegaTodosTrabalhos() {
         trabalhos = new ArrayList<>();
         Log.d("USUARIO", usuarioId);
-        databaseReference.child(usuarioId).child(CHAVE_PERSONAGEM).
+        databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 child(personagemId).child(CHAVE_LISTA_DESEJO).
                 addValueEventListener(new ValueEventListener() {
                     @Override

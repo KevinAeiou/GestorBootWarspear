@@ -2,7 +2,7 @@ package com.kevin.ceep.ui.activity;
 
 import static com.kevin.ceep.ui.activity.ListaTrabalhosActivity.removerAcentos;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PROFISSAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_RARIDADE;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
@@ -146,7 +146,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
                 new Intent(getApplicationContext(),
                         TrabalhoEspecificoActivity.class);
         cadastraNovoTrabalho.putExtra(CHAVE_TRABALHO, CODIGO_REQUISICAO_INSERE_TRABALHO);
-        cadastraNovoTrabalho.putExtra(CHAVE_NOME_PERSONAGEM, personagemId);
+        cadastraNovoTrabalho.putExtra(CHAVE_PERSONAGEM, personagemId);
         cadastraNovoTrabalho.putExtra(CHAVE_NOME_PROFISSAO,profissaoRecebido);
         cadastraNovoTrabalho.putExtra(CHAVE_NOME_RARIDADE,raridadeRecebido);
         startActivity(cadastraNovoTrabalho,
@@ -180,7 +180,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
             profissaoRecebido = (Profissao) dadosRecebidos
                     .getSerializableExtra(CHAVE_NOME_PROFISSAO);
             personagemId = (String) dadosRecebidos.
-                    getSerializableExtra(CHAVE_NOME_PERSONAGEM);
+                    getSerializableExtra(CHAVE_PERSONAGEM);
         }
     }
 
@@ -248,7 +248,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
                                 ConfirmaTrabalhoActivity.class);
 
                 iniciaTrabalhosActivity.putExtra(CHAVE_NOME_TRABALHO, trabalho);
-                iniciaTrabalhosActivity.putExtra(CHAVE_NOME_PERSONAGEM, personagemId);
+                iniciaTrabalhosActivity.putExtra(CHAVE_PERSONAGEM, personagemId);
                 startActivity(iniciaTrabalhosActivity,
                         ActivityOptions.makeSceneTransitionAnimation(ListaTrabalhosEspecificosActivity.this).toBundle());
 
