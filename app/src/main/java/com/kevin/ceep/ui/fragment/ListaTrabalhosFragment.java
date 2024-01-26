@@ -16,6 +16,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,11 +24,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -67,6 +73,9 @@ public class ListaTrabalhosFragment extends Fragment {
     private RecyclerView recyclerView;
     private List<TrabalhoProducao> trabalhos;
     private String usuarioId, personagemId;
+    private List<Personagem> personagens;
+    private Menu itemMenuPersonagem;
+    private SwipeRefreshLayout swipeRefreshLayout;
     public ListaTrabalhosFragment() {
         // Required empty public constructor
     }
@@ -74,12 +83,7 @@ public class ListaTrabalhosFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle dadosRecebidos = getArguments();
-        if (dadosRecebidos != null) {
-            if (dadosRecebidos.containsKey(CHAVE_PERSONAGEM)){
-                personagemId = getArguments().getString(CHAVE_PERSONAGEM);
-            }
-        }
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -91,11 +95,76 @@ public class ListaTrabalhosFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        inicializaComponentes();
-        atualizaListaTrabalho(view);
+        inicializaComponentes(view);
+        List<Personagem> todosPersonagens = pegaTodosPersonagens();
+        if (todosPersonagens.size() > 0){
+            atualizaListaTrabalho();
+        }else{
+            Log.d("listaPersonagem", "Lista todosPersonagens está vazia.");
+        }
         configuraSwipeRefreshLayout(view);
         configuraBotaoInsereTrabalho(view);
         configuraDeslizeItem();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_personagem, menu);
+        itemMenuPersonagem = menu;
+        MenuItem itemBusca = menu.findItem(R.id.itemMenuBusca);
+        SearchView busca = (SearchView) itemBusca.getActionView();
+        busca.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filtroLista(newText);
+                return false;
+            }
+        });
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private void filtroLista(String newText) {
+        // creating a new array list to filter our data.
+        List<TrabalhoProducao> listaFiltrada = new ArrayList<>();
+
+        // running a for loop to compare elements.
+        for (TrabalhoProducao item : trabalhos) {
+            // checking if the entered string matched with any item of our recycler view.
+            if (item.getNome().toLowerCase().contains(newText.toLowerCase())) {
+                // if the item is matched we are
+                // adding it to our filtered list.
+                listaFiltrada.add(item);
+            }
+        }
+        if (listaFiltrada.isEmpty()) {
+            // if no item is added in filtered list we are
+            // displaying a toast message as no data found.
+            Snackbar.make(getView(),"Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
+        } else {
+            // at last we are passing that filtered
+            // list to our adapter class.
+            trabalhoAdapter.setListaFiltrada(listaFiltrada);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Log.d("itemMenuSelecionado", String.valueOf(item));
+        Log.d("listaPersonagens", "Personagens na lista do menu:");
+        for (Personagem personagem: personagens){
+            Log.d("listaPersonagens", personagem.getNome());
+            if (personagem.getNome().equals(item.getTitle().toString())){
+                personagemId = personagem.getId();
+                atualizaListaTrabalho();
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void configuraDeslizeItem() {
@@ -126,10 +195,11 @@ public class ListaTrabalhosFragment extends Fragment {
                 child(idTrabalho).removeValue();
     }
     private void configuraSwipeRefreshLayout(View view) {
-        SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutTrabalhos);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutTrabalhos);
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            swipeRefreshLayout.setRefreshing(false);
-            atualizaListaTrabalho(view);
+            if (personagemId != null){
+                atualizaListaTrabalho();
+            }
         });
     }
     private void configuraBotaoInsereTrabalho(View view) {
@@ -146,17 +216,17 @@ public class ListaTrabalhosFragment extends Fragment {
         //startActivityForResult(iniciaFormularioNota, CODIGO_REQUISICAO_INSERE_NOTA);
     }
 
-    private void inicializaComponentes() {
+    private void inicializaComponentes(View view) {
         usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        recyclerView = view.findViewById(R.id.listaTrabalhoRecyclerView);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference(CHAVE_USUARIOS);
     }
-    private void atualizaListaTrabalho(View view) {
+    private void atualizaListaTrabalho() {
         List<TrabalhoProducao> todosTrabalhos = pegaTodosTrabalhos();
-        configuraRecyclerView(todosTrabalhos, view);
+        configuraRecyclerView(todosTrabalhos);
     }
-    private void configuraRecyclerView(List<TrabalhoProducao> todosTrabalhos, View view) {
-        recyclerView = view.findViewById(R.id.listaTrabalhoRecyclerView);
+    private void configuraRecyclerView(List<TrabalhoProducao> todosTrabalhos) {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         configuraAdapter(todosTrabalhos, recyclerView);
@@ -194,9 +264,39 @@ public class ListaTrabalhosFragment extends Fragment {
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_PERSONAGEM, personagemId);
         activityLauncher.launch(iniciaTrabalhoEspecificoActivity);
     }
+    private List<Personagem> pegaTodosPersonagens() {
+        Log.d("listaPersonagens", "Entrou na funçao pegaTodosPersonagens");
+        personagens = new ArrayList<>();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = database.getReference(CHAVE_USUARIOS);
+        databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
+                addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        personagens.clear();
+                        Log.d("listaPersonagens", "Limpou a lista de personagens");
+                        for (DataSnapshot dn:dataSnapshot.getChildren()){
+                            Personagem personagem = dn.getValue(Personagem.class);
+                            personagens.add(personagem);
+                            Log.d("listaPersonagens", "Personagem adicionado: " + personagem.getNome());
+                            itemMenuPersonagem.add(personagem.getNome());
+                        }
+                        personagemId = personagens.get(0).getId();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.d("listaPersonagens", "Erro ao definir lista de personagens.");
+                    }
+
+                });
+        Log.d("listaPersonagens", "Saiu da funçao pegaTodosPersonagens");
+        return personagens;
+    }
     private List<TrabalhoProducao> pegaTodosTrabalhos() {
         trabalhos = new ArrayList<>();
         Log.d("USUARIO", usuarioId);
+        Log.d("USUARIO", personagemId);
         databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 child(personagemId).child(CHAVE_LISTA_DESEJO).
                 addValueEventListener(new ValueEventListener() {
@@ -208,6 +308,7 @@ public class ListaTrabalhosFragment extends Fragment {
                             trabalhos.add(trabalho);
                         }
                         trabalhoAdapter.notifyDataSetChanged();
+                        swipeRefreshLayout.setRefreshing(false);
                     }
 
                     @Override

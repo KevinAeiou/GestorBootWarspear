@@ -50,14 +50,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class MenuNavegacaoLateral extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private ProgressDialog progressDialog;
-    private List<Personagem> personagens;
     private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
-    private Toolbar toolbar;
-    private String usuarioId, personagemId;
-    private Menu itemMenuPersonagem;
-    private final String[] mensagens={"Carregando dados...","Erro de conexão..."};
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,12 +59,8 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         setTitle(CHAVE_TITULO_TRABALHO);
 
         drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.navegacao_view);
-        toolbar = findViewById(R.id.toolbar);
-        usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        personagens = new ArrayList<>();
-        Log.d("listaPersonagens", "Criou ArrayList");
-        Log.d("USUARIO", usuarioId);
+        NavigationView navigationView = findViewById(R.id.navegacao_view);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(view -> drawerLayout.openDrawer(GravityCompat.START));
 
@@ -83,102 +72,6 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.nav_trabalhos);
     }
-
-    private Boolean vericaConexaoInternet(){
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo infConexao = cm.getActiveNetworkInfo();
-        return infConexao != null && infConexao.isConnectedOrConnecting();
-    }
-
-    private void configuraDialogoProgresso(int posicaoMensagem) {
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setCancelable(false);
-        progressDialog.setMessage(mensagens[posicaoMensagem]);
-        progressDialog.show();
-    }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_personagem, menu);
-        configuraDialogoProgresso(0);
-        itemMenuPersonagem = menu;
-        SearchView viewBusca = (SearchView) menu.findItem(R.id.itemMenuBusca).getActionView();
-        viewBusca.setQueryHint("Buscar");
-        viewBusca.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                //arrayAdapter.getFilter().filter(newText);
-                return false;
-            }
-        });
-        if (vericaConexaoInternet()) {
-            Log.d("conexaoInternet", "Possui conexão.");
-            pegaTodosPersonagens();
-
-        }else{
-            Log.d("conexaoInternet", "Não possui conexão.");
-            progressDialog.dismiss();
-            Toast.makeText(this,"Erro na conexão...",Toast.LENGTH_LONG).show();
-        }
-        return super.onCreateOptionsMenu(menu);
-    }
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Log.d("itemMenuSelecionado", String.valueOf(item));
-        Snackbar.make(findViewById(R.id.frameLayout), String.valueOf(item), Snackbar.LENGTH_LONG).show();
-        Log.d("listaPersonagens", "Personagens na lista do menu:");
-        for (Personagem personagem: personagens){
-            Log.d("listaPersonagens", personagem.getNome());
-            if (personagem.getNome().equals(item.getTitle().toString())){
-                personagemId = personagem.getId();
-                Log.d("itemMenuSelecionado", personagemId);
-                Bundle argumentos = new Bundle();
-                Log.d("itemMenuSelecionado33", personagemId);
-                argumentos.putString(CHAVE_PERSONAGEM, personagemId);
-                ListaTrabalhosFragment trabalhosFragment =  new ListaTrabalhosFragment();
-                trabalhosFragment.setArguments(argumentos);
-                reposicionaFragmento(trabalhosFragment);
-                break;
-            }
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void pegaTodosPersonagens() {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = database.getReference(CHAVE_USUARIOS);
-        databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
-                addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        personagens.clear();
-                        Log.d("listaPersonagens", "Limpou a lista de personagens");
-                        for (DataSnapshot dn:dataSnapshot.getChildren()){
-                            Personagem personagem = dn.getValue(Personagem.class);
-                            personagens.add(personagem);
-                            Log.d("listaPersonagens", "Personagem adicionado: " + personagem.getNome());
-                            itemMenuPersonagem.add(personagem.getNome());
-                        }
-                        progressDialog.dismiss();
-                        Log.d("listaPersonagens", "Personagens na lista: ");
-                        personagemId = personagens.get(0).getId();
-                        for (Personagem personagem: personagens){
-                            Log.d("listaPersonagens", personagem.getNome());
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-
-                });
-    }
-
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)){
@@ -192,19 +85,10 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.nav_trabalhos:
-                Bundle argumentos = new Bundle();
-                Log.d("itemMenuSelecionado33", personagemId);
-                argumentos.putString(CHAVE_PERSONAGEM, personagemId);
-
-                ListaTrabalhosFragment trabalhosFragment =  new ListaTrabalhosFragment();
-                trabalhosFragment.setArguments(argumentos);
-                reposicionaFragmento(trabalhosFragment);
+                reposicionaFragmento(new ListaTrabalhosFragment());
                 break;
             case R.id.nav_personagem:
-                itemMenuPersonagem.clear();
                 reposicionaFragmento(new ListaPersonagensFragment());
-                //Intent vaiParaListaPersonagens =  new Intent(getApplicationContext(), ListaPersonagemActivity.class);
-                //startActivity(vaiParaListaPersonagens, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
                 break;
             case R.id.nav_estoque:
                 reposicionaFragmento(new EstoqueFragment());

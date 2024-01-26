@@ -23,5 +23,19 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/botaoAFlutuantePersonagem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:layout_margin="16dp"
+        android:elevation="20dp"
+        android:contentDescription="Botão flutuante para cadastrar novo personagem"
+        android:src="@android:drawable/ic_input_add"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:backgroundTint="@color/cor_background_laranja"
+        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

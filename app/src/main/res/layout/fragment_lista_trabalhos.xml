@@ -6,15 +6,61 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.activity.ListaTrabalhosActivity">
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGrupId"
+        app:singleLine="true"
+        app:singleSelection="true"
+        app:selectionRequired="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipFiltroTodos"
+            android:padding="8dp"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Todos"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipFiltroProduzir"
+            android:checked="true"
+            android:padding="8dp"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Produzir"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipFiltroProduzindo"
+            android:padding="8dp"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Produzindo"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipFiltroPronto"
+            android:padding="8dp"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pronto"/>
+
+    </com.google.android.material.chip.ChipGroup>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayoutTrabalhos"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/chipEstadoPersonagem"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/chipGrupId">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listaTrabalhoRecyclerView"
@@ -23,17 +69,6 @@
             tools:listitem="@layout/item_trabalho" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <com.google.android.material.chip.Chip
-        android:id="@+id/chipEstadoPersonagem"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Inativo"
-        android:checkable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton"

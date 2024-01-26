@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -92,6 +93,7 @@ public class ListaPersonagensFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(false);
         if (getArguments() != null) {
 
         }
@@ -110,7 +112,14 @@ public class ListaPersonagensFragment extends Fragment {
         inicializaComponentes(view);
         atualizaListaPersonagem();
         configuraSwipeRefreshLayout(view);
+        configuraBotaoCadastraPersonagem(view);
     }
+
+    private void configuraBotaoCadastraPersonagem(View view) {
+        FloatingActionButton botaoCadastraPersonagem = view.findViewById(R.id.botaoAFlutuantePersonagem);
+        botaoCadastraPersonagem.setOnClickListener(view1 -> vaiParaAtributosPersonagemActivity(new Personagem()));
+    }
+
     private void inicializaComponentes(View view) {
         minhaAutenticacao = FirebaseAuth.getInstance();
         usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
