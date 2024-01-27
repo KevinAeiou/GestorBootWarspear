@@ -6,21 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.activity.ListaTrabalhosActivity">
 
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/buscaTrabalhoEstoque"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/busca_backgorund"
-        app:iconifiedByDefault="false"
-        app:layout_constraintBottom_toTopOf="@+id/swipeRefreshLayoutTrabalhos"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:queryHint="Buscar..." />
-
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayoutTrabalhos"
         android:layout_width="0dp"
@@ -28,12 +13,12 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/buscaTrabalhoEstoque">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/listaTrabalhoRecyclerView"
+            android:id="@+id/listaTrabalhoEstoqueRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listitem="@layout/item_trabalho_especifico" />
+            tools:listitem="@layout/item_trabalho_estoque" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

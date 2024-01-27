@@ -10,7 +10,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,14 +30,16 @@ import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
+import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoAdapter;
+import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEstoqueAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class EstoqueFragment extends Fragment {
+public class ListaEstoqueFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -50,13 +51,13 @@ public class EstoqueFragment extends Fragment {
     private String mParam2;
 
 
-    private ListaTrabalhoEspecificoAdapter trabalhoAdapter;
+    private ListaTrabalhoEstoqueAdapter trabalhoEstoqueAdapter;
     private DatabaseReference databaseReference;
     private RecyclerView recyclerView;
-    private List<Trabalho> trabalhos;
+    private List<TrabalhoEstoque> trabalhos;
     private String usuarioId, personagemId;
 
-    public EstoqueFragment() {
+    public ListaEstoqueFragment() {
         // Required empty public constructor
     }
 
@@ -69,8 +70,8 @@ public class EstoqueFragment extends Fragment {
      * @return A new instance of fragment EstoqueFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static EstoqueFragment newInstance(String param1, String param2) {
-        EstoqueFragment fragment = new EstoqueFragment();
+    public static ListaEstoqueFragment newInstance(String param1, String param2) {
+        ListaEstoqueFragment fragment = new ListaEstoqueFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -81,6 +82,7 @@ public class EstoqueFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         Bundle argumento = getArguments();
         if (argumento != null) {
             if (argumento.containsKey(CHAVE_PERSONAGEM)){
@@ -93,58 +95,36 @@ public class EstoqueFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_estoque, container, false);
+        return inflater.inflate(R.layout.fragment_lista_estoque, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        inicializaComponentes();
-        configuraCampoPesquisa(view);
-        atualizaListaEstoque(view);
+        inicializaComponentes(view);
+        atualizaListaEstoque();
     }
-    private void inicializaComponentes() {
+    private void inicializaComponentes(View view) {
         usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        recyclerView = view.findViewById(R.id.listaTrabalhoEstoqueRecyclerView);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference(CHAVE_USUARIOS);
     }
 
-    private void atualizaListaEstoque(View view) {
-        List<Trabalho> todosTrabalhos = pegaTodosTrabalhosEstoque();
-        configuraRecyclerView(todosTrabalhos, view);
+    private void atualizaListaEstoque() {
+        List<TrabalhoEstoque> todosTrabalhosEstoque = pegaTodosTrabalhosEstoque();
+        configuraRecyclerView(todosTrabalhosEstoque);
     }
-    private void configuraRecyclerView(List<Trabalho> todosTrabalhos, View view) {
-        recyclerView = view.findViewById(R.id.listaTrabalhoEspecificoRecyclerView);
+    private void configuraRecyclerView(List<TrabalhoEstoque> todosTrabalhosEstoque) {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        configuraAdapter(todosTrabalhos, recyclerView);
+        configuraAdapter(todosTrabalhosEstoque, recyclerView);
     }
-    private void configuraAdapter(List<Trabalho> todosTrabalhos, RecyclerView listaTrabalhos) {
-        trabalhoAdapter = new ListaTrabalhoEspecificoAdapter(getContext(),todosTrabalhos);
-        listaTrabalhos.setAdapter(trabalhoAdapter);
-        trabalhoAdapter.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(Profissao profissao, int posicao) {
-
-            }
-
-            @Override
-            public void onItemClick(Personagem personagem, int posicao) {
-
-            }
-
-            @Override
-            public void onItemClick(Trabalho trabalho, int adapterPosition) {
-
-            }
-
-            @Override
-            public void onItemClick(Raridade raridade, int adapterPosition) {
-
-            }
-        });
+    private void configuraAdapter(List<TrabalhoEstoque> todosTrabalhosEstoque, RecyclerView listaTrabalhos) {
+        trabalhoEstoqueAdapter = new ListaTrabalhoEstoqueAdapter(todosTrabalhosEstoque,getContext());
+        listaTrabalhos.setAdapter(trabalhoEstoqueAdapter);
     }
-    private List<Trabalho> pegaTodosTrabalhosEstoque() {
+    private List<TrabalhoEstoque> pegaTodosTrabalhosEstoque() {
         trabalhos = new ArrayList<>();
         databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 child(personagemId).child(CHAVE_LISTA_ESTOQUE).
@@ -153,10 +133,10 @@ public class EstoqueFragment extends Fragment {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         trabalhos.clear();
                         for (DataSnapshot dn:dataSnapshot.getChildren()){
-                            Trabalho trabalho = dn.getValue(Trabalho.class);
+                            TrabalhoEstoque trabalho = dn.getValue(TrabalhoEstoque.class);
                             trabalhos.add(trabalho);
                         }
-                        trabalhoAdapter.notifyDataSetChanged();
+                        trabalhoEstoqueAdapter.notifyDataSetChanged();
                     }
 
                     @Override
@@ -167,24 +147,7 @@ public class EstoqueFragment extends Fragment {
         return trabalhos;
     }
 
-    private void configuraCampoPesquisa(View view) {
-        SearchView busca = view.findViewById(R.id.buscaTrabalhoEspecifico);
-        busca.clearFocus();
-        busca.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String textoBusca) {
-                listaBusca(textoBusca);
-                return true;
-            }
-        });
-    }
-
-    private void listaBusca(String textoBusca) {
+    /*private void listaBusca(String textoBusca) {
         List<Trabalho> listaFiltro = new ArrayList<>();
         for (Trabalho trabalho:trabalhos){
             if (removerAcentos(trabalho.getNome().toLowerCase()).contains(removerAcentos(textoBusca.toLowerCase()))){
@@ -194,7 +157,7 @@ public class EstoqueFragment extends Fragment {
         if (listaFiltro.isEmpty()){
             Snackbar.make(getView().findViewById(R.id.frameLayout),"Nada encontrado...",Snackbar.LENGTH_SHORT).show();
         }else{
-            trabalhoAdapter.setListaFiltrada(listaFiltro);
+            trabalhoEstoqueAdapter.setListaFiltrada(listaFiltro);
         }
-    }
+    }*/
 }
