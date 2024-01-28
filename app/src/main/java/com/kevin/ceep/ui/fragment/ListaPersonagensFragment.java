@@ -164,7 +164,6 @@ public class ListaPersonagensFragment extends Fragment {
         });
     }
     private void vaiParaAtributosPersonagemActivity(Personagem personagem) {
-        Log.d("PERSONAGEM", personagem.getId());
         Intent iniciaAtributosPersonagemActivity = new Intent(getContext(), AtributosPersonagemActivity.class);
         iniciaAtributosPersonagemActivity.putExtra(CHAVE_PERSONAGEM,
                 personagem);

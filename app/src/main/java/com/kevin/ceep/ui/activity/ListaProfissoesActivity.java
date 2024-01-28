@@ -192,6 +192,9 @@ public class ListaProfissoesActivity extends AppCompatActivity {
                             profissoes.add(profissao);
                         }
                         profissaoAdapter.notifyDataSetChanged();
+                        if (profissoes.size() == 0){
+                            adicionaNovaListaProfissoes();
+                        }
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -199,6 +202,21 @@ public class ListaProfissoesActivity extends AppCompatActivity {
                     }
                 });
         return profissoes;
+    }
+    private void adicionaNovaListaProfissoes() {
+        String[] profissoes = getResources().getStringArray(R.array.profissoes);
+
+        for (int i = 0; i< profissoes.length; i++){
+            String novoIdProfissao = geraIdAleatorio();
+            Profissao profissao = new Profissao(profissoes[i], 0, false);
+            minhaReferencia.child(usuarioId)
+                    .child(CHAVE_LISTA_PERSONAGEM)
+                    .child(personagemId)
+                    .child(CHAVE_LISTA_PROFISSAO)
+                    .child(i+novoIdProfissao)
+                    .setValue(profissao);
+        }
+
     }
 
     private void configuraRecyclerView(){
