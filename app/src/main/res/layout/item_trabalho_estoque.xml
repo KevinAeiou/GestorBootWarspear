@@ -31,6 +31,7 @@
             android:minWidth="50dp"
             android:minHeight="50dp"
             android:gravity="center"
+            android:maxLines="1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/itemNomeTrabalhoEstoque"
             app:layout_constraintBottom_toBottomOf="parent"

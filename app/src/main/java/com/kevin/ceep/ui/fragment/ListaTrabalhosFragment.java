@@ -18,13 +18,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -76,14 +77,23 @@ public class ListaTrabalhosFragment extends Fragment {
     private List<Personagem> personagens;
     private Menu itemMenuPersonagem;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private LinearProgressIndicator indicadorProgresso;
     public ListaTrabalhosFragment() {
         // Required empty public constructor
     }
-
+    public static ListaTrabalhosFragment novaInstanciaListaPersonagensFragment(String personagemId) {
+        ListaTrabalhosFragment fragment = new ListaTrabalhosFragment();
+        Bundle argumento = new Bundle();
+        argumento.putString(CHAVE_PERSONAGEM, personagemId);
+        //argumento.putString(ARG_PARAM2, param2);
+        fragment.setArguments(argumento);
+        return fragment;
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        getParentFragmentManager().setFragmentResultListener(CHAVE_PERSONAGEM, this, (requestKey, result) -> personagemId = result.getString(CHAVE_PERSONAGEM));
     }
 
     @Override
@@ -96,13 +106,8 @@ public class ListaTrabalhosFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaComponentes(view);
-        List<Personagem> todosPersonagens = pegaTodosPersonagens();
-        if (todosPersonagens.size() > 0){
-            atualizaListaTrabalho();
-        }else{
-            Log.d("listaPersonagem", "Lista todosPersonagens está vazia.");
-        }
-        configuraSwipeRefreshLayout(view);
+
+        configuraSwipeRefreshLayout();
         configuraBotaoInsereTrabalho(view);
         configuraDeslizeItem();
     }
@@ -151,22 +156,6 @@ public class ListaTrabalhosFragment extends Fragment {
             trabalhoAdapter.setListaFiltrada(listaFiltrada);
         }
     }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Log.d("itemMenuSelecionado", String.valueOf(item));
-        Log.d("listaPersonagens", "Personagens na lista do menu:");
-        for (Personagem personagem: personagens){
-            Log.d("listaPersonagens", personagem.getNome());
-            if (personagem.getNome().equals(item.getTitle().toString())){
-                personagemId = personagem.getId();
-                atualizaListaTrabalho();
-                break;
-            }
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     private void configuraDeslizeItem() {
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT) {
             @Override
@@ -194,8 +183,7 @@ public class ListaTrabalhosFragment extends Fragment {
                 child(personagemId).child(CHAVE_LISTA_DESEJO).
                 child(idTrabalho).removeValue();
     }
-    private void configuraSwipeRefreshLayout(View view) {
-        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutTrabalhos);
+    private void configuraSwipeRefreshLayout() {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             if (personagemId != null){
                 atualizaListaTrabalho();
@@ -221,6 +209,8 @@ public class ListaTrabalhosFragment extends Fragment {
         recyclerView = view.findViewById(R.id.listaTrabalhoRecyclerView);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference(CHAVE_USUARIOS);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutTrabalhos);
+        indicadorProgresso = view.findViewById(R.id.indicadorProgressoListaTrabalhosFragment);
     }
     private void atualizaListaTrabalho() {
         List<TrabalhoProducao> todosTrabalhos = pegaTodosTrabalhos();
@@ -264,35 +254,6 @@ public class ListaTrabalhosFragment extends Fragment {
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_PERSONAGEM, personagemId);
         activityLauncher.launch(iniciaTrabalhoEspecificoActivity);
     }
-    private List<Personagem> pegaTodosPersonagens() {
-        Log.d("listaPersonagens", "Entrou na funçao pegaTodosPersonagens");
-        personagens = new ArrayList<>();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = database.getReference(CHAVE_USUARIOS);
-        databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
-                addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        personagens.clear();
-                        Log.d("listaPersonagens", "Limpou a lista de personagens");
-                        for (DataSnapshot dn:dataSnapshot.getChildren()){
-                            Personagem personagem = dn.getValue(Personagem.class);
-                            personagens.add(personagem);
-                            Log.d("listaPersonagens", "Personagem adicionado: " + personagem.getNome());
-                            itemMenuPersonagem.add(personagem.getNome());
-                        }
-                        personagemId = personagens.get(0).getId();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                            Log.d("listaPersonagens", "Erro ao definir lista de personagens.");
-                    }
-
-                });
-        Log.d("listaPersonagens", "Saiu da funçao pegaTodosPersonagens");
-        return personagens;
-    }
     private List<TrabalhoProducao> pegaTodosTrabalhos() {
         trabalhos = new ArrayList<>();
         Log.d("USUARIO", usuarioId);
@@ -308,6 +269,7 @@ public class ListaTrabalhosFragment extends Fragment {
                             trabalhos.add(trabalho);
                         }
                         trabalhoAdapter.notifyDataSetChanged();
+                        indicadorProgresso.setVisibility(View.GONE);
                         swipeRefreshLayout.setRefreshing(false);
                     }
 

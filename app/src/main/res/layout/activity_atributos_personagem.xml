@@ -7,23 +7,27 @@
     android:id="@+id/constraintLayoutAtributosPersonagem"
     tools:context=".ui.activity.AtributosPersonagemActivity">
 
-    <EditText
-        android:id="@+id/edtNomePersonagem"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/txtNomePersonagem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="@string/string_nome"
         android:layout_marginTop="50dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:inputType="text"
-        android:textSize="20sp"
-        android:gravity="center"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Nome"
-        android:hint="@string/string_nome"
-        android:autofillHints="name"
-        />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtNomePersonagem"
+            android:inputType="text"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/swUsoPersonagem"
@@ -34,9 +38,9 @@
         android:textSize="20sp"
         android:text="@string/string_uso"
         app:switchPadding="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/edtNomePersonagem"
-        app:layout_constraintStart_toStartOf="@+id/edtNomePersonagem"
-        app:layout_constraintTop_toBottomOf="@+id/edtNomePersonagem" />
+        app:layout_constraintEnd_toEndOf="@+id/txtNomePersonagem"
+        app:layout_constraintStart_toStartOf="@+id/txtNomePersonagem"
+        app:layout_constraintTop_toBottomOf="@+id/txtNomePersonagem" />
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/swEstadoPersonagem"
@@ -51,48 +55,65 @@
         app:layout_constraintStart_toStartOf="@+id/swUsoPersonagem"
         app:layout_constraintTop_toBottomOf="@+id/swUsoPersonagem" />
 
-    <EditText
-        android:id="@+id/edtEspacoProducaoPersonagem"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/txtEspacoProducaoPersonagem"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:inputType="numberSigned"
-        android:text="0"
-        app:layout_constraintEnd_toEndOf="@+id/edtNomePersonagem"
-        app:layout_constraintStart_toStartOf="@+id/edtNomePersonagem"
-        app:layout_constraintTop_toBottomOf="@+id/swEstadoPersonagem"
         android:hint="@string/string_espaco_producao"
-        android:autofillHints=""
-        />
+        android:layout_marginTop="8dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        app:layout_constraintEnd_toEndOf="@id/txtNomePersonagem"
+        app:layout_constraintStart_toStartOf="@id/txtNomePersonagem"
+        app:layout_constraintTop_toBottomOf="@id/swEstadoPersonagem">
 
-    <EditText
-        android:id="@+id/edtEmailPersonagem"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtEspacoProducaoPersonagem"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:text="0"
+            android:inputType="numberSigned"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/txtEmailPersonagem"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:inputType="textEmailAddress"
-        app:layout_constraintEnd_toEndOf="@+id/edtNomePersonagem"
-        app:layout_constraintStart_toStartOf="@+id/edtNomePersonagem"
-        app:layout_constraintTop_toBottomOf="@+id/edtEspacoProducaoPersonagem"
         android:hint="@string/string_email"
-        android:autofillHints="emailAddress"
-        />
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        app:layout_constraintStart_toStartOf="@id/txtEspacoProducaoPersonagem"
+        app:layout_constraintEnd_toEndOf="@id/txtEspacoProducaoPersonagem"
+        app:layout_constraintTop_toBottomOf="@id/txtEspacoProducaoPersonagem">
 
-    <EditText
-        android:id="@+id/edtSenhaPersonagem"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtEmailPersonagem"
+            android:inputType="textEmailAddress"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/txtSenhaPersonagem"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:autofillHints="password"
-        android:gravity="center"
         android:hint="@string/string_senha"
-        android:inputType="textPassword"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="@+id/edtEmailPersonagem"
-        app:layout_constraintStart_toStartOf="@+id/edtEmailPersonagem"
-        app:layout_constraintTop_toBottomOf="@+id/edtEmailPersonagem" />
+        app:passwordToggleEnabled="true"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        app:layout_constraintStart_toStartOf="@id/txtEmailPersonagem"
+        app:layout_constraintEnd_toEndOf="@id/txtEmailPersonagem"
+        app:layout_constraintTop_toBottomOf="@id/txtEmailPersonagem">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtSenhaPersonagem"
+            android:inputType="textPassword"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

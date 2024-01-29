@@ -82,7 +82,7 @@ public class ListaTrabalhoEstoqueAdapter extends RecyclerView.Adapter<ListaTraba
         }
         private void preencheCampos(TrabalhoEstoque trabalhoEstoque) {
                 nomeTrabalho.setText(trabalhoEstoque.getNome());
-                quantidadeTrabalho.setText(trabalhoEstoque.getQuantidade());
+                quantidadeTrabalho.setText(String.valueOf(trabalhoEstoque.getQuantidade()));
         }
     }
 

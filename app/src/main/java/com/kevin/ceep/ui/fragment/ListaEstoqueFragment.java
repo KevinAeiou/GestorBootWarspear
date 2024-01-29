@@ -1,6 +1,5 @@
 package com.kevin.ceep.ui.fragment;
 
-import static com.kevin.ceep.ui.activity.ListaTrabalhosActivity.removerAcentos;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_ESTOQUE;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
@@ -13,12 +12,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,35 +30,23 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Personagem;
-import com.kevin.ceep.model.Profissao;
-import com.kevin.ceep.model.Raridade;
-import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
-import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEstoqueAdapter;
-import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class ListaEstoqueFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-
     private ListaTrabalhoEstoqueAdapter trabalhoEstoqueAdapter;
     private DatabaseReference databaseReference;
     private RecyclerView recyclerView;
     private List<TrabalhoEstoque> trabalhos;
+    private List<Personagem> personagens;
     private String usuarioId, personagemId;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private Menu itemMenuPersonagem;// Variavel provisoria
+
 
     public ListaEstoqueFragment() {
         // Required empty public constructor
@@ -65,17 +56,15 @@ public class ListaEstoqueFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param personagemId Parameter 1.
      * @return A new instance of fragment EstoqueFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ListaEstoqueFragment newInstance(String param1, String param2) {
+    public static ListaEstoqueFragment novaInstanciaListaEstoque(String personagemId) {
         ListaEstoqueFragment fragment = new ListaEstoqueFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+        Bundle argumentos = new Bundle();
+        argumentos.putString(CHAVE_PERSONAGEM, personagemId);
+        fragment.setArguments(argumentos);
         return fragment;
     }
 
@@ -102,15 +91,77 @@ public class ListaEstoqueFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaComponentes(view);
-        atualizaListaEstoque();
+        List<Personagem> todosPersonagens = pegaTodosPersonagens();
+        if (todosPersonagens.size() > 0){
+            atualizaListaEstoque();
+        }
+        configuraSwipeRefreshLayout();
     }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_personagem, menu);
+        itemMenuPersonagem = menu;
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        for (Personagem personagem: personagens){
+            Log.d("listaPersonagens", personagem.getNome());
+            if (personagem.getNome().equals(item.getTitle().toString())){
+                personagemId = personagem.getId();
+                atualizaListaEstoque();
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void configuraSwipeRefreshLayout() {
+        swipeRefreshLayout.setOnRefreshListener(()->{
+            if (personagemId != null){
+                atualizaListaEstoque();
+            }
+        });
+    }
+
     private void inicializaComponentes(View view) {
         usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         recyclerView = view.findViewById(R.id.listaTrabalhoEstoqueRecyclerView);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference(CHAVE_USUARIOS);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutTrabalhosEstoque);
     }
+    private List<Personagem> pegaTodosPersonagens() {
+        Log.d("listaPersonagens", "Entrou na funçao pegaTodosPersonagens");
+        personagens = new ArrayList<>();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = database.getReference(CHAVE_USUARIOS);
+        databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
+                addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        personagens.clear();
+                        Log.d("listaPersonagens", "Limpou a lista de personagens");
+                        for (DataSnapshot dn:dataSnapshot.getChildren()){
+                            Personagem personagem = dn.getValue(Personagem.class);
+                            personagens.add(personagem);
+                            Log.d("listaPersonagens", "Personagem adicionado: " + personagem.getNome());
+                            itemMenuPersonagem.add(personagem.getNome());
+                        }
+                        personagemId = personagens.get(0).getId();
+                    }
 
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.d("listaPersonagens", "Erro ao definir lista de personagens.");
+                    }
+
+                });
+        Log.d("listaPersonagens", "Saiu da funçao pegaTodosPersonagens");
+        return personagens;
+    }
     private void atualizaListaEstoque() {
         List<TrabalhoEstoque> todosTrabalhosEstoque = pegaTodosTrabalhosEstoque();
         configuraRecyclerView(todosTrabalhosEstoque);
@@ -126,6 +177,7 @@ public class ListaEstoqueFragment extends Fragment {
     }
     private List<TrabalhoEstoque> pegaTodosTrabalhosEstoque() {
         trabalhos = new ArrayList<>();
+        Log.d("pegaEstoque",personagemId);
         databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 child(personagemId).child(CHAVE_LISTA_ESTOQUE).
                 addValueEventListener(new ValueEventListener() {

@@ -49,7 +49,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         toogle.syncState();
 
         navigationView.setNavigationItemSelectedListener(this);
-        navigationView.setCheckedItem(R.id.nav_trabalhos);
+        navigationView.setCheckedItem(R.id.nav_personagem);
     }
     @Override
     public void onBackPressed() {
@@ -62,6 +62,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        item.setChecked(true);
         switch (item.getItemId()){
             case R.id.nav_trabalhos:
                 reposicionaFragmento(new ListaTrabalhosFragment());
@@ -103,7 +104,6 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         FragmentTransaction transicaoDeFragmento = gerenciadorDeFragmento.beginTransaction();
         transicaoDeFragmento.replace(R.id.frameLayout, fragmento);
         transicaoDeFragmento.commit();
-
     }
 
 }
