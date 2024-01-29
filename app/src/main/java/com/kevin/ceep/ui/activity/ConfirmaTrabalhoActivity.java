@@ -83,7 +83,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         autoCompleteLicenca = findViewById(R.id.txtAutoCompleteLicencaTrabalho);
         autoCompleteQuantidade = findViewById(R.id.txtAutoCompleteQuantidadeTrabalho);
 
-        String[] licencas = getResources().getStringArray(R.array.licencas);
+        String[] licencas = getResources().getStringArray(R.array.licencas_completas);
         String[] quantidade = getResources().getStringArray(R.array.quantidade);
 
         ArrayAdapter<String> adapterLicenca = new ArrayAdapter<>(this,
