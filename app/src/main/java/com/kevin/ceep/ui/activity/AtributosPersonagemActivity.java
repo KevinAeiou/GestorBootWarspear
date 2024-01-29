@@ -119,6 +119,11 @@ public class AtributosPersonagemActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private boolean verificaEspacoVazio() {
+
+        return true;
+    }
+
     @Override
     public void onBackPressed() {
         if (verifcaPersonagemModificado()) {
