@@ -1,5 +1,9 @@
 package com.kevin.ceep.ui.activity;
 
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_ESTOQUE;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_TRABALHO;
 
 import android.app.ActivityOptions;
@@ -8,6 +12,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -30,13 +35,15 @@ import com.kevin.ceep.R;
 
 public class MenuNavegacaoLateral extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawerLayout;
+    private String personagemRecebido;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_navegacao_lateral);
         setTitle(CHAVE_TITULO_TRABALHO);
-
+        int itemNavegacao = R.id.nav_personagem;
+        itemNavegacao = recebeDadosIntent(itemNavegacao);
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.navegacao_view);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -44,13 +51,55 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         toolbar.setNavigationOnClickListener(view -> drawerLayout.openDrawer(GravityCompat.START));
 
         navigationView.bringToFront();
+        Log.d("menuNavegacao", "Trouxe para frente.");
         ActionBarDrawerToggle toogle = new ActionBarDrawerToggle(this, drawerLayout, R.string.abre_menu_navegacao, R.string.fecha_menu_navegacao);
         drawerLayout.addDrawerListener(toogle);
         toogle.syncState();
 
         navigationView.setNavigationItemSelectedListener(this);
-        navigationView.setCheckedItem(R.id.nav_personagem);
+        mostraFragmentSelecionado(itemNavegacao);
+        // navigationView.setCheckedItem(itemNavegacao);
+        Log.d("menuNavegacao", "Definiu item: " + itemNavegacao);
     }
+
+    private void mostraFragmentSelecionado(int itemNavegacao) {
+        Fragment fragmentoSelecionado = null;
+        switch (itemNavegacao){
+            case R.id.nav_personagem:
+                setTitle(CHAVE_LISTA_PERSONAGEM);
+                fragmentoSelecionado = new ListaPersonagensFragment();
+                Log.d("menuNavegacao", "Clicou item: personagens");
+                break;
+            case R.id.nav_trabalhos:
+                setTitle(CHAVE_LISTA_TRABALHO);
+                fragmentoSelecionado = ListaTrabalhosFragment.novaInstanciaListaPersonagensFragment(personagemRecebido);
+                Log.d("menuNavegacao", "Clicou item: trabalhos");
+                break;
+            case R.id.nav_estoque:
+                setTitle(CHAVE_LISTA_ESTOQUE);
+                fragmentoSelecionado = new ListaEstoqueFragment();
+                Log.d("menuNavegacao", "Clicou item: estoque");
+                break;
+        }
+        if (fragmentoSelecionado != null){
+            reposicionaFragmento(fragmentoSelecionado);
+        }
+        drawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    private int recebeDadosIntent(int itemNavegacao) {
+        Intent dadosRecebidos = getIntent();
+        personagemRecebido = null;
+        if (dadosRecebidos.hasExtra(CHAVE_PERSONAGEM)){
+            personagemRecebido = (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
+            if (personagemRecebido != null){
+                itemNavegacao = R.id.nav_trabalhos;
+            }
+        }
+
+        return itemNavegacao;
+    }
+
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)){
@@ -63,23 +112,8 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         item.setChecked(true);
-        switch (item.getItemId()){
-            case R.id.nav_trabalhos:
-                reposicionaFragmento(new ListaTrabalhosFragment());
-                break;
-            case R.id.nav_personagem:
-                reposicionaFragmento(new ListaPersonagensFragment());
-                break;
-            case R.id.nav_estoque:
-                reposicionaFragmento(new ListaEstoqueFragment());
-                break;
-            case R.id.nav_sair:
-                FirebaseAuth.getInstance().signOut();
-                vaiParaEntraActivity();
-                finish();
-                break;
-        }
-        drawerLayout.closeDrawer(GravityCompat.START);
+        Log.d("menuNavegacao", "Definiu item checado como True.");
+        mostraFragmentSelecionado(item.getItemId());
         return true;
     }
 

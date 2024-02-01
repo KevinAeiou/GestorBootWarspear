@@ -22,6 +22,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,8 +32,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Personagem;
+import com.kevin.ceep.model.Profissao;
+import com.kevin.ceep.model.Raridade;
+import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEstoqueAdapter;
+import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +45,13 @@ import java.util.Objects;
 
 public class ListaEstoqueFragment extends Fragment {
     private ListaTrabalhoEstoqueAdapter trabalhoEstoqueAdapter;
-    private DatabaseReference databaseReference;
+    private DatabaseReference minhaReferencia;
     private RecyclerView recyclerView;
     private List<TrabalhoEstoque> trabalhos;
     private List<Personagem> personagens;
     private String usuarioId, personagemId;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private TextInputEditText edtQuantidade;
     private Menu itemMenuPersonagem;// Variavel provisoria
 
 
@@ -130,8 +137,9 @@ public class ListaEstoqueFragment extends Fragment {
         usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         recyclerView = view.findViewById(R.id.listaTrabalhoEstoqueRecyclerView);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference(CHAVE_USUARIOS);
+        minhaReferencia = database.getReference(CHAVE_USUARIOS);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutTrabalhosEstoque);
+        edtQuantidade = view.findViewById(R.id.itemEdtQuantidadeTrabalhoEstoque);
     }
     private List<Personagem> pegaTodosPersonagens() {
         Log.d("listaPersonagens", "Entrou na funçao pegaTodosPersonagens");
@@ -174,11 +182,74 @@ public class ListaEstoqueFragment extends Fragment {
     private void configuraAdapter(List<TrabalhoEstoque> todosTrabalhosEstoque, RecyclerView listaTrabalhos) {
         trabalhoEstoqueAdapter = new ListaTrabalhoEstoqueAdapter(todosTrabalhosEstoque,getContext());
         listaTrabalhos.setAdapter(trabalhoEstoqueAdapter);
+        trabalhoEstoqueAdapter.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(Profissao profissao, int posicao) {
+
+            }
+
+            @Override
+            public void onItemClick(Personagem personagem, int posicao) {
+
+            }
+
+            @Override
+            public void onItemClick(Trabalho trabalho, int adapterPosition) {
+
+            }
+
+            @Override
+            public void onItemClick(Raridade raridade, int adapterPosition) {
+
+            }
+
+            @Override
+            public void onItemClick(TrabalhoEstoque trabalhoEstoque, int adapterPosition, int botaoId) {
+                alteraQuantidade(trabalhoEstoque, adapterPosition, botaoId);
+            }
+        });
     }
+
+    private void alteraQuantidade(TrabalhoEstoque trabalhoEstoque, int adapterPosition, int botaoId) {
+        if (botaoId == R.id.itemBotaoMenosUm){
+            minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
+                    .child(personagemId).child(CHAVE_LISTA_ESTOQUE)
+                    .child(trabalhoEstoque.getId()).child("quantidade")
+                    .setValue(trabalhoEstoque.getQuantidade()-1, ((databaseError, databaseReference) -> {
+                        if (databaseError != null){
+                            Snackbar.make(getView(),databaseError.getMessage(),Snackbar.LENGTH_SHORT).show();
+                        } else {
+                            TrabalhoEstoque trabalhoAlterado = new TrabalhoEstoque(
+                                    trabalhoEstoque.getId(),
+                                    trabalhoEstoque.getNome(),
+                                    trabalhoEstoque.getQuantidade()-1);
+                            Snackbar.make(getView(),"Quantidade alterada!",Snackbar.LENGTH_SHORT).show();
+                            trabalhoEstoqueAdapter.altera(adapterPosition,trabalhoAlterado);
+                        }
+                    }));
+        }else if (botaoId == R.id.itemBotaoMaisUm){
+            minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
+                    .child(personagemId).child(CHAVE_LISTA_ESTOQUE)
+                    .child(trabalhoEstoque.getId()).child("quantidade")
+                    .setValue(trabalhoEstoque.getQuantidade() + 1, (databaseError, databaseReference) -> {
+                        if (databaseError != null){
+                            Snackbar.make(getView(),databaseError.getMessage(),Snackbar.LENGTH_SHORT).show();
+                        } else {
+                            TrabalhoEstoque trabalhoAlterado = new TrabalhoEstoque(
+                                    trabalhoEstoque.getId(),
+                                    trabalhoEstoque.getNome(),
+                                    trabalhoEstoque.getQuantidade()+1);
+                            Snackbar.make(getView(),"Quantidade alterada!",Snackbar.LENGTH_SHORT).show();
+                            trabalhoEstoqueAdapter.altera(adapterPosition,trabalhoAlterado);
+                        }
+                    });
+        }
+    }
+
     private List<TrabalhoEstoque> pegaTodosTrabalhosEstoque() {
         trabalhos = new ArrayList<>();
         Log.d("pegaEstoque",personagemId);
-        databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
+        minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 child(personagemId).child(CHAVE_LISTA_ESTOQUE).
                 addValueEventListener(new ValueEventListener() {
                     @Override
@@ -189,6 +260,7 @@ public class ListaEstoqueFragment extends Fragment {
                             trabalhos.add(trabalho);
                         }
                         trabalhoEstoqueAdapter.notifyDataSetChanged();
+                        swipeRefreshLayout.setRefreshing(false);
                     }
 
                     @Override

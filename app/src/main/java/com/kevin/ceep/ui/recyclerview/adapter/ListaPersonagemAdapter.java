@@ -1,5 +1,6 @@
 package com.kevin.ceep.ui.recyclerview.adapter;
 import android.content.Context;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,7 +71,13 @@ public class ListaPersonagemAdapter extends RecyclerView.Adapter<ListaPersonagem
             nome_personagem = itemView.findViewById(R.id.itemNomePersonagem);
             card_personagem=itemView.findViewById(R.id.cardViewPersonagem);
 
-            itemView.setOnClickListener(view -> onItemClickListener.onItemClick(personagem, getAdapterPosition()));
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onItemClickListener.onItemClick(personagem, getAdapterPosition());
+                }
+            });
+            //itemView.setOnClickListener(view -> onItemClickListener.onItemClick(personagem, getAdapterPosition()));
         }
 
         public void vincula(Personagem personagem){

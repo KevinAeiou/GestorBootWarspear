@@ -4,6 +4,7 @@ import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
+import com.kevin.ceep.model.TrabalhoEstoque;
 
 public interface OnItemClickListener {
 
@@ -12,4 +13,5 @@ public interface OnItemClickListener {
     void onItemClick(Trabalho trabalho, int adapterPosition);
 
     void onItemClick(Raridade raridade, int adapterPosition);
+    void onItemClick(TrabalhoEstoque trabalhoEstoque, int adapterPosition, int botaoId);
 }
