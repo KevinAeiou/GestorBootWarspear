@@ -12,6 +12,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Ceep">
         <activity
+            android:theme="@style/TelaCheia"
+            android:name=".ui.activity.SplashscreenActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".ui.activity.AtributosPersonagemActivity"
             android:exported="false" />
         <activity
@@ -32,13 +42,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.activity.EntrarUsuarioActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="true"/>
         <activity
             android:name=".ui.activity.ConfirmaTrabalhoActivity"
             android:exported="false" />
