@@ -8,35 +8,60 @@
     android:id="@+id/itemCardTrabalhoEstoque">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayoutItemCardTrabalhoEstoque"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/itemNomeTrabalhoEstoque"
             style="@style/txtTituloCard"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Trabalho estoque"
             android:contentDescription="Nome do item em estoque"
-            />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Trabalho estoque" />
 
-        <EditText
-            android:id="@+id/itemQuantidadeTrabalhoEstoque"
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/itemBotaoMenosUm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_menos_um"
+            app:layout_constraintBottom_toBottomOf="@+id/itemTxtQuantidadeTrabalhosEstoque"
+            app:layout_constraintEnd_toStartOf="@+id/itemTxtQuantidadeTrabalhosEstoque"
+            app:layout_constraintTop_toTopOf="@+id/itemTxtQuantidadeTrabalhosEstoque" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/itemTxtQuantidadeTrabalhosEstoque"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:minWidth="50dp"
-            android:minHeight="50dp"
+            android:layout_marginBottom="16dp"
             android:gravity="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/itemNomeTrabalhoEstoque"
             app:layout_constraintBottom_toBottomOf="parent"
-            tools:text="0"
-            />
+            app:layout_constraintEnd_toEndOf="@id/constraintLayoutItemCardTrabalhoEstoque"
+            app:layout_constraintStart_toStartOf="@+id/constraintLayoutItemCardTrabalhoEstoque"
+            app:layout_constraintTop_toBottomOf="@id/itemNomeTrabalhoEstoque">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/itemEdtQuantidadeTrabalhoEstoque"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="Campo para editar quantidade"
+                android:inputType="numberSigned"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/itemBotaoMaisUm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/ic_mais_um"
+            app:layout_constraintBottom_toBottomOf="@+id/itemTxtQuantidadeTrabalhosEstoque"
+            app:layout_constraintStart_toEndOf="@+id/itemTxtQuantidadeTrabalhosEstoque"
+            app:layout_constraintTop_toTopOf="@+id/itemTxtQuantidadeTrabalhosEstoque" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </com.google.android.material.card.MaterialCardView>

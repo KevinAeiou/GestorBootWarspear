@@ -55,7 +55,15 @@ public class AtributosPersonagemActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         inicializaComponentes();
         recebeDadosIntent();
-        preencheCampos();
+    }
+    private void recebeDadosIntent() {
+        Intent dadosRecebidos = getIntent();
+        if (dadosRecebidos.hasExtra(CHAVE_PERSONAGEM)){
+            personagemRecebido = (Personagem) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
+            if (personagemRecebido != null){
+                preencheCampos();
+            }
+        }
     }
 
     private void preencheCampos() {
@@ -68,13 +76,6 @@ public class AtributosPersonagemActivity extends AppCompatActivity {
         }
         if (personagemRecebido.getEstado()){
             personagemSwEstado.setChecked(true);
-        }
-    }
-
-    private void recebeDadosIntent() {
-        Intent dadosRecebidos = getIntent();
-        if (dadosRecebidos.hasExtra(CHAVE_PERSONAGEM)){
-            personagemRecebido = (Personagem) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
         }
     }
 
@@ -118,6 +119,11 @@ public class AtributosPersonagemActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private boolean verificaEspacoVazio() {
+
+        return true;
+    }
+
     @Override
     public void onBackPressed() {
         if (verifcaPersonagemModificado()) {
@@ -142,27 +148,27 @@ public class AtributosPersonagemActivity extends AppCompatActivity {
     private void modificaPersonagemServidor() {
         if (!(personagemNome.getText().toString().equals(personagemRecebido.getNome()))){
             minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
-                    .child(personagemRecebido.getId()).setValue(personagemNome.getText().toString());
+                    .child(personagemRecebido.getId()).child("nome").setValue(personagemNome.getText().toString());
         }
         if (!(personagemEspacoProducao.getText().toString().equals(String.valueOf(personagemRecebido.getEspacoProducao())))){
             minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
-                    .child(personagemRecebido.getId()).setValue(Integer.valueOf(personagemEspacoProducao.getText().toString()));
+                    .child(personagemRecebido.getId()).child("espacoProducao").setValue(Integer.valueOf(personagemEspacoProducao.getText().toString()));
         }
         if (!(personagemEmail.getText().toString().equals(personagemRecebido.getEmail()))){
             minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
-                    .child(personagemRecebido.getId()).setValue(Integer.valueOf(personagemEmail.getText().toString()));
+                    .child(personagemRecebido.getId()).child("email").setValue(personagemEmail.getText().toString());
         }
         if (!(personagemSenha.getText().toString().equals(personagemRecebido.getSenha()))){
             minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
-                    .child(personagemRecebido.getId()).setValue(Integer.valueOf(personagemSenha.getText().toString()));
+                    .child(personagemRecebido.getId()).child("senha").setValue(personagemSenha.getText().toString());
         }
         if (personagemSwUso.isChecked()!=personagemRecebido.getUso()){
             minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
-                    .child(personagemRecebido.getId()).setValue(personagemSwUso.isChecked());
+                    .child(personagemRecebido.getId()).child("uso").setValue(personagemSwUso.isChecked());
         }
-        if (personagemSwEstado.isChecked()!=personagemRecebido.getUso()){
+        if (personagemSwEstado.isChecked()!=personagemRecebido.getEstado()){
             minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
-                    .child(personagemRecebido.getId()).setValue(personagemSwEstado.isChecked());
+                    .child(personagemRecebido.getId()).child("estado").setValue(personagemSwEstado.isChecked());
         }
 
     }

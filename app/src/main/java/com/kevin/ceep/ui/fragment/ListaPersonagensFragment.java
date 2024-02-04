@@ -12,6 +12,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -22,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,6 +36,7 @@ import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
+import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.ui.activity.AtributosPersonagemActivity;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaPersonagemAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
@@ -41,14 +45,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ListaPersonagensFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ListaPersonagensFragment extends Fragment {
-
     ActivityResultLauncher<Intent> activityLauncher=registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -67,20 +64,13 @@ public class ListaPersonagensFragment extends Fragment {
     private RecyclerView recyclerView;
     private DatabaseReference minhaReferencia;
     private String usuarioId;
+    private FragmentManager supportFragmentManager;
+    private LinearProgressIndicator indicadorProgresso;
+    private FloatingActionButton botaoCadastraPersonagem;
 
     public ListaPersonagensFragment() {
         // Required empty public constructor
     }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ListaPersonagensFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static ListaPersonagensFragment newInstance(String param1, String param2) {
         ListaPersonagensFragment fragment = new ListaPersonagensFragment();
         Bundle args = new Bundle();
@@ -94,9 +84,6 @@ public class ListaPersonagensFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(false);
-        if (getArguments() != null) {
-
-        }
     }
 
     @Override
@@ -112,20 +99,16 @@ public class ListaPersonagensFragment extends Fragment {
         inicializaComponentes(view);
         atualizaListaPersonagem();
         configuraSwipeRefreshLayout(view);
-        configuraBotaoCadastraPersonagem(view);
+        configuraBotaoCadastraPersonagem();
     }
-
-    private void configuraBotaoCadastraPersonagem(View view) {
-        FloatingActionButton botaoCadastraPersonagem = view.findViewById(R.id.botaoAFlutuantePersonagem);
-        botaoCadastraPersonagem.setOnClickListener(view1 -> vaiParaAtributosPersonagemActivity(new Personagem()));
-    }
-
     private void inicializaComponentes(View view) {
         minhaAutenticacao = FirebaseAuth.getInstance();
         usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         minhaReferencia = database.getReference(CHAVE_USUARIOS);
         recyclerView = view.findViewById(R.id.listaPersonagensRecyclerViewFragment);
+        indicadorProgresso = view.findViewById(R.id.indicadorProgressoListaPersonagensFragment);
+        botaoCadastraPersonagem = view.findViewById(R.id.botaoFlutuantePersonagem);
     }
     private void atualizaListaPersonagem() {
         List<Personagem> todosPersonagens = pegaTodosPersonagens();
@@ -149,7 +132,7 @@ public class ListaPersonagensFragment extends Fragment {
 
             @Override
             public void onItemClick(Personagem personagem, int posicao) {
-                vaiParaAtributosPersonagemActivity(personagem);
+                vaiParaListaTrabalhosFragment(personagem);
             }
 
             @Override
@@ -161,13 +144,28 @@ public class ListaPersonagensFragment extends Fragment {
             public void onItemClick(Raridade raridade, int adapterPosition) {
 
             }
+
+            @Override
+            public void onItemClick(TrabalhoEstoque trabalhoEstoque, int adapterPosition, int botaoId) {
+
+            }
         });
     }
+    private void vaiParaListaTrabalhosFragment(Personagem personagem) {
+        ListaTrabalhosFragment fragment = new ListaTrabalhosFragment();
+        Bundle argumento = new Bundle();
+        argumento.putString(CHAVE_PERSONAGEM, personagem.getId());
+        getParentFragmentManager().setFragmentResult(CHAVE_PERSONAGEM, argumento);
+        FragmentManager gerenciadorDeFragmento = getActivity().getSupportFragmentManager();
+        FragmentTransaction transicaoDeFragmento = gerenciadorDeFragmento.beginTransaction();
+        fragment.setArguments(argumento);
+        transicaoDeFragmento.replace(R.id.frameLayout, fragment);
+        transicaoDeFragmento.commit();
+    }
     private void vaiParaAtributosPersonagemActivity(Personagem personagem) {
-        Log.d("PERSONAGEM", personagem.getId());
-        Intent iniciaAtributosPersonagemActivity = new Intent(getContext(), AtributosPersonagemActivity.class);
-        iniciaAtributosPersonagemActivity.putExtra(CHAVE_PERSONAGEM,
-                personagem);
+        Intent iniciaAtributosPersonagemActivity =
+                new Intent(getActivity(), AtributosPersonagemActivity.class);
+        iniciaAtributosPersonagemActivity.putExtra(CHAVE_PERSONAGEM, personagem);
         activityLauncher.launch(iniciaAtributosPersonagemActivity);
     }
     private void configuraSwipeRefreshLayout(View view) {
@@ -176,6 +174,9 @@ public class ListaPersonagensFragment extends Fragment {
             swipeRefreshLayout.setRefreshing(false);
             atualizaListaPersonagem();
         });
+    }
+    private void configuraBotaoCadastraPersonagem() {
+        botaoCadastraPersonagem.setOnClickListener(view -> vaiParaAtributosPersonagemActivity(new Personagem()));
     }
     private List<Personagem> pegaTodosPersonagens() {
         personagens = new ArrayList<>();
@@ -192,6 +193,7 @@ public class ListaPersonagensFragment extends Fragment {
                             personagens.add(personagem);
                         }
                         personagemAdapter.notifyDataSetChanged();
+                        indicadorProgresso.setVisibility(View.GONE);
                     }
 
                     @Override

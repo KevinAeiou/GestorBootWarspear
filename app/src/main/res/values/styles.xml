@@ -111,4 +111,8 @@
         <item name="android:textColor">@color/black</item>
     </style>
 
+    <style name="TelaCheia" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
 </resources>

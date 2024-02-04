@@ -36,6 +36,7 @@ import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
+import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaProfissaoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
@@ -192,6 +193,9 @@ public class ListaProfissoesActivity extends AppCompatActivity {
                             profissoes.add(profissao);
                         }
                         profissaoAdapter.notifyDataSetChanged();
+                        if (profissoes.size() == 0){
+                            adicionaNovaListaProfissoes();
+                        }
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -199,6 +203,21 @@ public class ListaProfissoesActivity extends AppCompatActivity {
                     }
                 });
         return profissoes;
+    }
+    private void adicionaNovaListaProfissoes() {
+        String[] profissoes = getResources().getStringArray(R.array.profissoes);
+
+        for (int i = 0; i< profissoes.length; i++){
+            String novoIdProfissao = geraIdAleatorio();
+            Profissao profissao = new Profissao(profissoes[i], 0, false);
+            minhaReferencia.child(usuarioId)
+                    .child(CHAVE_LISTA_PERSONAGEM)
+                    .child(personagemId)
+                    .child(CHAVE_LISTA_PROFISSAO)
+                    .child(i+novoIdProfissao)
+                    .setValue(profissao);
+        }
+
     }
 
     private void configuraRecyclerView(){
@@ -241,6 +260,11 @@ public class ListaProfissoesActivity extends AppCompatActivity {
 
             @Override
             public void onItemClick(Raridade raridade, int adapterPosition) {
+
+            }
+
+            @Override
+            public void onItemClick(TrabalhoEstoque trabalhoEstoque, int adapterPosition, int botaoId) {
 
             }
         });

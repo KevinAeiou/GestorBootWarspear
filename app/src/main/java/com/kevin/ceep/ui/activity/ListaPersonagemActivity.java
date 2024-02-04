@@ -36,6 +36,7 @@ import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
+import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaPersonagemAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
@@ -252,6 +253,11 @@ public class ListaPersonagemActivity extends AppCompatActivity {
             @Override
             public void onItemClick(Raridade raridade, int adapterPosition) {
                 
+            }
+
+            @Override
+            public void onItemClick(TrabalhoEstoque trabalhoEstoque, int adapterPosition, int botaoId) {
+
             }
         });
     }

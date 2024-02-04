@@ -106,7 +106,9 @@ public class ListaTrabalhoProducaoAdapter extends RecyclerView.Adapter<ListaTrab
 
         private void configuraCorCardViewTrabalho(TrabalhoProducao trabalhoProducao) {
             Integer estado = trabalhoProducao.getEstado();
-            if (estado==1){
+            if (estado == 0){
+                cardview_trabalho.setCardBackgroundColor(ContextCompat.getColor(context,R.color.cor_background_card));
+            }else if (estado==1){
                 cardview_trabalho.setCardBackgroundColor(ContextCompat.getColor(context,R.color.cor_background_produzindo));
             }else if (estado==2){
                 cardview_trabalho.setCardBackgroundColor(ContextCompat.getColor(context,R.color.cor_background_feito));
