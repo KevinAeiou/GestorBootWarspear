@@ -18,7 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,7 +31,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
@@ -59,7 +57,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 public class ListaTrabalhosFragment extends Fragment {
-    private static final String TAG="MainActivity";
+    private static final String TAG="ListaTrabalhosFragment";
     ActivityResultLauncher<Intent> activityLauncher=registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -75,10 +73,9 @@ public class ListaTrabalhosFragment extends Fragment {
     private DatabaseReference databaseReference;
     private ListaTrabalhoProducaoAdapter trabalhoAdapter;
     private RecyclerView recyclerView;
-    private List<TrabalhoProducao> trabalhos;
+    private List<TrabalhoProducao> trabalhos, trabalhosFiltrados;
     private String usuarioId, personagemId;
     private List<Personagem> personagens;
-    private Menu itemMenuPersonagem;
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearProgressIndicator indicadorProgresso;
     private ChipGroup grupoChipFiltro;
@@ -97,63 +94,73 @@ public class ListaTrabalhosFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        /*getParentFragmentManager().setFragmentResultListener(CHAVE_PERSONAGEM, this, (requestKey, result) -> {
-            personagemId = result.getString(CHAVE_PERSONAGEM);
-            Log.d("personagemID1", "personagemID definido como: "+personagemId);
-        });*/
+        Log.d(TAG, "onCreate");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView");
         return inflater.inflate(R.layout.fragment_lista_trabalhos, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.d(TAG, "onViewCreated");
         inicializaComponentes(view);
-        getParentFragmentManager().setFragmentResultListener(CHAVE_PERSONAGEM, this, (requestKey, result) -> {
-            personagemId = result.getString(CHAVE_PERSONAGEM);
-            atualizaListaTrabalho();
-        });
+        recebePersonagemId();
+        configuraRecyclerView(trabalhos);
         configuraSwipeRefreshLayout();
         configuraBotaoInsereTrabalho(view);
         configuraDeslizeItem();
+        configuraChipSelecionado();
+    }
+
+    private void configuraChipSelecionado() {
         grupoChipFiltro.setOnCheckedChangeListener((group, checkedId) -> {
-            Log.d("chipSelecionado", "Chip selecionado: "+checkedId);
-            int estado = -1;
-            switch (checkedId){
-                case (R.id.chipFiltroTodos):
-                    estado = -1;
-                    break;
-                case (R.id.chipFiltroProduzir):
-                    estado = 0;
-                    break;
-                case (R.id.chipFiltroProduzindo):
-                    estado = 1;
-                    break;
-                case (R.id.chipFiltroPronto):
-                    estado = 2;
-                    break;
-            }
-            List<TrabalhoProducao> listaFiltrada = filtroListaChip(estado, trabalhos);
-            if (listaFiltrada.isEmpty()) {
-                // if no item is added in filtered list we are
-                // displaying a toast message as no data found.
-                Snackbar.make(getView(), "Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
-            } else {
-                // at last we are passing that filtered
-                // list to our adapter class.
-                trabalhoAdapter.setListaFiltrada(listaFiltrada);
-            }
+            configuraChipFiltro(checkedId);
         });
+    }
+
+    private void configuraChipFiltro(int checkedId) {
+        int estado = -1;
+        switch (checkedId){
+            case (R.id.chipFiltroTodos):
+                estado = -1;
+                break;
+            case (R.id.chipFiltroProduzir):
+                estado = 0;
+                break;
+            case (R.id.chipFiltroProduzindo):
+                estado = 1;
+                break;
+            case (R.id.chipFiltroPronto):
+                estado = 2;
+                break;
+        }
+        trabalhosFiltrados = filtroListaChip(estado, trabalhos);
+        if (trabalhosFiltrados.isEmpty()) {
+            Snackbar.make(getView(), "Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
+        } else {
+            trabalhoAdapter.setListaFiltrada(trabalhosFiltrados);
+        }
+    }
+
+    private void recebePersonagemId() {
+        Log.d(TAG, "inicio recebe dados");
+        getParentFragmentManager().setFragmentResultListener(CHAVE_PERSONAGEM, this, (requestKey, result) -> {
+            personagemId = result.getString(CHAVE_PERSONAGEM);
+            Log.d(TAG, "personagemId: "+personagemId);
+            pegaTodosTrabalhos();
+        });
+        Log.d(TAG, "fim recebe dados");
     }
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_personagem, menu);
-        itemMenuPersonagem = menu;
+        Log.d(TAG, "onCreateOptionsMenu");
         MenuItem itemBusca = menu.findItem(R.id.itemMenuBusca);
         SearchView busca = (SearchView) itemBusca.getActionView();
         busca.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -194,7 +201,7 @@ public class ListaTrabalhosFragment extends Fragment {
         List<TrabalhoProducao> listaFiltrada = new ArrayList<>();
 
         // running a for loop to compare elements.
-        for (TrabalhoProducao item : trabalhos) {
+        for (TrabalhoProducao item : trabalhosFiltrados) {
             // checking if the entered string matched with any item of our recycler view.
             if (item.getNome().toLowerCase().contains(newText.toLowerCase())) {
                 // if the item is matched we are
@@ -203,12 +210,9 @@ public class ListaTrabalhosFragment extends Fragment {
             }
         }
         if (listaFiltrada.isEmpty()) {
-            // if no item is added in filtered list we are
-            // displaying a toast message as no data found.
             Snackbar.make(getView(),"Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
         } else {
-            // at last we are passing that filtered
-            // list to our adapter class.
+            trabalhosFiltrados = listaFiltrada;
             trabalhoAdapter.setListaFiltrada(listaFiltrada);
         }
     }
@@ -234,7 +238,7 @@ public class ListaTrabalhosFragment extends Fragment {
     }
 
     private void removeTrabalhoLista(int swipePosicao) {
-        String idTrabalho = trabalhos.get(swipePosicao).getId();
+        String idTrabalho = trabalhosFiltrados.get(swipePosicao).getId();
         databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 child(personagemId).child(CHAVE_LISTA_DESEJO).
                 child(idTrabalho).removeValue();
@@ -242,7 +246,7 @@ public class ListaTrabalhosFragment extends Fragment {
     private void configuraSwipeRefreshLayout() {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             if (personagemId != null){
-                atualizaListaTrabalho();
+                pegaTodosTrabalhos();
             }
         });
     }
@@ -261,6 +265,7 @@ public class ListaTrabalhosFragment extends Fragment {
     }
 
     private void inicializaComponentes(View view) {
+        trabalhos = new ArrayList<>();
         usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         recyclerView = view.findViewById(R.id.listaTrabalhoRecyclerView);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -271,26 +276,8 @@ public class ListaTrabalhosFragment extends Fragment {
 
     }
     private void atualizaListaTrabalho() {
-        List<TrabalhoProducao> todosTrabalhos = pegaTodosTrabalhos();
         int chipId = grupoChipFiltro.getCheckedChipId();
-        int estado = -1;
-        if (chipId == R.id.chipFiltroTodos){
-            estado = -1;
-        }else if (chipId == R.id.chipFiltroProduzir){
-            estado = 0;
-        }else if (chipId == R.id.chipFiltroProduzindo){
-            estado = 1;
-        }else if (chipId == R.id.chipFiltroPronto){
-            estado = 2;
-        }
-        List<TrabalhoProducao> listaFiltrada = filtroListaChip(estado,todosTrabalhos);
-        Log.d("listaFiltrada1", "Tamanho da lista filtrada: "+ listaFiltrada.size());
-        if (listaFiltrada.isEmpty()) {
-            // if no item is added in filtered list we are
-            // displaying a toast message as no data found.
-            Snackbar.make(getView(), "Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
-        }
-        configuraRecyclerView(listaFiltrada);
+        configuraChipFiltro(chipId);
     }
     private void configuraRecyclerView(List<TrabalhoProducao> listaFiltrada) {
         recyclerView.setHasFixedSize(true);
@@ -335,7 +322,8 @@ public class ListaTrabalhosFragment extends Fragment {
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_PERSONAGEM, personagemId);
         activityLauncher.launch(iniciaTrabalhoEspecificoActivity);
     }
-    private List<TrabalhoProducao> pegaTodosTrabalhos() {
+    private void pegaTodosTrabalhos() {
+        Log.d(TAG, "inicio pegaTodosTrabalhos");
         trabalhos = new ArrayList<>();
         databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 child(personagemId).child(CHAVE_LISTA_DESEJO).
@@ -350,6 +338,8 @@ public class ListaTrabalhosFragment extends Fragment {
                         trabalhoAdapter.notifyDataSetChanged();
                         indicadorProgresso.setVisibility(View.GONE);
                         swipeRefreshLayout.setRefreshing(false);
+                        Log.d(TAG, "Todos trabalhos: "+trabalhos);
+                        atualizaListaTrabalho();
                     }
 
                     @Override
@@ -357,6 +347,6 @@ public class ListaTrabalhosFragment extends Fragment {
 
                     }
                 });
-        return trabalhos;
+        Log.d(TAG, "fim pegaTodosTrabalhos");
     }
 }
