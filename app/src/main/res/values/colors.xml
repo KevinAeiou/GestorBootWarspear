@@ -17,11 +17,14 @@
     <color name="cor_texto_raridade_comum">#FCF5EF</color>
     <color name="cor_texto_nivel">#00ff00</color>
     <!-- Cores de fundo -->
-    <color name="cor_background_escuro">#27BAF4</color>
-    <color name="cor_background_escuro_secundario">#31C7F5</color>
+    <color name="cor_azul">#115588</color>
+    <color name="cor_azul_escuro">#003256</color>
+    <color name="cor_azul_claro">#9BCBFF</color>
+    <color name="cor_laranja">#FF7235</color>
+    <color name="cor_laranja_escuro">#CD4E10</color>
+    <color name="cor_laranja_claro">#FF8C5D</color>
     <color name="cor_background_claro">#59D8FF</color>
     <color name="cor_background_claro_secundario">#A0E2F7</color>
-    <color name="cor_background_laranja">#FF7235</color>
     <color name="cor_background_bordo">#A71500</color>
     <color name="cor_background_card">#6DB5CA</color>
     <color name="cor_background_produzindo">#6d87ca</color>

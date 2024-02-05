@@ -80,6 +80,10 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
                 fragmentoSelecionado = new ListaEstoqueFragment();
                 Log.d("menuNavegacao", "Clicou item: estoque");
                 break;
+            case R.id.nav_sair:
+                FirebaseAuth.getInstance().signOut();
+                vaiParaEntraActivity();
+                break;
         }
         if (fragmentoSelecionado != null){
             reposicionaFragmento(fragmentoSelecionado);

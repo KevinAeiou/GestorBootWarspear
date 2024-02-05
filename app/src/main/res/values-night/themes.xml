@@ -2,13 +2,13 @@
     <!-- Base application theme. -->
     <style name="Theme.Ceep" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/cor_background_claro</item>
-        <item name="colorPrimaryVariant">@color/cor_background_claro_secundario</item>
-        <item name="colorOnPrimary">@color/cor_background_card</item>
+        <item name="colorPrimary">@color/cor_azul_claro</item>
+        <item name="colorPrimaryVariant">@color/cor_azul</item>
+        <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondary">@color/cor_laranja_claro</item>
+        <item name="colorSecondaryVariant">@color/cor_laranja_claro</item>
+        <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
@@ -28,13 +28,13 @@
     </style>
     <style name="Theme.Ceep.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/cor_background_claro</item>
-        <item name="colorPrimaryVariant">@color/cor_background_claro_secundario</item>
-        <item name="colorOnPrimary">@color/cor_background_card</item>
+        <item name="colorPrimary">@color/cor_azul_claro</item>
+        <item name="colorPrimaryVariant">@color/cor_azul</item>
+        <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondary">@color/cor_laranja_claro</item>
+        <item name="colorSecondaryVariant">@color/cor_laranja_claro</item>
+        <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->

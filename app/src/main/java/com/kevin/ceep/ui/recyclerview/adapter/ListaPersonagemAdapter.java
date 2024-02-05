@@ -1,6 +1,5 @@
 package com.kevin.ceep.ui.recyclerview.adapter;
 import android.content.Context;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,7 +90,7 @@ public class ListaPersonagemAdapter extends RecyclerView.Adapter<ListaPersonagem
                 if (personagem.getUso()){
                     card_personagem.setCardBackgroundColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_principiante));
                 }else{
-                    card_personagem.setCardBackgroundColor(ContextCompat.getColor(context,R.color.cor_background_escuro));
+                    card_personagem.setCardBackgroundColor(ContextCompat.getColor(context,R.color.cor_azul));
                 }
             }else{
                 card_personagem.setCardBackgroundColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_iniciante));
