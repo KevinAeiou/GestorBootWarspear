@@ -1,25 +1,22 @@
 package com.kevin.ceep.ui.activity;
 
+import static com.kevin.ceep.ui.activity.ListaPersonagemActivity.geraIdAleatorio;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_REQUISICAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.annotation.LongDef;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AutoCompleteTextView;
-import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -32,9 +29,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.ActivityAtributosPersonagemBinding;
 import com.kevin.ceep.model.Personagem;
-import com.kevin.ceep.model.Profissao;
-import com.kevin.ceep.model.Raridade;
-import com.kevin.ceep.model.TrabalhoProducao;
 
 import java.util.Objects;
 
@@ -43,10 +37,12 @@ public class AtributosPersonagemActivity extends AppCompatActivity {
     private FirebaseDatabase database;
     private DatabaseReference minhareferencia;
     private Personagem personagemRecebido;
+    private TextInputLayout personagemNomeTxt, personagemEspacoProducaoTxt, personagemEmailTxt, personagemSenhaTxt;
     private EditText personagemNome, personagemEspacoProducao, personagemEmail, personagemSenha;
     private SwitchCompat personagemSwUso, personagemSwEstado;
     private String usuarioId;
     private ActivityAtributosPersonagemBinding binding;
+    private int codigoRequisicao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +55,14 @@ public class AtributosPersonagemActivity extends AppCompatActivity {
     private void recebeDadosIntent() {
         Intent dadosRecebidos = getIntent();
         if (dadosRecebidos.hasExtra(CHAVE_PERSONAGEM)){
-            personagemRecebido = (Personagem) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
-            if (personagemRecebido != null){
-                preencheCampos();
+            codigoRequisicao = (int) dadosRecebidos.getSerializableExtra(CHAVE_REQUISICAO);
+            if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO){
+
+            } else if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO) {
+                personagemRecebido = (Personagem) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
+                if (personagemRecebido != null){
+                    preencheCampos();
+                }
             }
         }
     }
@@ -84,11 +85,15 @@ public class AtributosPersonagemActivity extends AppCompatActivity {
         minhareferencia = database.getReference(CHAVE_USUARIOS);
         usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         personagemNome = binding.edtNomePersonagem;
+        personagemNomeTxt = binding.txtNomePersonagem;
         personagemEspacoProducao = binding.edtEspacoProducaoPersonagem;
+        personagemEspacoProducaoTxt = binding.txtEspacoProducaoPersonagem;
         personagemSwUso = binding.swUsoPersonagem;
         personagemSwEstado = binding.swEstadoPersonagem;
         personagemEmail = binding.edtEmailPersonagem;
+        personagemEmailTxt = binding.txtEmailPersonagem;
         personagemSenha = binding.edtSenhaPersonagem;
+        personagemSenhaTxt = binding.txtSenhaPersonagem;
     }
 
     @Override
@@ -100,47 +105,94 @@ public class AtributosPersonagemActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId()==R.id.itemMenuSalvaTrabalho) {
-            if (verifcaPersonagemModificado()) {
-                Snackbar.make(binding.constraintLayoutAtributosPersonagem, "Personagem modificado", Snackbar.LENGTH_LONG).show();
-                MaterialAlertDialogBuilder dialogoDeAlerta = new MaterialAlertDialogBuilder(this);
-                dialogoDeAlerta.setMessage("Deseja confirmar alterações?");
-                dialogoDeAlerta.setNegativeButton("Não", ((dialogInterface, i) -> {
+            if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO) {
+                if (verifcaPersonagemModificado()) {
+                    Snackbar.make(binding.constraintLayoutAtributosPersonagem, "Personagem modificado", Snackbar.LENGTH_LONG).show();
+                    MaterialAlertDialogBuilder dialogoDeAlerta = new MaterialAlertDialogBuilder(this);
+                    dialogoDeAlerta.setMessage("Deseja confirmar alterações?");
+                    dialogoDeAlerta.setNegativeButton("Não", ((dialogInterface, i) -> {
+                        vaiParaFragmentoPersonagens();
+                    }));
+                    dialogoDeAlerta.setPositiveButton("Sim", (dialogInterface, i) -> {
+                        modificaPersonagemServidor();
+                        vaiParaFragmentoPersonagens();
+                    });
+                    dialogoDeAlerta.show();
+                } else {
                     vaiParaFragmentoPersonagens();
-                }));
-                dialogoDeAlerta.setPositiveButton("Sim", (dialogInterface, i) -> {
-                    modificaPersonagemServidor();
+                }
+            } else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO) {
+                if (verificaCampos()){
+                    String novoId = geraIdAleatorio();
+                    Snackbar.make(getCurrentFocus(), "Todos os campos satisfeitos!", Snackbar.LENGTH_LONG).show();
+                    Personagem novoPersonagem = new Personagem(
+                            novoId,
+                            personagemNome.getText().toString(),
+                            personagemEmail.getText().toString(),
+                            personagemSenha.getText().toString(),
+                            personagemSwEstado.isChecked(),
+                            personagemSwUso.isChecked(),
+                            Integer.parseInt(personagemEspacoProducao.getText().toString())
+                    );
+                    minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).child(novoId).setValue(novoPersonagem);
                     vaiParaFragmentoPersonagens();
-                });
-                dialogoDeAlerta.show();
-            } else {
-                vaiParaFragmentoPersonagens();
+                    finish();
+                }
             }
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean verificaEspacoVazio() {
-
-        return true;
+    private boolean verificaCampos() {
+        boolean confirmacao = true;
+        if (personagemNome.getText().toString().isEmpty()){
+            personagemNomeTxt.setHelperText("Campo requerido!");
+            confirmacao = false;
+        }else {
+            personagemNomeTxt.setHelperTextEnabled(false);
+        }
+        if (personagemEspacoProducao.getText().toString().isEmpty()){
+            personagemEspacoProducaoTxt.setHelperText("Campo requerido!");
+            confirmacao = false;
+        }else {
+            personagemEspacoProducaoTxt.setHelperTextEnabled(false);
+        }
+        if (personagemEmail.getText().toString().isEmpty()){
+            personagemEmailTxt.setHelperText("Campo requerido!");
+            confirmacao = false;
+        }else {
+            personagemEmailTxt.setHelperTextEnabled(false);
+        }
+        if (personagemSenha.getText().toString().isEmpty()){
+            personagemSenhaTxt.setHelperText("Campo requerido!");
+            confirmacao = false;
+        }else {
+            personagemSenhaTxt.setHelperTextEnabled(false);
+        }
+        return confirmacao;
     }
 
     @Override
     public void onBackPressed() {
-        if (verifcaPersonagemModificado()) {
-            Snackbar.make(binding.constraintLayoutAtributosPersonagem, "Personagem modificado", Snackbar.LENGTH_LONG).show();
-            MaterialAlertDialogBuilder dialogoDeAlerta = new MaterialAlertDialogBuilder(this);
-            dialogoDeAlerta.setMessage("Deseja descartar alterações?");
-            dialogoDeAlerta.setNegativeButton("Não", ((dialogInterface, i) -> {
-                modificaPersonagemServidor();
-                vaiParaFragmentoPersonagens();
+        if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO) {
+            if (verifcaPersonagemModificado()) {
+                Snackbar.make(binding.constraintLayoutAtributosPersonagem, "Personagem modificado", Snackbar.LENGTH_LONG).show();
+                MaterialAlertDialogBuilder dialogoDeAlerta = new MaterialAlertDialogBuilder(this);
+                dialogoDeAlerta.setMessage("Deseja descartar alterações?");
+                dialogoDeAlerta.setNegativeButton("Não", ((dialogInterface, i) -> {
+                    modificaPersonagemServidor();
+                    vaiParaFragmentoPersonagens();
+                    super.onBackPressed();
+                }));
+                dialogoDeAlerta.setPositiveButton("Sim", (dialogInterface, i) -> {
+                    vaiParaFragmentoPersonagens();
+                    super.onBackPressed();
+                });
+                dialogoDeAlerta.show();
+            } else {
                 super.onBackPressed();
-            }));
-            dialogoDeAlerta.setPositiveButton("Sim", (dialogInterface, i) -> {
-                vaiParaFragmentoPersonagens();
-                super.onBackPressed();
-            });
-            dialogoDeAlerta.show();
-        }else {
+            }
+        } else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO) {
             super.onBackPressed();
         }
     }

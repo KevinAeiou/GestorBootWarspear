@@ -9,7 +9,6 @@ public interface NotaActivityConstantes {
     String CHAVE_LISTA_ESTOQUE = "Lista_estoque";
     String CHAVE_LISTA_PROFISSAO = "Lista_profissoes";
     String CHAVE_LISTA_TRABALHO = "Lista_trabalhos";
-
     String CHAVE_NOME_RARIDADE = "nome_raridade";
     String CHAVE_NOME_PROFISSAO = "nome_profissao";
     String CHAVE_NOME_TRABALHO = "nome_trabalho";
@@ -26,6 +25,7 @@ public interface NotaActivityConstantes {
     String CHAVE_TITULO_NOVO_TRABALHO="Novo trabalho";
     String TAG_ACTIVITY = "Estado da Activity";
     String CHAVE_ESTADO = "estado";
+    String CHAVE_REQUISICAO = "requisicao";
     int CODIGO_REQUISICAO_INSERE_TRABALHO = 1;
     int CODIGO_REQUISICAO_ALTERA_TRABALHO = 2;
     int POSICAO_INVALIDA = -1;

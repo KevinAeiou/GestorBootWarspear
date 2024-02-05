@@ -2,7 +2,9 @@ package com.kevin.ceep.ui.fragment;
 
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_REQUISICAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -165,6 +167,7 @@ public class ListaPersonagensFragment extends Fragment {
     private void vaiParaAtributosPersonagemActivity(Personagem personagem) {
         Intent iniciaAtributosPersonagemActivity =
                 new Intent(getActivity(), AtributosPersonagemActivity.class);
+        iniciaAtributosPersonagemActivity.putExtra(CHAVE_REQUISICAO, CODIGO_REQUISICAO_INSERE_TRABALHO);
         iniciaAtributosPersonagemActivity.putExtra(CHAVE_PERSONAGEM, personagem);
         activityLauncher.launch(iniciaAtributosPersonagemActivity);
     }
