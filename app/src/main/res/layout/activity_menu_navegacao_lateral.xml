@@ -23,8 +23,8 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/white"
                 android:elevation="0dp"
+                style="@style/Widget.MaterialComponents.Toolbar"
                 app:navigationIcon="@drawable/ic_menu"
                 />
         </com.google.android.material.appbar.AppBarLayout>
