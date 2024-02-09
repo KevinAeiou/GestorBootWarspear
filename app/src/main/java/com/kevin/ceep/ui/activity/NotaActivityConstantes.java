@@ -23,6 +23,7 @@ public interface NotaActivityConstantes {
     String CHAVE_TITULO_PERSONAGEM = "Personagem";
     String CHAVE_TITULO_ALTERA_STATUS_TRABALHO = "Altera estado";
     String CHAVE_TITULO_NOVO_TRABALHO="Novo trabalho";
+    String CHAVE_TITULO_ESTOQUE = "Estoque";
     String TAG_ACTIVITY = "Estado da Activity";
     String CHAVE_ESTADO = "estado";
     String CHAVE_REQUISICAO = "requisicao";

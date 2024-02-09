@@ -66,17 +66,14 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         Fragment fragmentoSelecionado = null;
         switch (itemNavegacao){
             case R.id.nav_personagem:
-                setTitle(CHAVE_LISTA_PERSONAGEM);
                 fragmentoSelecionado = new ListaPersonagensFragment();
                 Log.d("menuNavegacao", "Clicou item: personagens");
                 break;
             case R.id.nav_trabalhos:
-                setTitle(CHAVE_LISTA_TRABALHO);
                 fragmentoSelecionado = ListaTrabalhosFragment.novaInstanciaListaPersonagensFragment(personagemRecebido);
                 Log.d("menuNavegacao", "Clicou item: trabalhos");
                 break;
             case R.id.nav_estoque:
-                setTitle(CHAVE_LISTA_ESTOQUE);
                 fragmentoSelecionado = new ListaEstoqueFragment();
                 Log.d("menuNavegacao", "Clicou item: estoque");
                 break;
