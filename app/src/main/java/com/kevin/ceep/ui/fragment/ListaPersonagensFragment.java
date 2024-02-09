@@ -63,26 +63,14 @@ public class ListaPersonagensFragment extends Fragment {
     );
     private ListaPersonagemAdapter personagemAdapter;
     private List<Personagem> personagens;
-    private FirebaseAuth minhaAutenticacao;
     private RecyclerView recyclerView;
-    private DatabaseReference minhaReferencia;
     private String usuarioId;
-    private FragmentManager supportFragmentManager;
     private LinearProgressIndicator indicadorProgresso;
     private FloatingActionButton botaoCadastraPersonagem;
 
     public ListaPersonagensFragment() {
         // Required empty public constructor
     }
-    public static ListaPersonagensFragment newInstance(String param1, String param2) {
-        ListaPersonagensFragment fragment = new ListaPersonagensFragment();
-        Bundle args = new Bundle();
-        //args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +81,7 @@ public class ListaPersonagensFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        getActivity().setTitle(CHAVE_TITULO_PERSONAGEM);
+        requireActivity().setTitle(CHAVE_TITULO_PERSONAGEM);
         return inflater.inflate(R.layout.fragment_lista_personagens, container, false);
     }
 
@@ -106,10 +94,10 @@ public class ListaPersonagensFragment extends Fragment {
         configuraBotaoCadastraPersonagem();
     }
     private void inicializaComponentes(View view) {
-        minhaAutenticacao = FirebaseAuth.getInstance();
+        FirebaseAuth minhaAutenticacao = FirebaseAuth.getInstance();
         usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        minhaReferencia = database.getReference(CHAVE_USUARIOS);
+        DatabaseReference minhaReferencia = database.getReference(CHAVE_USUARIOS);
         recyclerView = view.findViewById(R.id.listaPersonagensRecyclerViewFragment);
         indicadorProgresso = view.findViewById(R.id.indicadorProgressoListaPersonagensFragment);
         botaoCadastraPersonagem = view.findViewById(R.id.botaoFlutuantePersonagem);
@@ -159,10 +147,11 @@ public class ListaPersonagensFragment extends Fragment {
         ListaTrabalhosFragment fragment = new ListaTrabalhosFragment();
         Bundle argumento = new Bundle();
         argumento.putString(CHAVE_PERSONAGEM, personagem.getId());
-        getParentFragmentManager().setFragmentResult(CHAVE_PERSONAGEM, argumento);
-        FragmentManager gerenciadorDeFragmento = getActivity().getSupportFragmentManager();
-        FragmentTransaction transicaoDeFragmento = gerenciadorDeFragmento.beginTransaction();
         fragment.setArguments(argumento);
+
+        getParentFragmentManager().setFragmentResult(CHAVE_PERSONAGEM, argumento);
+        FragmentManager gerenciadorDeFragmento = requireActivity().getSupportFragmentManager();
+        FragmentTransaction transicaoDeFragmento = gerenciadorDeFragmento.beginTransaction();
         transicaoDeFragmento.replace(R.id.frameLayout, fragment);
         transicaoDeFragmento.commit();
     }

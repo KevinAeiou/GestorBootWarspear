@@ -1,9 +1,9 @@
 package com.kevin.ceep.ui.fragment;
 
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
@@ -12,19 +12,6 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICA
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,6 +19,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -77,20 +75,11 @@ public class ListaTrabalhosFragment extends Fragment {
     private RecyclerView recyclerView;
     private List<TrabalhoProducao> trabalhos, trabalhosFiltrados;
     private String usuarioId, personagemId;
-    private List<Personagem> personagens;
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearProgressIndicator indicadorProgresso;
     private ChipGroup grupoChipFiltro;
     public ListaTrabalhosFragment() {
         // Required empty public constructor
-    }
-    public static ListaTrabalhosFragment novaInstanciaListaPersonagensFragment(String personagemId) {
-        ListaTrabalhosFragment fragment = new ListaTrabalhosFragment();
-        Bundle argumento = new Bundle();
-        argumento.putString(CHAVE_PERSONAGEM, personagemId);
-        //argumento.putString(ARG_PARAM2, param2);
-        fragment.setArguments(argumento);
-        return fragment;
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -103,7 +92,7 @@ public class ListaTrabalhosFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
-        getActivity().setTitle(CHAVE_TITULO_TRABALHO);
+        requireActivity().setTitle(CHAVE_TITULO_TRABALHO);
         return inflater.inflate(R.layout.fragment_lista_trabalhos, container, false);
     }
 
@@ -121,16 +110,13 @@ public class ListaTrabalhosFragment extends Fragment {
     }
 
     private void configuraChipSelecionado() {
-        grupoChipFiltro.setOnCheckedChangeListener((group, checkedId) -> {
-            configuraChipFiltro(checkedId);
-        });
+        grupoChipFiltro.setOnCheckedChangeListener((group, checkedId) -> configuraChipFiltro(checkedId));
     }
 
     private void configuraChipFiltro(int checkedId) {
         int estado = -1;
         switch (checkedId){
             case (R.id.chipFiltroTodos):
-                estado = -1;
                 break;
             case (R.id.chipFiltroProduzir):
                 estado = 0;
@@ -144,7 +130,7 @@ public class ListaTrabalhosFragment extends Fragment {
         }
         trabalhosFiltrados = filtroListaChip(estado, trabalhos);
         if (trabalhosFiltrados.isEmpty()) {
-            Snackbar.make(getView(), "Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(requireView(), "Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
         } else {
             trabalhoAdapter.setListaFiltrada(trabalhosFiltrados);
         }
@@ -155,7 +141,9 @@ public class ListaTrabalhosFragment extends Fragment {
         getParentFragmentManager().setFragmentResultListener(CHAVE_PERSONAGEM, this, (requestKey, result) -> {
             personagemId = result.getString(CHAVE_PERSONAGEM);
             Log.d(TAG, "personagemId: "+personagemId);
-            pegaTodosTrabalhos();
+            if (personagemId != null){
+                pegaTodosTrabalhos();
+            }
         });
         Log.d(TAG, "fim recebe dados");
     }
@@ -213,7 +201,7 @@ public class ListaTrabalhosFragment extends Fragment {
             }
         }
         if (listaFiltrada.isEmpty()) {
-            Snackbar.make(getView(),"Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(requireView(),"Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
         } else {
             trabalhosFiltrados = listaFiltrada;
             trabalhoAdapter.setListaFiltrada(listaFiltrada);

@@ -1,20 +1,12 @@
 package com.kevin.ceep.ui.fragment;
 
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_ESTOQUE;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_ESTOQUE;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,8 +15,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -52,30 +50,10 @@ public class ListaEstoqueFragment extends Fragment {
     private List<Personagem> personagens;
     private String usuarioId, personagemId;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private TextInputEditText edtQuantidade;
     private Menu itemMenuPersonagem;// Variavel provisoria
-
-
     public ListaEstoqueFragment() {
         // Required empty public constructor
     }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param personagemId Parameter 1.
-     * @return A new instance of fragment EstoqueFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ListaEstoqueFragment novaInstanciaListaEstoque(String personagemId) {
-        ListaEstoqueFragment fragment = new ListaEstoqueFragment();
-        Bundle argumentos = new Bundle();
-        argumentos.putString(CHAVE_PERSONAGEM, personagemId);
-        fragment.setArguments(argumentos);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,7 +70,7 @@ public class ListaEstoqueFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        getActivity().setTitle(CHAVE_TITULO_ESTOQUE);
+        requireActivity().setTitle(CHAVE_TITULO_ESTOQUE);
         return inflater.inflate(R.layout.fragment_lista_estoque, container, false);
     }
 
@@ -106,7 +84,6 @@ public class ListaEstoqueFragment extends Fragment {
         }
         configuraSwipeRefreshLayout();
     }
-
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_personagem, menu);
@@ -141,7 +118,6 @@ public class ListaEstoqueFragment extends Fragment {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         minhaReferencia = database.getReference(CHAVE_USUARIOS);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutTrabalhosEstoque);
-        edtQuantidade = view.findViewById(R.id.itemEdtQuantidadeTrabalhoEstoque);
     }
     private List<Personagem> pegaTodosPersonagens() {
         Log.d("listaPersonagens", "Entrou na funçao pegaTodosPersonagens");
@@ -157,8 +133,10 @@ public class ListaEstoqueFragment extends Fragment {
                         for (DataSnapshot dn:dataSnapshot.getChildren()){
                             Personagem personagem = dn.getValue(Personagem.class);
                             personagens.add(personagem);
-                            Log.d("listaPersonagens", "Personagem adicionado: " + personagem.getNome());
-                            itemMenuPersonagem.add(personagem.getNome());
+                            if (personagem != null) {
+                                Log.d("listaPersonagens", "Personagem adicionado: " + personagem.getNome());
+                            }
+                            itemMenuPersonagem.add(personagem != null ? personagem.getNome() : null);
                         }
                         personagemId = personagens.get(0).getId();
                     }
@@ -219,13 +197,13 @@ public class ListaEstoqueFragment extends Fragment {
                     .child(trabalhoEstoque.getId()).child("quantidade")
                     .setValue(trabalhoEstoque.getQuantidade()-1, ((databaseError, databaseReference) -> {
                         if (databaseError != null){
-                            Snackbar.make(getView(),databaseError.getMessage(),Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(requireView(),databaseError.getMessage(),Snackbar.LENGTH_SHORT).show();
                         } else {
                             TrabalhoEstoque trabalhoAlterado = new TrabalhoEstoque(
                                     trabalhoEstoque.getId(),
                                     trabalhoEstoque.getNome(),
                                     trabalhoEstoque.getQuantidade()-1);
-                            Snackbar.make(getView(),"Quantidade alterada!",Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(requireView(),"Quantidade alterada!",Snackbar.LENGTH_SHORT).show();
                             trabalhoEstoqueAdapter.altera(adapterPosition,trabalhoAlterado);
                         }
                     }));
@@ -235,13 +213,13 @@ public class ListaEstoqueFragment extends Fragment {
                     .child(trabalhoEstoque.getId()).child("quantidade")
                     .setValue(trabalhoEstoque.getQuantidade() + 1, (databaseError, databaseReference) -> {
                         if (databaseError != null){
-                            Snackbar.make(getView(),databaseError.getMessage(),Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(requireView(),databaseError.getMessage(),Snackbar.LENGTH_SHORT).show();
                         } else {
                             TrabalhoEstoque trabalhoAlterado = new TrabalhoEstoque(
                                     trabalhoEstoque.getId(),
                                     trabalhoEstoque.getNome(),
                                     trabalhoEstoque.getQuantidade()+1);
-                            Snackbar.make(getView(),"Quantidade alterada!",Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(requireView(),"Quantidade alterada!",Snackbar.LENGTH_SHORT).show();
                             trabalhoEstoqueAdapter.altera(adapterPosition,trabalhoAlterado);
                         }
                     });
@@ -272,18 +250,4 @@ public class ListaEstoqueFragment extends Fragment {
                 });
         return trabalhos;
     }
-
-    /*private void listaBusca(String textoBusca) {
-        List<Trabalho> listaFiltro = new ArrayList<>();
-        for (Trabalho trabalho:trabalhos){
-            if (removerAcentos(trabalho.getNome().toLowerCase()).contains(removerAcentos(textoBusca.toLowerCase()))){
-                listaFiltro.add(trabalho);
-            }
-        }
-        if (listaFiltro.isEmpty()){
-            Snackbar.make(getView().findViewById(R.id.frameLayout),"Nada encontrado...",Snackbar.LENGTH_SHORT).show();
-        }else{
-            trabalhoEstoqueAdapter.setListaFiltrada(listaFiltro);
-        }
-    }*/
 }

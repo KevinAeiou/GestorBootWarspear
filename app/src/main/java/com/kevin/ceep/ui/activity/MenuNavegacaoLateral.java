@@ -1,17 +1,11 @@
 package com.kevin.ceep.ui.activity;
 
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_ESTOQUE;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_TRABALHO;
 
 import android.app.ActivityOptions;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -28,10 +22,10 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.kevin.ceep.R;
 import com.kevin.ceep.ui.fragment.ListaEstoqueFragment;
 import com.kevin.ceep.ui.fragment.ListaPersonagensFragment;
 import com.kevin.ceep.ui.fragment.ListaTrabalhosFragment;
-import com.kevin.ceep.R;
 
 public class MenuNavegacaoLateral extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawerLayout;
@@ -63,14 +57,20 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
     }
 
     private void mostraFragmentSelecionado(int itemNavegacao) {
+        FragmentManager gerenciadorDeFragmento = getSupportFragmentManager();
         Fragment fragmentoSelecionado = null;
+        Bundle argumento = new Bundle();
         switch (itemNavegacao){
             case R.id.nav_personagem:
                 fragmentoSelecionado = new ListaPersonagensFragment();
                 Log.d("menuNavegacao", "Clicou item: personagens");
                 break;
             case R.id.nav_trabalhos:
-                fragmentoSelecionado = ListaTrabalhosFragment.novaInstanciaListaPersonagensFragment(personagemRecebido);
+                fragmentoSelecionado = new ListaTrabalhosFragment();
+                argumento.putString(CHAVE_PERSONAGEM, personagemRecebido);
+                fragmentoSelecionado.setArguments(argumento);
+                gerenciadorDeFragmento.setFragmentResult(CHAVE_PERSONAGEM, argumento);
+                Log.d("menuNavegacao", "Fragmento selecionado: "+fragmentoSelecionado);
                 Log.d("menuNavegacao", "Clicou item: trabalhos");
                 break;
             case R.id.nav_estoque:
@@ -83,7 +83,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
                 break;
         }
         if (fragmentoSelecionado != null){
-            reposicionaFragmento(fragmentoSelecionado);
+            reposicionaFragmento(fragmentoSelecionado, gerenciadorDeFragmento);
         }
         drawerLayout.closeDrawer(GravityCompat.START);
     }
@@ -93,6 +93,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         personagemRecebido = null;
         if (dadosRecebidos.hasExtra(CHAVE_PERSONAGEM)){
             personagemRecebido = (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
+            Log.d("menuNavegacao", "String id personagem recebido: "+personagemRecebido);
             if (personagemRecebido != null){
                 itemNavegacao = R.id.nav_trabalhos;
             }
@@ -123,19 +124,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
                 EntrarUsuarioActivity.class);
         startActivity(vaiParaEntraActivity, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
     }
-    public int retornaContadorLinhaEsqueleto(Context context){
-        int pxAltura = retornaAlturaDispositivo(context);
-        int alturaLinhaEsqueleto = (int) getResources().getDimension(R.dimen.row_layout_height);
-        return (int) Math.ceil(pxAltura/alturaLinhaEsqueleto);
-    }
-    public int retornaAlturaDispositivo(Context context){
-        Resources resources = context.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        return metrics.heightPixels;
-    }
-
-    private void reposicionaFragmento(Fragment fragmento){
-        FragmentManager gerenciadorDeFragmento = getSupportFragmentManager();
+    private void reposicionaFragmento(Fragment fragmento, FragmentManager gerenciadorDeFragmento){
         FragmentTransaction transicaoDeFragmento = gerenciadorDeFragmento.beginTransaction();
         transicaoDeFragmento.replace(R.id.frameLayout, fragmento);
         transicaoDeFragmento.commit();
