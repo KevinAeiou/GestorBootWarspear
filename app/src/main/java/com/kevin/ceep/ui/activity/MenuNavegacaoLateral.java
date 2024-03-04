@@ -61,6 +61,8 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         Fragment fragmentoSelecionado = null;
         Bundle argumento = new Bundle();
         switch (itemNavegacao){
+            case R.id.nav_lista_personagem:
+                break;
             case R.id.nav_personagem:
                 fragmentoSelecionado = new ListaPersonagensFragment();
                 Log.d("menuNavegacao", "Clicou item: personagens");

@@ -70,13 +70,7 @@ public class ListaPersonagemAdapter extends RecyclerView.Adapter<ListaPersonagem
             nome_personagem = itemView.findViewById(R.id.itemNomePersonagem);
             card_personagem=itemView.findViewById(R.id.cardViewPersonagem);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onItemClickListener.onItemClick(personagem, getAdapterPosition());
-                }
-            });
-            //itemView.setOnClickListener(view -> onItemClickListener.onItemClick(personagem, getAdapterPosition()));
+            itemView.setOnClickListener(v -> onItemClickListener.onItemClick(personagem, getAdapterPosition()));
         }
 
         public void vincula(Personagem personagem){

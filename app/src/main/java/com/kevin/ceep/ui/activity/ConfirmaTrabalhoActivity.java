@@ -141,7 +141,6 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
                 .child(novoId)
                 .setValue(novoTrabalho);
     }
-
     private void configuraQuantidadeSelecionada() {
         String[] quantidade = getResources().getStringArray(R.array.quantidade);
         quantidadeSelecionada = 1;
@@ -151,7 +150,6 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         });
         Log.d("QUANTIDADE2", String.valueOf(quantidadeSelecionada));
     }
-
     private void configuraLicencaSelecionada() {
         String[] licencas_completas = getResources().getStringArray(R.array.licencas_completas);
         licencaSelecionada = licencas_completas[3];

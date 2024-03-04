@@ -130,6 +130,7 @@ public class ListaTrabalhosFragment extends Fragment {
         }
         trabalhosFiltrados = filtroListaChip(estado, trabalhos);
         if (trabalhosFiltrados.isEmpty()) {
+            trabalhoAdapter.limpaLista();
             Snackbar.make(requireView(), "Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
         } else {
             trabalhoAdapter.setListaFiltrada(trabalhosFiltrados);
@@ -201,6 +202,7 @@ public class ListaTrabalhosFragment extends Fragment {
             }
         }
         if (listaFiltrada.isEmpty()) {
+            trabalhoAdapter.limpaLista();
             Snackbar.make(requireView(),"Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
         } else {
             trabalhosFiltrados = listaFiltrada;

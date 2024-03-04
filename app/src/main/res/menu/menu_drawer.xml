@@ -6,7 +6,10 @@
     <group
         android:checkableBehavior="single"
         android:id="@+id/grupo1">
-
+        <item
+            android:id="@+id/nav_lista_personagem"
+            android:actionLayout="@layout/item_lista_personagens"
+            android:title="Lista personagens" />
         <item
             android:id="@+id/nav_personagem"
             android:title="@string/personagens"/>

@@ -194,6 +194,7 @@ public class ListaTrabalhosActivity extends AppCompatActivity {
             }
         }
         if (listaFiltro.isEmpty()){
+            trabalhoAdapter.limpaLista();
             Toast.makeText(this,"Nada encontrado...",Toast.LENGTH_SHORT).show();
         }else{
             trabalhoAdapter.setListaFiltrada(listaFiltro);

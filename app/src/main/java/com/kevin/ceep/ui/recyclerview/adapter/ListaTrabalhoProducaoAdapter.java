@@ -68,6 +68,10 @@ public class ListaTrabalhoProducaoAdapter extends RecyclerView.Adapter<ListaTrab
         notifyItemRangeChanged(posicao,trabalhosProducao.size());
         notifyDataSetChanged();
     }
+    public void limpaLista() {
+        trabalhosProducao.clear();
+        notifyDataSetChanged();
+    }
 
     public class TrabalhoProducaoViewHolder extends RecyclerView.ViewHolder{
 

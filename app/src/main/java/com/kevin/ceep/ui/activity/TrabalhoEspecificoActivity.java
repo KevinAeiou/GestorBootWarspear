@@ -167,7 +167,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private void recebeDadosIntent() {
         Intent dadosRecebidos=getIntent();
-
         if (dadosRecebidos.hasExtra(CHAVE_TRABALHO)){
             codigoRequisicao= (int) dadosRecebidos
                     .getSerializableExtra(CHAVE_TRABALHO);
