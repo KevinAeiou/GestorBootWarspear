@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:showIn="">
 
     <group
@@ -9,10 +10,10 @@
         <item
             android:id="@+id/nav_lista_personagem"
             android:actionLayout="@layout/item_lista_personagens"
-            android:title="Lista personagens" />
-        <item
-            android:id="@+id/nav_personagem"
-            android:title="@string/personagens"/>
+            android:title="Lista personagens"
+            app:showAsAction="ifRoom|collapseActionView">
+            <menu></menu>
+        </item>
         <item
             android:id="@+id/nav_trabalhos"
             android:title="@string/trabalhos"/>

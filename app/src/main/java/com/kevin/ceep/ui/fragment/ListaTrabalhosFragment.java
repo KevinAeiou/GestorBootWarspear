@@ -25,6 +25,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -78,6 +80,7 @@ public class ListaTrabalhosFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearProgressIndicator indicadorProgresso;
     private ChipGroup grupoChipFiltro;
+    private ConstraintLayout layoutFragmentoTrabalhos;
     public ListaTrabalhosFragment() {
         // Required empty public constructor
     }
@@ -131,7 +134,7 @@ public class ListaTrabalhosFragment extends Fragment {
         trabalhosFiltrados = filtroListaChip(estado, trabalhos);
         if (trabalhosFiltrados.isEmpty()) {
             trabalhoAdapter.limpaLista();
-            Snackbar.make(requireView(), "Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(layoutFragmentoTrabalhos, "Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
         } else {
             trabalhoAdapter.setListaFiltrada(trabalhosFiltrados);
         }
@@ -139,13 +142,16 @@ public class ListaTrabalhosFragment extends Fragment {
 
     private void recebePersonagemId() {
         Log.d(TAG, "inicio recebe dados");
-        getParentFragmentManager().setFragmentResultListener(CHAVE_PERSONAGEM, this, (requestKey, result) -> {
-            personagemId = result.getString(CHAVE_PERSONAGEM);
-            Log.d(TAG, "personagemId: "+personagemId);
-            if (personagemId != null){
-                pegaTodosTrabalhos();
+        Bundle dadosRecebidos = getArguments();
+        if (dadosRecebidos != null) {
+            if (dadosRecebidos.containsKey(CHAVE_PERSONAGEM)){
+                personagemId = dadosRecebidos.getString(CHAVE_PERSONAGEM);
+                Log.d(TAG,"ID do personagem recebido: "+personagemId);
+                if (personagemId != null){
+                    pegaTodosTrabalhos();
+                }
             }
-        });
+        }
         Log.d(TAG, "fim recebe dados");
     }
 
@@ -203,7 +209,7 @@ public class ListaTrabalhosFragment extends Fragment {
         }
         if (listaFiltrada.isEmpty()) {
             trabalhoAdapter.limpaLista();
-            Snackbar.make(requireView(),"Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(layoutFragmentoTrabalhos,"Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
         } else {
             trabalhosFiltrados = listaFiltrada;
             trabalhoAdapter.setListaFiltrada(listaFiltrada);
@@ -240,6 +246,8 @@ public class ListaTrabalhosFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             if (personagemId != null){
                 pegaTodosTrabalhos();
+            } else {
+                Log.d(TAG, "ID do personagem está vazio!");
             }
         });
     }
@@ -258,6 +266,7 @@ public class ListaTrabalhosFragment extends Fragment {
     }
 
     private void inicializaComponentes(View view) {
+        Log.d("fragmentoTrabalhos", "Inicializa componentes!");
         trabalhos = new ArrayList<>();
         usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         recyclerView = view.findViewById(R.id.listaTrabalhoRecyclerView);
@@ -266,7 +275,7 @@ public class ListaTrabalhosFragment extends Fragment {
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutTrabalhos);
         indicadorProgresso = view.findViewById(R.id.indicadorProgressoListaTrabalhosFragment);
         grupoChipFiltro = view.findViewById(R.id.chipGrupId);
-
+        layoutFragmentoTrabalhos = view.findViewById(R.id.constraintLayoutFragmentoListaTrabalhos);
     }
     private void atualizaListaTrabalho() {
         int chipId = grupoChipFiltro.getCheckedChipId();

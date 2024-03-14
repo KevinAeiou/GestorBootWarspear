@@ -2,10 +2,11 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/chip"
+    android:id="@+id/constraintLayoutFragmentoListaTrabalhos"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.activity.ListaTrabalhosActivity">
+
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/chipGrupId"
         app:singleLine="true"

@@ -1,13 +1,19 @@
 package com.kevin.ceep.ui.activity;
 
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,38 +28,76 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
+import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.ui.fragment.ListaEstoqueFragment;
-import com.kevin.ceep.ui.fragment.ListaPersonagensFragment;
 import com.kevin.ceep.ui.fragment.ListaTrabalhosFragment;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class MenuNavegacaoLateral extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawerLayout;
+    private List<Personagem> personagens;
     private String personagemRecebido;
+    private NavigationView navigationView;
+    private MenuItem personagemSelecionado;
+    private int itemNavegacao;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_navegacao_lateral);
-        setTitle(CHAVE_TITULO_TRABALHO);
-        int itemNavegacao = R.id.nav_personagem;
-        itemNavegacao = recebeDadosIntent(itemNavegacao);
-        drawerLayout = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.navegacao_view);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(view -> drawerLayout.openDrawer(GravityCompat.START));
+
+        inicializaComponentes();
+
+        configuraToolbar();
 
         navigationView.bringToFront();
-        Log.d("menuNavegacao", "Trouxe para frente.");
         ActionBarDrawerToggle toogle = new ActionBarDrawerToggle(this, drawerLayout, R.string.abre_menu_navegacao, R.string.fecha_menu_navegacao);
         drawerLayout.addDrawerListener(toogle);
         toogle.syncState();
 
         navigationView.setNavigationItemSelectedListener(this);
-        mostraFragmentSelecionado(itemNavegacao);
-        // navigationView.setCheckedItem(itemNavegacao);
+        Menu menuNavigation = navigationView.getMenu();
+        MenuItem menuPersonagens = menuNavigation.findItem(R.id.nav_lista_personagem);
+        SubMenu subItens = menuPersonagens.getSubMenu();
+        pegaTodosPersonagens(subItens);
+
+        navigationView.setCheckedItem(itemNavegacao);
         Log.d("menuNavegacao", "Definiu item: " + itemNavegacao);
+    }
+
+    private void configuraToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(view -> drawerLayout.openDrawer(GravityCompat.START));
+        personagemSelecionado = null;
+    }
+
+    private void inicializaComponentes() {
+        setTitle(CHAVE_TITULO_TRABALHO);
+        itemNavegacao = R.id.nav_trabalhos;
+        itemNavegacao = recebeDadosIntent(itemNavegacao);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.navegacao_view);
+    }
+
+    private void atualizaPersonagemSelecionado() {
+        if (personagemSelecionado != null) {
+            View cabecalho = navigationView.getHeaderView(0);
+            TextView txtPersonagem = cabecalho.findViewById(R.id.txtLayoutCabecalhoPersonagem);
+            txtPersonagem.setText(personagemSelecionado.getTitle());
+            Log.d("personagemSelecionado", "Nome do personagem Selecionado: "+personagemSelecionado.getTitle());
+            personagemRecebido = personagens.get(personagemSelecionado.getOrder()).getId();
+            mostraFragmentSelecionado(itemNavegacao);
+        }
     }
 
     private void mostraFragmentSelecionado(int itemNavegacao) {
@@ -61,12 +105,6 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         Fragment fragmentoSelecionado = null;
         Bundle argumento = new Bundle();
         switch (itemNavegacao){
-            case R.id.nav_lista_personagem:
-                break;
-            case R.id.nav_personagem:
-                fragmentoSelecionado = new ListaPersonagensFragment();
-                Log.d("menuNavegacao", "Clicou item: personagens");
-                break;
             case R.id.nav_trabalhos:
                 fragmentoSelecionado = new ListaTrabalhosFragment();
                 argumento.putString(CHAVE_PERSONAGEM, personagemRecebido);
@@ -77,6 +115,8 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
                 break;
             case R.id.nav_estoque:
                 fragmentoSelecionado = new ListaEstoqueFragment();
+                argumento.putString(CHAVE_PERSONAGEM, personagemRecebido);
+                fragmentoSelecionado.setArguments(argumento);
                 Log.d("menuNavegacao", "Clicou item: estoque");
                 break;
             case R.id.nav_sair:
@@ -100,7 +140,6 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
                 itemNavegacao = R.id.nav_trabalhos;
             }
         }
-
         return itemNavegacao;
     }
 
@@ -115,8 +154,10 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        personagemSelecionado = item;
         item.setChecked(true);
-        Log.d("menuNavegacao", "Definiu item checado como True.");
+        Log.d("menuNavegacao", "Item selecionado: "+item);
+        atualizaPersonagemSelecionado();
         mostraFragmentSelecionado(item.getItemId());
         return true;
     }
@@ -131,5 +172,37 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         transicaoDeFragmento.replace(R.id.frameLayout, fragmento);
         transicaoDeFragmento.commit();
     }
+    private void pegaTodosPersonagens(SubMenu subItens) {
+        personagens = new ArrayList<>();
+        String usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = database.getReference(CHAVE_USUARIOS);
+        databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
+                addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        personagens.clear();
+                        subItens.clear();
+                        int indice = 0;
+                        for (DataSnapshot dn:dataSnapshot.getChildren()){
+                            Personagem personagem = dn.getValue(Personagem.class);
+                            personagens.add(personagem);
+                            subItens.add(0, indice, indice, personagem.getNome());
+                            indice += 1;
+                        }
+                        if (personagemSelecionado == null) {
+                            MenuItem itemMenu = subItens.getItem(0);
+                            Log.d("subMenu", "Item personagem: "+itemMenu.getTitle());
+                            personagemSelecionado = itemMenu;
+                            atualizaPersonagemSelecionado();
+                        }
+                        // indicadorProgresso.setVisibility(View.GONE);
+                    }
 
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
 }
