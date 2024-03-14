@@ -47,7 +47,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
     private List<Personagem> personagens;
     private String personagemRecebido;
     private NavigationView navigationView;
-    private MenuItem personagemSelecionado;
+    private Personagem personagemSelecionado;
     private int itemNavegacao;
 
     @Override
@@ -92,10 +92,15 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
     private void atualizaPersonagemSelecionado() {
         if (personagemSelecionado != null) {
             View cabecalho = navigationView.getHeaderView(0);
-            TextView txtPersonagem = cabecalho.findViewById(R.id.txtLayoutCabecalhoPersonagem);
-            txtPersonagem.setText(personagemSelecionado.getTitle());
-            Log.d("personagemSelecionado", "Nome do personagem Selecionado: "+personagemSelecionado.getTitle());
-            personagemRecebido = personagens.get(personagemSelecionado.getOrder()).getId();
+            TextView txtCabecalhoNome = cabecalho.findViewById(R.id.txtCabecalhoNomePersonagem);
+            TextView txtCabecalhoEstado = cabecalho.findViewById(R.id.txtCabecalhoEstadoPersonagem);
+            TextView txtCabecalhoUso = cabecalho.findViewById(R.id.txtCabecalhoUsoPersonagem);
+            TextView txtCabecalhoEspacoProducao = cabecalho.findViewById(R.id.txtCabecalhoEspacoProducaoPersonagem);
+            txtCabecalhoNome.setText(personagemSelecionado.getNome());
+            txtCabecalhoEstado.setText("Estado: "+personagemSelecionado.getEstado());
+            txtCabecalhoUso.setText("Uso: "+personagemSelecionado.getUso());
+            txtCabecalhoEspacoProducao.setText("Espaço de produção: "+personagemSelecionado.getEspacoProducao());
+            personagemRecebido = personagemSelecionado.getId();
             mostraFragmentSelecionado(itemNavegacao);
         }
     }
@@ -154,7 +159,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        personagemSelecionado = item;
+        personagemSelecionado = personagens.get(item.getOrder());
         item.setChecked(true);
         Log.d("menuNavegacao", "Item selecionado: "+item);
         atualizaPersonagemSelecionado();
@@ -193,7 +198,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
                         if (personagemSelecionado == null) {
                             MenuItem itemMenu = subItens.getItem(0);
                             Log.d("subMenu", "Item personagem: "+itemMenu.getTitle());
-                            personagemSelecionado = itemMenu;
+                            personagemSelecionado = personagens.get(itemMenu.getOrder());
                             atualizaPersonagemSelecionado();
                         }
                         // indicadorProgresso.setVisibility(View.GONE);

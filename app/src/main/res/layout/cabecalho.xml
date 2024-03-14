@@ -2,28 +2,42 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="200dp"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:background="@color/light_blue_600"
     android:gravity="bottom"
     android:padding="20dp"
     android:id="@+id/linearLayoutCabecalho">
 
-    <ImageView
-        android:layout_width="75dp"
-        android:layout_height="75dp"/>
-
     <TextView
-        android:id="@+id/txtLayoutCabecalhoPersonagem"
+        android:id="@+id/txtCabecalhoNomePersonagem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Personagem"
+        tools:text="Nome"
         android:textColor="@color/white"
         android:textSize="24sp" />
 
     <TextView
+        android:id="@+id/txtCabecalhoEstadoPersonagem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Gestor de produção"
+        tools:text="Estado"
+        android:textSize="14sp"
+        android:textColor="@color/white"/>
+
+    <TextView
+        android:id="@+id/txtCabecalhoUsoPersonagem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Uso"
+        android:textSize="14sp"
+        android:textColor="@color/white"/>
+
+    <TextView
+        android:id="@+id/txtCabecalhoEspacoProducaoPersonagem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Espaço de produção"
         android:textSize="14sp"
         android:textColor="@color/white"/>
 </LinearLayout>
