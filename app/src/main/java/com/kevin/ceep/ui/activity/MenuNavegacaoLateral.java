@@ -6,6 +6,7 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_REQUISICAO
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
@@ -143,7 +144,10 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
                 fragmentoSelecionado.setArguments(argumento);
                 break;
             case R.id.nav_configuracao:
-                vaiParaAtributosPersonagem();
+                vaiParaAtributosPersonagem(CODIGO_REQUISICAO_ALTERA_TRABALHO);
+                break;
+            case R.id.nav_novo_personagem:
+                vaiParaAtributosPersonagem(CODIGO_REQUISICAO_INSERE_TRABALHO);
                 break;
             case R.id.nav_sair:
                 FirebaseAuth.getInstance().signOut();
@@ -156,10 +160,10 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         drawerLayout.closeDrawer(GravityCompat.START);
     }
 
-    private void vaiParaAtributosPersonagem() {
+    private void vaiParaAtributosPersonagem(int codigoRequisicao) {
         Intent iniciaVaiParaAtributosPersonagem = new Intent(getApplicationContext(), AtributosPersonagemActivity.class);
         iniciaVaiParaAtributosPersonagem.putExtra(CHAVE_PERSONAGEM, personagemSelecionado);
-        iniciaVaiParaAtributosPersonagem.putExtra(CHAVE_REQUISICAO, CODIGO_REQUISICAO_ALTERA_TRABALHO);
+        iniciaVaiParaAtributosPersonagem.putExtra(CHAVE_REQUISICAO, codigoRequisicao);
         startActivity(iniciaVaiParaAtributosPersonagem);
     }
 

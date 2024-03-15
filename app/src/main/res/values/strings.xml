@@ -80,4 +80,5 @@
     <string name="string_estado">Estado</string>
     <string name="string_uso">Uso</string>
     <string name="stringConfiguracao">Configuração</string>
+    <string name="stringNovoPersonagem">Novo personagem</string>
 </resources>

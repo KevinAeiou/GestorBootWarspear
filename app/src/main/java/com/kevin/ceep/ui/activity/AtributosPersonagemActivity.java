@@ -124,7 +124,6 @@ public class AtributosPersonagemActivity extends AppCompatActivity {
             } else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO) {
                 if (verificaCampos()){
                     String novoId = geraIdAleatorio();
-                    Snackbar.make(getCurrentFocus(), "Todos os campos satisfeitos!", Snackbar.LENGTH_LONG).show();
                     Personagem novoPersonagem = new Personagem(
                             novoId,
                             personagemNome.getText().toString(),
@@ -136,7 +135,6 @@ public class AtributosPersonagemActivity extends AppCompatActivity {
                     );
                     minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).child(novoId).setValue(novoPersonagem);
                     vaiParaFragmentoPersonagens();
-                    finish();
                 }
             }
         }
@@ -225,9 +223,8 @@ public class AtributosPersonagemActivity extends AppCompatActivity {
 
     }
     private void vaiParaFragmentoPersonagens() {
-        Intent vaiParaFragmentoPersonagens = new Intent(getApplicationContext(), MenuNavegacaoLateral.class);
-        //vaiParaFragmentoPersonagens.putExtra();
-        setResult(1,vaiParaFragmentoPersonagens);
+        Intent iniciaVaiParaFragmentoPersonagens = new Intent(getApplicationContext(), MenuNavegacaoLateral.class);
+        setResult(1,iniciaVaiParaFragmentoPersonagens);
         AtributosPersonagemActivity.super.onBackPressed();
     }
 
