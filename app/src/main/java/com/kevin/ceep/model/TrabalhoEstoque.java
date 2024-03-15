@@ -2,26 +2,14 @@ package com.kevin.ceep.model;
 
 import java.io.Serializable;
 
-public class TrabalhoEstoque implements Serializable {
-    private String id;
-    private String nome;
+public class TrabalhoEstoque extends Trabalho implements Serializable {
     private Integer quantidade;
 
     private TrabalhoEstoque(){}
-    public TrabalhoEstoque(String id, String nome, Integer quantidade) {
-        this.id = id;
-        this.nome = nome;
+    public TrabalhoEstoque(String id, String nome, String profissao, String raridade, Integer nivel, Integer experiencia, Integer quantidade) {
+        super(id,nome,profissao,raridade,nivel,experiencia);
         this.quantidade = quantidade;
     }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
     public Integer getQuantidade() {
         return quantidade;
     }

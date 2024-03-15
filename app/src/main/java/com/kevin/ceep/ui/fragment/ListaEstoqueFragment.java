@@ -6,6 +6,7 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_ESTOQUE;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -41,6 +43,7 @@ import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEstoqueAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -121,37 +124,6 @@ public class ListaEstoqueFragment extends Fragment {
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutTrabalhosEstoque);
         layoutFragmentoEstoque = view.findViewById(R.id.constraintLayoutFragmentoListaEstoque);
     }
-    private List<Personagem> pegaTodosPersonagens() {
-        Log.d("listaPersonagens", "Entrou na funçao pegaTodosPersonagens");
-        personagens = new ArrayList<>();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = database.getReference(CHAVE_USUARIOS);
-        databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
-                addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        personagens.clear();
-                        Log.d("listaPersonagens", "Limpou a lista de personagens");
-                        for (DataSnapshot dn:dataSnapshot.getChildren()){
-                            Personagem personagem = dn.getValue(Personagem.class);
-                            personagens.add(personagem);
-                            if (personagem != null) {
-                                Log.d("listaPersonagens", "Personagem adicionado: " + personagem.getNome());
-                            }
-                            itemMenuPersonagem.add(personagem != null ? personagem.getNome() : null);
-                        }
-                        personagemId = personagens.get(0).getId();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.d("listaPersonagens", "Erro ao definir lista de personagens.");
-                    }
-
-                });
-        Log.d("listaPersonagens", "Saiu da funçao pegaTodosPersonagens");
-        return personagens;
-    }
     private void atualizaListaEstoque() {
         List<TrabalhoEstoque> todosTrabalhosEstoque = pegaTodosTrabalhosEstoque();
         configuraRecyclerView(todosTrabalhosEstoque);
@@ -204,6 +176,10 @@ public class ListaEstoqueFragment extends Fragment {
                             TrabalhoEstoque trabalhoAlterado = new TrabalhoEstoque(
                                     trabalhoEstoque.getId(),
                                     trabalhoEstoque.getNome(),
+                                    trabalhoEstoque.getProfissao(),
+                                    trabalhoEstoque.getRaridade(),
+                                    trabalhoEstoque.getNivel(),
+                                    trabalhoEstoque.getExperiencia(),
                                     trabalhoEstoque.getQuantidade()-1);
                             Snackbar.make(layoutFragmentoEstoque,"Quantidade alterada!",Snackbar.LENGTH_SHORT).show();
                             trabalhoEstoqueAdapter.altera(adapterPosition,trabalhoAlterado);
@@ -220,6 +196,10 @@ public class ListaEstoqueFragment extends Fragment {
                             TrabalhoEstoque trabalhoAlterado = new TrabalhoEstoque(
                                     trabalhoEstoque.getId(),
                                     trabalhoEstoque.getNome(),
+                                    trabalhoEstoque.getProfissao(),
+                                    trabalhoEstoque.getRaridade(),
+                                    trabalhoEstoque.getNivel(),
+                                    trabalhoEstoque.getExperiencia(),
                                     trabalhoEstoque.getQuantidade()+1);
                             Snackbar.make(layoutFragmentoEstoque,"Quantidade alterada!",Snackbar.LENGTH_SHORT).show();
                             trabalhoEstoqueAdapter.altera(adapterPosition,trabalhoAlterado);
@@ -234,6 +214,7 @@ public class ListaEstoqueFragment extends Fragment {
         minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 child(personagemId).child(CHAVE_LISTA_ESTOQUE).
                 addValueEventListener(new ValueEventListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         trabalhos.clear();
@@ -241,6 +222,7 @@ public class ListaEstoqueFragment extends Fragment {
                             TrabalhoEstoque trabalho = dn.getValue(TrabalhoEstoque.class);
                             trabalhos.add(trabalho);
                         }
+                        trabalhos.sort(Comparator.comparing(TrabalhoEstoque::getNivel).thenComparing(TrabalhoEstoque::getNome));
                         trabalhoEstoqueAdapter.notifyDataSetChanged();
                         swipeRefreshLayout.setRefreshing(false);
                     }

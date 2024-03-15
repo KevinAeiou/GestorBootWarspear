@@ -58,6 +58,8 @@ public class ListaTrabalhoEstoqueAdapter extends RecyclerView.Adapter<ListaTraba
     public class TrabalhoEstoqueViewHolder extends RecyclerView.ViewHolder{
         private final MaterialCardView cardTrabalho;
         private final TextView nomeTrabalho;
+        private final TextView profissaoTrabalho;
+        private final TextView nivelTrabalho;
         private final EditText quantidadeTrabalho;
         private TrabalhoEstoque trabalhoEstoque;
         private ImageButton botaoMenosUm;
@@ -68,6 +70,8 @@ public class ListaTrabalhoEstoqueAdapter extends RecyclerView.Adapter<ListaTraba
             super(itemView);
             cardTrabalho = itemView.findViewById(R.id.itemCardTrabalhoEstoque);
             nomeTrabalho = itemView.findViewById(R.id.itemNomeTrabalhoEstoque);
+            profissaoTrabalho = itemView.findViewById(R.id.itemProfissaoTrabalhoEstoque);
+            nivelTrabalho = itemView.findViewById(R.id.itemNivelTrabalhoEstoque);
             quantidadeTrabalho = itemView.findViewById(R.id.itemEdtQuantidadeTrabalhoEstoque);
             botaoMenosUm = itemView.findViewById(R.id.itemBotaoMenosUm);
             botaoMaisUm = itemView.findViewById(R.id.itemBotaoMaisUm);
@@ -81,6 +85,8 @@ public class ListaTrabalhoEstoqueAdapter extends RecyclerView.Adapter<ListaTraba
         }
         private void preencheCampos(TrabalhoEstoque trabalhoEstoque) {
                 nomeTrabalho.setText(trabalhoEstoque.getNome());
+                profissaoTrabalho.setText(trabalhoEstoque.getProfissao());
+                nivelTrabalho.setText("Nível "+trabalhoEstoque.getNivel());
                 quantidadeTrabalho.setText(String.valueOf(trabalhoEstoque.getQuantidade()));
         }
     }

@@ -78,6 +78,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         Menu menuNavigation = navigationView.getMenu();
         MenuItem menuPersonagens = menuNavigation.findItem(R.id.nav_lista_personagem);
         SubMenu subItens = menuPersonagens.getSubMenu();
+        subItens.clear();
         int indice = 0;
         for (Personagem personagem : personagens) {
             subItens.add(0, indice, indice, personagem.getNome());

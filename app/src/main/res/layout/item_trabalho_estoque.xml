@@ -16,10 +16,33 @@
             android:id="@+id/itemNomeTrabalhoEstoque"
             style="@style/txtTituloCard"
             android:contentDescription="Nome do item em estoque"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Trabalho estoque" />
+            tools:text="Nome do trabalho estoque" />
+
+        <TextView
+            android:id="@+id/itemProfissaoTrabalhoEstoque"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="20sp"
+            android:contentDescription="Profissão do item em estoque"
+            app:layout_constraintStart_toStartOf="@id/itemNomeTrabalhoEstoque"
+            app:layout_constraintTop_toBottomOf="@id/itemNomeTrabalhoEstoque"
+            tools:text="Profissão do trabalho estoque" />
+
+        <TextView
+            android:id="@+id/itemNivelTrabalhoEstoque"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:textSize="20sp"
+            android:contentDescription="Nível do item em estoque"
+            app:layout_constraintStart_toStartOf="@id/itemProfissaoTrabalhoEstoque"
+            app:layout_constraintTop_toBottomOf="@id/itemProfissaoTrabalhoEstoque"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="Nível do trabalho estoque" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/itemBotaoMenosUm"
@@ -38,10 +61,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
+            android:layout_marginEnd="8dp"
             android:gravity="center"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/constraintLayoutItemCardTrabalhoEstoque"
-            app:layout_constraintStart_toStartOf="@+id/constraintLayoutItemCardTrabalhoEstoque"
+            app:layout_constraintEnd_toStartOf="@id/itemBotaoMaisUm"
             app:layout_constraintTop_toBottomOf="@id/itemNomeTrabalhoEstoque">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -61,7 +84,7 @@
             android:layout_marginStart="8dp"
             android:src="@drawable/ic_mais_um"
             app:layout_constraintBottom_toBottomOf="@+id/itemTxtQuantidadeTrabalhosEstoque"
-            app:layout_constraintStart_toEndOf="@+id/itemTxtQuantidadeTrabalhosEstoque"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/itemTxtQuantidadeTrabalhosEstoque" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
