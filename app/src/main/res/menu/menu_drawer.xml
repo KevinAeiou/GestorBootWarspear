@@ -12,8 +12,14 @@
             android:actionLayout="@layout/item_lista_personagens"
             android:title="Lista personagens"
             app:showAsAction="ifRoom|collapseActionView">
-            <menu></menu>
+            <menu>
+            </menu>
         </item>
+    </group>
+
+    <group
+        android:checkableBehavior="single"
+        android:id="@+id/grupo2">
         <item
             android:id="@+id/nav_trabalhos"
             android:title="@string/trabalhos"/>
@@ -23,8 +29,10 @@
     </group>
 
     <group
-        android:checkableBehavior="single"
-        android:id="@+id/grupo2">
+        android:id="@+id/grupo3">
+        <item
+            android:id="@+id/nav_configuracao"
+            android:title="@string/stringConfiguracao"/>
         <item
             android:id="@+id/nav_sair"
             android:title="@string/sair"/>

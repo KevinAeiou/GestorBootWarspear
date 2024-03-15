@@ -79,4 +79,5 @@
     <string name="string_espaco_producao">Espaço de produção</string>
     <string name="string_estado">Estado</string>
     <string name="string_uso">Uso</string>
+    <string name="stringConfiguracao">Configuração</string>
 </resources>

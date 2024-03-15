@@ -2,8 +2,10 @@ package com.kevin.ceep.ui.activity;
 
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_REQUISICAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
@@ -27,6 +29,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -45,9 +48,11 @@ import java.util.Objects;
 public class MenuNavegacaoLateral extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawerLayout;
     private List<Personagem> personagens;
-    private String personagemRecebido;
+    private String idPersonagemRecebido;
     private NavigationView navigationView;
     private Personagem personagemSelecionado;
+    private CircularProgressIndicator indicadorProgresso;
+    private TextView txtCabecalhoNome, txtCabecalhoEstado, txtCabecalhoUso, txtCabecalhoEspacoProducao;
     private int itemNavegacao;
 
     @Override
@@ -60,25 +65,41 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         configuraToolbar();
 
         navigationView.bringToFront();
-        ActionBarDrawerToggle toogle = new ActionBarDrawerToggle(this, drawerLayout, R.string.abre_menu_navegacao, R.string.fecha_menu_navegacao);
-        drawerLayout.addDrawerListener(toogle);
-        toogle.syncState();
+        configuraToogle();
 
         navigationView.setNavigationItemSelectedListener(this);
-        Menu menuNavigation = navigationView.getMenu();
-        MenuItem menuPersonagens = menuNavigation.findItem(R.id.nav_lista_personagem);
-        SubMenu subItens = menuPersonagens.getSubMenu();
-        pegaTodosPersonagens(subItens);
+        pegaTodosPersonagens();
 
         navigationView.setCheckedItem(itemNavegacao);
         Log.d("menuNavegacao", "Definiu item: " + itemNavegacao);
+    }
+
+    private void configuraSubMenuPersonagem() {
+        Menu menuNavigation = navigationView.getMenu();
+        MenuItem menuPersonagens = menuNavigation.findItem(R.id.nav_lista_personagem);
+        SubMenu subItens = menuPersonagens.getSubMenu();
+        int indice = 0;
+        for (Personagem personagem : personagens) {
+            subItens.add(0, indice, indice, personagem.getNome());
+            indice += 1;
+        }
+        if (personagemSelecionado == null) {
+            MenuItem itemMenu = subItens.getItem(0);
+            personagemSelecionado = personagens.get(itemMenu.getOrder());
+            atualizaPersonagemSelecionado();
+        }
+    }
+
+    private void configuraToogle() {
+        ActionBarDrawerToggle toogle = new ActionBarDrawerToggle(this, drawerLayout, R.string.abre_menu_navegacao, R.string.fecha_menu_navegacao);
+        drawerLayout.addDrawerListener(toogle);
+        toogle.syncState();
     }
 
     private void configuraToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(view -> drawerLayout.openDrawer(GravityCompat.START));
-        personagemSelecionado = null;
     }
 
     private void inicializaComponentes() {
@@ -87,42 +108,41 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         itemNavegacao = recebeDadosIntent(itemNavegacao);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navegacao_view);
+        indicadorProgresso = findViewById(R.id.indicadorProgressoMenuNavegacao);
+        View cabecalho = navigationView.getHeaderView(0);
+        txtCabecalhoNome = cabecalho.findViewById(R.id.txtCabecalhoNomePersonagem);
+        txtCabecalhoEstado = cabecalho.findViewById(R.id.txtCabecalhoEstadoPersonagem);
+        txtCabecalhoUso = cabecalho.findViewById(R.id.txtCabecalhoUsoPersonagem);
+        txtCabecalhoEspacoProducao = cabecalho.findViewById(R.id.txtCabecalhoEspacoProducaoPersonagem);
+        personagemSelecionado = null;
     }
 
     private void atualizaPersonagemSelecionado() {
         if (personagemSelecionado != null) {
-            View cabecalho = navigationView.getHeaderView(0);
-            TextView txtCabecalhoNome = cabecalho.findViewById(R.id.txtCabecalhoNomePersonagem);
-            TextView txtCabecalhoEstado = cabecalho.findViewById(R.id.txtCabecalhoEstadoPersonagem);
-            TextView txtCabecalhoUso = cabecalho.findViewById(R.id.txtCabecalhoUsoPersonagem);
-            TextView txtCabecalhoEspacoProducao = cabecalho.findViewById(R.id.txtCabecalhoEspacoProducaoPersonagem);
             txtCabecalhoNome.setText(personagemSelecionado.getNome());
             txtCabecalhoEstado.setText("Estado: "+personagemSelecionado.getEstado());
             txtCabecalhoUso.setText("Uso: "+personagemSelecionado.getUso());
             txtCabecalhoEspacoProducao.setText("Espaço de produção: "+personagemSelecionado.getEspacoProducao());
-            personagemRecebido = personagemSelecionado.getId();
-            mostraFragmentSelecionado(itemNavegacao);
+            idPersonagemRecebido = personagemSelecionado.getId();
+            mostraFragmentSelecionado(navigationView.getCheckedItem().getItemId());
         }
     }
 
     private void mostraFragmentSelecionado(int itemNavegacao) {
-        FragmentManager gerenciadorDeFragmento = getSupportFragmentManager();
         Fragment fragmentoSelecionado = null;
         Bundle argumento = new Bundle();
+        argumento.putString(CHAVE_PERSONAGEM, idPersonagemRecebido);
         switch (itemNavegacao){
             case R.id.nav_trabalhos:
                 fragmentoSelecionado = new ListaTrabalhosFragment();
-                argumento.putString(CHAVE_PERSONAGEM, personagemRecebido);
                 fragmentoSelecionado.setArguments(argumento);
-                gerenciadorDeFragmento.setFragmentResult(CHAVE_PERSONAGEM, argumento);
-                Log.d("menuNavegacao", "Fragmento selecionado: "+fragmentoSelecionado);
-                Log.d("menuNavegacao", "Clicou item: trabalhos");
                 break;
             case R.id.nav_estoque:
                 fragmentoSelecionado = new ListaEstoqueFragment();
-                argumento.putString(CHAVE_PERSONAGEM, personagemRecebido);
                 fragmentoSelecionado.setArguments(argumento);
-                Log.d("menuNavegacao", "Clicou item: estoque");
+                break;
+            case R.id.nav_configuracao:
+                vaiParaAtributosPersonagem();
                 break;
             case R.id.nav_sair:
                 FirebaseAuth.getInstance().signOut();
@@ -130,18 +150,25 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
                 break;
         }
         if (fragmentoSelecionado != null){
-            reposicionaFragmento(fragmentoSelecionado, gerenciadorDeFragmento);
+            reposicionaFragmento(fragmentoSelecionado);
         }
         drawerLayout.closeDrawer(GravityCompat.START);
     }
 
+    private void vaiParaAtributosPersonagem() {
+        Intent iniciaVaiParaAtributosPersonagem = new Intent(getApplicationContext(), AtributosPersonagemActivity.class);
+        iniciaVaiParaAtributosPersonagem.putExtra(CHAVE_PERSONAGEM, personagemSelecionado);
+        iniciaVaiParaAtributosPersonagem.putExtra(CHAVE_REQUISICAO, CODIGO_REQUISICAO_ALTERA_TRABALHO);
+        startActivity(iniciaVaiParaAtributosPersonagem);
+    }
+
     private int recebeDadosIntent(int itemNavegacao) {
         Intent dadosRecebidos = getIntent();
-        personagemRecebido = null;
+        idPersonagemRecebido = null;
         if (dadosRecebidos.hasExtra(CHAVE_PERSONAGEM)){
-            personagemRecebido = (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
-            Log.d("menuNavegacao", "String id personagem recebido: "+personagemRecebido);
-            if (personagemRecebido != null){
+            idPersonagemRecebido = (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
+            Log.d("menuNavegacao", "String id personagem recebido: "+ idPersonagemRecebido);
+            if (idPersonagemRecebido != null){
                 itemNavegacao = R.id.nav_trabalhos;
             }
         }
@@ -159,10 +186,14 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        personagemSelecionado = personagens.get(item.getOrder());
-        item.setChecked(true);
         Log.d("menuNavegacao", "Item selecionado: "+item);
-        atualizaPersonagemSelecionado();
+        Log.d("menuNavegacao", "ID do menu do item selecionado: "+item.getGroupId());
+        if (item.getGroupId() == 0) {
+            personagemSelecionado = personagens.get(item.getOrder());
+            Log.d("menuNavegacao", "Personagem selecionado: "+personagemSelecionado.getNome());
+            atualizaPersonagemSelecionado();
+        }
+        item.setChecked(true);
         mostraFragmentSelecionado(item.getItemId());
         return true;
     }
@@ -172,12 +203,13 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
                 EntrarUsuarioActivity.class);
         startActivity(vaiParaEntraActivity, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
     }
-    private void reposicionaFragmento(Fragment fragmento, FragmentManager gerenciadorDeFragmento){
+    private void reposicionaFragmento(Fragment fragmento) {
+        FragmentManager gerenciadorDeFragmento = getSupportFragmentManager();
         FragmentTransaction transicaoDeFragmento = gerenciadorDeFragmento.beginTransaction();
         transicaoDeFragmento.replace(R.id.frameLayout, fragmento);
         transicaoDeFragmento.commit();
     }
-    private void pegaTodosPersonagens(SubMenu subItens) {
+    private void pegaTodosPersonagens() {
         personagens = new ArrayList<>();
         String usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -187,26 +219,16 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         personagens.clear();
-                        subItens.clear();
-                        int indice = 0;
                         for (DataSnapshot dn:dataSnapshot.getChildren()){
                             Personagem personagem = dn.getValue(Personagem.class);
                             personagens.add(personagem);
-                            subItens.add(0, indice, indice, personagem.getNome());
-                            indice += 1;
                         }
-                        if (personagemSelecionado == null) {
-                            MenuItem itemMenu = subItens.getItem(0);
-                            Log.d("subMenu", "Item personagem: "+itemMenu.getTitle());
-                            personagemSelecionado = personagens.get(itemMenu.getOrder());
-                            atualizaPersonagemSelecionado();
-                        }
-                        // indicadorProgresso.setVisibility(View.GONE);
+                        configuraSubMenuPersonagem();
+                        indicadorProgresso.setVisibility(View.GONE);
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
                     }
                 });
     }
