@@ -30,6 +30,10 @@ public class Trabalho implements Serializable {
         return profissao;
     }
 
+    public void setProfissao(String profissao) {
+        this.profissao = profissao;
+    }
+
     public Integer getNivel() {
         return nivel;
     }

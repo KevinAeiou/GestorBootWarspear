@@ -10,9 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -20,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -52,10 +48,8 @@ public class ListaEstoqueFragment extends Fragment {
     private DatabaseReference minhaReferencia;
     private RecyclerView recyclerView;
     private List<TrabalhoEstoque> trabalhos;
-    private List<Personagem> personagens;
     private String usuarioId, personagemId;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private Menu itemMenuPersonagem;// Variavel provisoria
     private ConstraintLayout layoutFragmentoEstoque;
     public ListaEstoqueFragment() {
         // Required empty public constructor
@@ -88,26 +82,6 @@ public class ListaEstoqueFragment extends Fragment {
         atualizaListaEstoque();
         configuraSwipeRefreshLayout();
     }
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_personagem, menu);
-        itemMenuPersonagem = menu;
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        for (Personagem personagem: personagens){
-            Log.d("listaPersonagens", personagem.getNome());
-            if (personagem.getNome().equals(item.getTitle().toString())){
-                personagemId = personagem.getId();
-                atualizaListaEstoque();
-                break;
-            }
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     private void configuraSwipeRefreshLayout() {
         swipeRefreshLayout.setOnRefreshListener(()->{
             if (personagemId != null){
@@ -220,9 +194,12 @@ public class ListaEstoqueFragment extends Fragment {
                         trabalhos.clear();
                         for (DataSnapshot dn:dataSnapshot.getChildren()){
                             TrabalhoEstoque trabalho = dn.getValue(TrabalhoEstoque.class);
+                            if (trabalho != null && trabalho.getNome().equals("Licença de produção do aprendiz")) {
+                                trabalho.setProfissao("");
+                            }
                             trabalhos.add(trabalho);
                         }
-                        trabalhos.sort(Comparator.comparing(TrabalhoEstoque::getNivel).thenComparing(TrabalhoEstoque::getNome));
+                        trabalhos.sort(Comparator.comparing(TrabalhoEstoque::getProfissao).thenComparing(Trabalho::getNivel).thenComparing(Trabalho::getRaridade).thenComparing(TrabalhoEstoque::getNome));
                         trabalhoEstoqueAdapter.notifyDataSetChanged();
                         swipeRefreshLayout.setRefreshing(false);
                     }

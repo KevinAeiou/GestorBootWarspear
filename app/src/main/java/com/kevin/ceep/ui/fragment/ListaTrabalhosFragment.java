@@ -28,7 +28,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.SearchView;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -66,13 +65,6 @@ public class ListaTrabalhosFragment extends Fragment {
     ActivityResultLauncher<Intent> activityLauncher=registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                Log.d(TAG,"onActivityResult");
-                if (result.getResultCode()==1){
-                    Intent intent=result.getData();
-                    if (intent!=null){
-
-                    }
-                }
             }
     );
     private DatabaseReference databaseReference;
@@ -341,7 +333,7 @@ public class ListaTrabalhosFragment extends Fragment {
                             TrabalhoProducao trabalho = dn.getValue(TrabalhoProducao.class);
                             trabalhos.add(trabalho);
                         }
-                        trabalhos.sort(Comparator.comparing(TrabalhoProducao::getNivel).thenComparing(TrabalhoProducao::getNome));
+                        trabalhos.sort(Comparator.comparing(TrabalhoProducao::getProfissao).thenComparing(Trabalho::getRaridade).thenComparing(TrabalhoProducao::getNivel).thenComparing(TrabalhoProducao::getNome));
                         trabalhoAdapter.notifyDataSetChanged();
                         indicadorProgresso.setVisibility(View.GONE);
                         swipeRefreshLayout.setRefreshing(false);

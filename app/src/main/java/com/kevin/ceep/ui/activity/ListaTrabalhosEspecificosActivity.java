@@ -16,11 +16,13 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.SearchView;
@@ -44,6 +46,7 @@ import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
@@ -197,6 +200,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = database.getReference("Lista_trabalhos");
         databaseReference.addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 trabalhos.clear();
@@ -208,6 +212,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
                         trabalhos.add(trabalho);
                     }
                 }
+                trabalhos.sort(Comparator.comparing(Trabalho::getNivel).thenComparing(Trabalho::getNome));
                 trabalhoAdapter.notifyDataSetChanged();
                 progressDialog.dismiss();
             }
