@@ -31,6 +31,10 @@
             android:title="@string/stringNovoPersonagem"/>
 
         <item
+            android:id="@+id/nav_novo_trabalho"
+            android:title="@string/stringNovoTrabalho"/>
+
+        <item
             android:id="@+id/nav_configuracao"
             android:title="@string/stringConfiguracao"/>
 

@@ -6,55 +6,46 @@
     android:layout_height="match_parent"
     tools:context=".ui.activity.ListaTrabalhosEspecificosActivity">
 
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/buscaTrabalhoEspecifico"
-        android:layout_width="match_parent"
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/listaTodosTrabalhosIndicadorProgresso"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:layout_marginBottom="8dp"
-        app:queryHint="Buscar..."
-        android:background="@drawable/busca_backgorund"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:iconifiedByDefault="false"/>
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayoutTrabalhosEspecificos"
+        android:id="@+id/listaTodosTrabalhosSwipeRefreshLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/buscaTrabalhoEspecifico"
-        app:layout_constraintBottom_toTopOf="@id/layoutTrabalhosEspecificos">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/listaTrabalhoEspecificoRecyclerView"
+            android:id="@+id/listaTodosTrabalhosRecyclerView"
             android:layout_width="0dp"
             android:layout_height="0dp"
             tools:listitem="@layout/item_trabalho_especifico" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <View
-        android:id="@+id/layoutTrabalhosEspecificos"
-        android:layout_width="0dp"
-        android:layout_height="90dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/swipeRefreshLayoutTrabalhosEspecificos"/>
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/botaoNovoTrabalhoEspecifico"
-        style="@style/btn"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/listaTodosTrabalhosfloatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:background="@drawable/botao_estados_background"
-        android:text="@string/cadastrar_novo_trabalho"
-        app:layout_constraintBottom_toBottomOf="@+id/layoutTrabalhosEspecificos"
-        app:layout_constraintEnd_toEndOf="@+id/layoutTrabalhosEspecificos"
-        app:layout_constraintStart_toStartOf="@+id/layoutTrabalhosEspecificos"
-        app:layout_constraintTop_toTopOf="@+id/layoutTrabalhosEspecificos" />
-
+        android:clickable="true"
+        android:contentDescription="@string/cadastrar_novo_trabalho"
+        android:focusable="true"
+        android:foregroundGravity="center"
+        app:backgroundTint="@color/cor_laranja"
+        app:elevation="20dp"
+        app:fabSize="auto"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_adiciona"
+        tools:ignore="SpeakableTextPresentCheck" />
 </androidx.constraintlayout.widget.ConstraintLayout>

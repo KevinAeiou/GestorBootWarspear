@@ -19,24 +19,26 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
+import com.kevin.ceep.databinding.ActivityListaTrabalhosEspecificosBinding;
 import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Raridade;
@@ -50,37 +52,35 @@ import java.util.Comparator;
 import java.util.List;
 
 public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
-
+    private ActivityListaTrabalhosEspecificosBinding binding;
     private ListaTrabalhoEspecificoAdapter trabalhoAdapter;
     private Profissao profissaoRecebido;
     private Raridade raridadeRecebido;
-    private ProgressDialog progressDialog;
-    private AppCompatButton botaoNovoTrabalho;
+    private FloatingActionButton botaoNovoTrabalho;
     private RecyclerView recyclerView;
     private List<Trabalho> trabalhos;
     private String personagemId;
-
+    private CircularProgressIndicator indicadorCircular;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_lista_trabalhos_especificos);
+        binding = ActivityListaTrabalhosEspecificosBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         setTitle(CHAVE_TITULO_TRABALHO);
 
         recebeDadosIntent();
         inicializaComponentes();
-        atualizaListaTrabalhoEspecifico();
+        atualizaListaTodosTrabalho();
 
-        configuraCampoPesquisa();
         configuraBotaoInsereTrabalho();
         configuraDeslizeItem();
         configuraSwipeRefreshLayout();
         Log.i(TAG_ACTIVITY,"onCreateListaTrabalhosEspecificos");
         }
-
     private void inicializaComponentes() {
-        botaoNovoTrabalho = findViewById(R.id.botaoNovoTrabalhoEspecifico);
+        botaoNovoTrabalho = binding.listaTodosTrabalhosfloatingActionButton;
+        indicadorCircular = binding.listaTodosTrabalhosIndicadorProgresso;
     }
-
     private void configuraDeslizeItem() {
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT) {
             @Override
@@ -101,24 +101,6 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
-
-    private void configuraCampoPesquisa() {
-        SearchView busca = findViewById(R.id.buscaTrabalhoEspecifico);
-        busca.clearFocus();
-        busca.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String textoBusca) {
-                listaBusca(textoBusca);
-                return true;
-            }
-        });
-    }
-
     private void listaBusca(String textoBusca) {
         List<Trabalho> listaFiltro = new ArrayList<>();
         for (Trabalho trabalho:trabalhos){
@@ -158,22 +140,16 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
     }
 
     private void configuraSwipeRefreshLayout() {
-        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshLayoutTrabalhosEspecificos);
+        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.listaTodosTrabalhosSwipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(false);
-            atualizaListaTrabalhoEspecifico();
+            atualizaListaTodosTrabalho();
         });
     }
 
-    private void atualizaListaTrabalhoEspecifico() {
-        mostraDialogodeProresso();
-        if (vericaConexaoInternet()){
-            List<Trabalho> todosTrabalhos = pegaTodosTrabalhos();
-            configuraRecyclerView(todosTrabalhos);
-        }else{
-            progressDialog.dismiss();
-            Toast.makeText(this,"Erro na conexão...",Toast.LENGTH_LONG).show();
-        }
+    private void atualizaListaTodosTrabalho() {
+        List<Trabalho> todosTrabalhos = pegaTodosTrabalhos();
+        configuraRecyclerView(todosTrabalhos);
     }
 
     private void recebeDadosIntent() {
@@ -188,13 +164,6 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
         }
     }
 
-    private void mostraDialogodeProresso(){
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setCancelable(false);
-        progressDialog.setMessage("Carregando dados...");
-        progressDialog.show();
-    }
-
     private List<Trabalho> pegaTodosTrabalhos() {
         trabalhos = new ArrayList<>();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -206,15 +175,13 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
                 trabalhos.clear();
                 for (DataSnapshot dn:dataSnapshot.getChildren()){
                     Trabalho trabalho = dn.getValue(Trabalho.class);
-                    if (!(trabalho==null)&&
-                            removerAcentos(trabalho.getProfissao()).equals(removerAcentos(profissaoRecebido.getNome()))&&
-                            removerAcentos(trabalho.getRaridade()).equals(removerAcentos(raridadeRecebido.getNome()))){
+                    if (trabalho != null){
                         trabalhos.add(trabalho);
                     }
                 }
-                trabalhos.sort(Comparator.comparing(Trabalho::getNivel).thenComparing(Trabalho::getNome));
+                trabalhos.sort(Comparator.comparing(Trabalho::getProfissao).thenComparing(Trabalho::getNivel).thenComparing(Trabalho::getNome));
                 trabalhoAdapter.notifyDataSetChanged();
-                progressDialog.dismiss();
+                indicadorCircular.setVisibility(View.GONE);
             }
 
             @Override
@@ -226,7 +193,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
     }
 
     private void configuraRecyclerView(List<Trabalho> todosTrabalhos) {
-        recyclerView = findViewById(R.id.listaTrabalhoEspecificoRecyclerView);
+        recyclerView = binding.listaTodosTrabalhosRecyclerView;
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         configuraAdapter(todosTrabalhos, recyclerView);
@@ -271,10 +238,9 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
             }
         });
     }
-
-    private boolean vericaConexaoInternet() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo infConexao = cm.getActiveNetworkInfo();
-        return infConexao != null && infConexao.isConnectedOrConnecting();
+    @Override
+    protected void onStop() {
+        super.onStop();
+        binding = null;
     }
 }
