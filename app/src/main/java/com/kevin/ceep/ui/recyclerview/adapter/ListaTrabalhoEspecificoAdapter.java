@@ -68,6 +68,7 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
         private final TextView nome_trabalho_especifico;
         private final TextView profissao_trabalho_especifico;
         private final TextView nivel_trabalho_especifico;
+        private final TextView experienciaTrabalhoEspecifico;
         private Trabalho trabalho;
 
         public TrabalhoEspecificoViewHolder(@NonNull View itemView) {
@@ -75,6 +76,7 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
             nome_trabalho_especifico = itemView.findViewById(R.id.itemNomeTrabaloEspecifico);
             profissao_trabalho_especifico = itemView.findViewById(R.id.itemProfissaoTrabalhoEspecifico);
             nivel_trabalho_especifico = itemView.findViewById(R.id.itemNivelTrabaloEspecifico);
+            experienciaTrabalhoEspecifico = itemView.findViewById(R.id.itemExperienciaTrabaloEspecifico);
             itemView.setOnClickListener(view -> {
                 onItemClickListener.onItemClick(trabalho,getAdapterPosition());
             });
@@ -91,6 +93,7 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
             profissao_trabalho_especifico.setTextColor(Color.WHITE);
             nivel_trabalho_especifico.setText(String.valueOf(trabalho.getNivel()));
             nivel_trabalho_especifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_nivel));
+            experienciaTrabalhoEspecifico.setText(String.valueOf(trabalho.getExperiencia()));
         }
 
         private void confiuraCorNomeTrabalo(Trabalho trabalho) {

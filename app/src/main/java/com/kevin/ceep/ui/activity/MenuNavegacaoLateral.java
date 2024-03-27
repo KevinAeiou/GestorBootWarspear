@@ -78,6 +78,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
     private void configuraSubMenuPersonagem() {
         Menu menuNavigation = navigationView.getMenu();
         MenuItem menuPersonagens = menuNavigation.findItem(R.id.nav_lista_personagem);
+        menuPersonagens.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         SubMenu subItens = menuPersonagens.getSubMenu();
         subItens.clear();
         int indice = 0;
@@ -85,6 +86,11 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
             subItens.add(0, indice, indice, personagem.getNome());
             indice += 1;
         }
+        SubMenu subMenuTeste = menuNavigation.addSubMenu(9,99,1,"Sub Menu teste");
+        subMenuTeste.add(9,0,0,"Testee1");
+        subMenuTeste.add(9,1,1,"Testee2");
+        subMenuTeste.add(9,2,2,"Testee3");
+        subMenuTeste.getItem().setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
         if (personagemSelecionado == null) {
             MenuItem itemMenu = subItens.getItem(0);
             personagemSelecionado = personagens.get(itemMenu.getOrder());
@@ -126,15 +132,15 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
             txtCabecalhoUso.setText("Uso: "+personagemSelecionado.getUso());
             txtCabecalhoEspacoProducao.setText("Espaço de produção: "+personagemSelecionado.getEspacoProducao());
             idPersonagemRecebido = personagemSelecionado.getId();
-            mostraFragmentSelecionado(navigationView.getCheckedItem().getItemId());
+            mostraFragmentSelecionado(navigationView.getCheckedItem());
         }
     }
 
-    private void mostraFragmentSelecionado(int itemNavegacao) {
+    private void mostraFragmentSelecionado(MenuItem itemNavegacao) {
         Fragment fragmentoSelecionado = null;
         Bundle argumento = new Bundle();
         argumento.putString(CHAVE_PERSONAGEM, idPersonagemRecebido);
-        switch (itemNavegacao){
+        switch (itemNavegacao.getItemId()){
             case R.id.nav_trabalhos:
                 fragmentoSelecionado = new ListaTrabalhosFragment();
                 fragmentoSelecionado.setArguments(argumento);
@@ -154,10 +160,9 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
                 vaiParaEntraActivity();
                 break;
         }
-        if (fragmentoSelecionado != null){
+        if (fragmentoSelecionado != null) {
             reposicionaFragmento(fragmentoSelecionado);
         }
-        drawerLayout.closeDrawer(GravityCompat.START);
     }
 
     private void vaiParaAtributosPersonagem(int codigoRequisicao) {
@@ -197,9 +202,11 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
             personagemSelecionado = personagens.get(item.getOrder());
             Log.d("menuNavegacao", "Personagem selecionado: "+personagemSelecionado.getNome());
             atualizaPersonagemSelecionado();
+        } else {
+            drawerLayout.closeDrawer(GravityCompat.START);
         }
         item.setChecked(true);
-        mostraFragmentSelecionado(item.getItemId());
+        mostraFragmentSelecionado(item);
         return true;
     }
 

@@ -12,16 +12,18 @@
         <TextView
             android:id="@+id/itemNomeTrabaloEspecifico"
             style="@style/txtTituloCard"
+            android:gravity="start"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:text="Trabalho" />
 
         <TextView
             android:id="@+id/itemProfissaoTrabalhoEspecifico"
             style="@style/txtSubtituloCard"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="@+id/itemNomeTrabaloEspecifico"
+            app:layout_constraintEnd_toEndOf="@id/itemNomeTrabaloEspecifico"
             app:layout_constraintTop_toBottomOf="@+id/itemNomeTrabaloEspecifico"
             tools:text="Profissão" />
 
@@ -29,10 +31,21 @@
             android:id="@+id/itemNivelTrabaloEspecifico"
             style="@style/txtSubtituloCard"
             android:layout_marginEnd="16dp"
-            app:layout_constraintBottom_toBottomOf="@+id/itemProfissaoTrabalhoEspecifico"
+            app:layout_constraintBottom_toBottomOf="@+id/itemExperienciaTrabaloEspecifico"
+            app:layout_constraintTop_toTopOf="@id/itemExperienciaTrabaloEspecifico"
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="Nivel" />
 
+        <TextView
+            android:id="@+id/itemExperienciaTrabaloEspecifico"
+            style="@style/txtSubtituloCard"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/itemProfissaoTrabalhoEspecifico"
+            app:layout_constraintStart_toStartOf="@id/itemProfissaoTrabalhoEspecifico"
+            app:layout_constraintTop_toBottomOf="@id/itemProfissaoTrabalhoEspecifico"
+            tools:text="Experiência" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>
