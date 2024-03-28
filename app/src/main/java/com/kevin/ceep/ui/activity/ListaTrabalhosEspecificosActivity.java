@@ -12,10 +12,7 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICA
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
 
 import android.app.ActivityOptions;
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -124,10 +121,10 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
     }
 
     private void configuraBotaoInsereTrabalho() {
-        botaoNovoTrabalho.setOnClickListener(view -> vaiParaTrabalhoEspecificoActivity());
+        botaoNovoTrabalho.setOnClickListener(view -> vaiParaCadastraTrabalhoEspecificoActivity());
     }
 
-    private void vaiParaTrabalhoEspecificoActivity() {
+    private void vaiParaCadastraTrabalhoEspecificoActivity() {
         Intent cadastraNovoTrabalho=
                 new Intent(getApplicationContext(),
                         TrabalhoEspecificoActivity.class);
@@ -179,7 +176,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
                         trabalhos.add(trabalho);
                     }
                 }
-                trabalhos.sort(Comparator.comparing(Trabalho::getProfissao).thenComparing(Trabalho::getNivel).thenComparing(Trabalho::getNome));
+                trabalhos.sort(Comparator.comparing(Trabalho::getProfissao).thenComparing(Trabalho::getRaridade).thenComparing(Trabalho::getNivel).thenComparing(Trabalho::getNome));
                 trabalhoAdapter.notifyDataSetChanged();
                 indicadorCircular.setVisibility(View.GONE);
             }

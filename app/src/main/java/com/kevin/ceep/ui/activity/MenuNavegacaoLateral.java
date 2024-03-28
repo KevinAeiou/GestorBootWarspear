@@ -155,6 +155,9 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
             case R.id.nav_novo_personagem:
                 vaiParaAtributosPersonagem(CODIGO_REQUISICAO_INSERE_TRABALHO);
                 break;
+            case R.id.nav_novo_trabalho:
+                vaiParaListaTodosTrabalhos();
+                break;
             case R.id.nav_sair:
                 FirebaseAuth.getInstance().signOut();
                 vaiParaEntraActivity();
@@ -163,6 +166,11 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         if (fragmentoSelecionado != null) {
             reposicionaFragmento(fragmentoSelecionado);
         }
+    }
+
+    private void vaiParaListaTodosTrabalhos() {
+        Intent iniciaVaiParaListaTodosTrabalhos = new Intent(getApplicationContext(), ListaTrabalhosEspecificosActivity.class);
+        startActivity(iniciaVaiParaListaTodosTrabalhos);
     }
 
     private void vaiParaAtributosPersonagem(int codigoRequisicao) {
