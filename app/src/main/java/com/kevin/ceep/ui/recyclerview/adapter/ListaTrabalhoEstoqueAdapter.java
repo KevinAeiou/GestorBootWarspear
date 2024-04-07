@@ -63,9 +63,9 @@ public class ListaTrabalhoEstoqueAdapter extends RecyclerView.Adapter<ListaTraba
         private final EditText quantidadeTrabalho;
         private TrabalhoEstoque trabalhoEstoque;
         private ImageButton botaoMenosUm;
+        private ImageButton botaoMenosCinquenta;
         private ImageButton botaoMaisUm;
-
-
+        private ImageButton botaoMaisCinquenta;
         public TrabalhoEstoqueViewHolder(@NonNull View itemView) {
             super(itemView);
             cardTrabalho = itemView.findViewById(R.id.itemCardTrabalhoEstoque);
@@ -74,9 +74,13 @@ public class ListaTrabalhoEstoqueAdapter extends RecyclerView.Adapter<ListaTraba
             nivelTrabalho = itemView.findViewById(R.id.itemNivelTrabalhoEstoque);
             quantidadeTrabalho = itemView.findViewById(R.id.itemEdtQuantidadeTrabalhoEstoque);
             botaoMenosUm = itemView.findViewById(R.id.itemBotaoMenosUm);
+            botaoMenosCinquenta = itemView.findViewById(R.id.itemBotaoMenosCinquenta);
             botaoMaisUm = itemView.findViewById(R.id.itemBotaoMaisUm);
+            botaoMaisCinquenta = itemView.findViewById(R.id.itemBotaoMaisCinquenta);
             botaoMenosUm.setOnClickListener(v -> onItemClickListener.onItemClick(trabalhoEstoque,getAdapterPosition(), R.id.itemBotaoMenosUm));
+            botaoMenosCinquenta.setOnClickListener(v -> onItemClickListener.onItemClick(trabalhoEstoque,getAdapterPosition(), R.id.itemBotaoMenosCinquenta));
             botaoMaisUm.setOnClickListener(v -> onItemClickListener.onItemClick(trabalhoEstoque,getAdapterPosition(), R.id.itemBotaoMaisUm));
+            botaoMaisCinquenta.setOnClickListener(v -> onItemClickListener.onItemClick(trabalhoEstoque,getAdapterPosition(), R.id.itemBotaoMaisCinquenta));
 
         }
         public void vincula(TrabalhoEstoque trabalhoEstoque){

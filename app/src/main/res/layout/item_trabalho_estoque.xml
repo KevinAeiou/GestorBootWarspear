@@ -45,14 +45,23 @@
             tools:text="Nível do trabalho estoque" />
 
         <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/itemBotaoMenosUm"
+            android:id="@+id/itemBotaoMenosCinquenta"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:src="@drawable/ic_menos_um"
             app:layout_constraintBottom_toBottomOf="@+id/itemTxtQuantidadeTrabalhosEstoque"
             app:layout_constraintEnd_toStartOf="@+id/itemTxtQuantidadeTrabalhosEstoque"
             app:layout_constraintTop_toTopOf="@+id/itemTxtQuantidadeTrabalhosEstoque" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/itemBotaoMenosUm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_menos_um"
+            app:layout_constraintBottom_toBottomOf="@+id/itemBotaoMenosCinquenta"
+            app:layout_constraintEnd_toStartOf="@+id/itemBotaoMenosCinquenta"
+            app:layout_constraintTop_toTopOf="@+id/itemBotaoMenosCinquenta"
+            />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/itemTxtQuantidadeTrabalhosEstoque"
@@ -61,10 +70,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
-            android:layout_marginEnd="8dp"
             android:gravity="center"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/itemBotaoMaisUm"
+            app:layout_constraintEnd_toStartOf="@id/itemBotaoMaisCinquenta"
             app:layout_constraintTop_toBottomOf="@id/itemNomeTrabalhoEstoque">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -78,13 +86,22 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/itemBotaoMaisCinquenta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_mais_um"
+            app:layout_constraintBottom_toBottomOf="@+id/itemTxtQuantidadeTrabalhosEstoque"
+            app:layout_constraintEnd_toStartOf="@id/itemBotaoMaisUm"
+            app:layout_constraintTop_toTopOf="@+id/itemTxtQuantidadeTrabalhosEstoque" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/itemBotaoMaisUm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:src="@drawable/ic_mais_um"
-            app:layout_constraintBottom_toBottomOf="@+id/itemTxtQuantidadeTrabalhosEstoque"
+            app:layout_constraintBottom_toBottomOf="@+id/itemBotaoMaisCinquenta"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/itemTxtQuantidadeTrabalhosEstoque" />
+            app:layout_constraintTop_toTopOf="@+id/itemBotaoMaisCinquenta" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

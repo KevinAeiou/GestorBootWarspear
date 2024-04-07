@@ -6,6 +6,12 @@
     <string name="estoque">Estoque</string>
     <string name="trabalhos">Trabalhos</string>
     <string name="cadastrar_novo_trabalho">Cadastrar novo trabalho</string>
+    <string-array name="raridades">
+        <item>Comum</item>
+        <item>Melhorado</item>
+        <item>Raro</item>
+        <item>Especial</item>
+    </string-array>
     <string-array name="estados">
         <item>Produzir</item>
         <item>Produzindo</item>
@@ -81,5 +87,15 @@
     <string name="string_uso">Uso</string>
     <string name="stringConfiguracao">Configuração</string>
     <string name="stringNovoPersonagem">Novo personagem</string>
-    <string name="stringNovoTrabalho">Novo trabalho</string>
+    <string name="stringRecorrente">Recorrente</string>
+    <string name="stringExperiencia">Experiência</string>
+    <string name="stringProfissao">Profissão</string>
+    <string name="stringNivel">Nível</string>
+    <string name="stringQuantidade">Quantidade</string>
+    <string name="stringRaridade">Raridade</string>
+    <string name="stringTrabalhoNecessario">Trabalho necessário</string>
+    <string name="stringLicenca">Licença</string>
+    <string name="stringImagemDoTrabalhoDesejado">Imagem do trabalho desejado</string>
+    <string name="stringAdicionar">Adicionar</string>
+    <string name="stringUm">1</string>
 </resources>

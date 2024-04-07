@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -139,11 +140,24 @@ public class ListaEstoqueFragment extends Fragment {
     }
 
     private void alteraQuantidade(TrabalhoEstoque trabalhoEstoque, int adapterPosition, int botaoId) {
-        if (botaoId == R.id.itemBotaoMenosUm){
-            minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
+        int novaQuantidade = trabalhoEstoque.getQuantidade();
+        if (botaoId == R.id.itemBotaoMenosUm && trabalhoEstoque.getQuantidade() > 0){
+            novaQuantidade -= 1;
+        } else if (botaoId == R.id.itemBotaoMenosCinquenta && trabalhoEstoque.getQuantidade() > 0) {
+            novaQuantidade -= 50;
+            if (novaQuantidade < 0) {
+                novaQuantidade = 0;
+            }
+        } else if (botaoId == R.id.itemBotaoMaisUm){
+            novaQuantidade += 1;
+        } else if (botaoId == R.id.itemBotaoMaisCinquenta) {
+            novaQuantidade += 50;
+        }
+        int finalNovaQuantidade = novaQuantidade;
+        minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
                     .child(personagemId).child(CHAVE_LISTA_ESTOQUE)
                     .child(trabalhoEstoque.getId()).child("quantidade")
-                    .setValue(trabalhoEstoque.getQuantidade()-1, ((databaseError, databaseReference) -> {
+                    .setValue(novaQuantidade, ((databaseError, databaseReference) -> {
                         if (databaseError != null){
                             Snackbar.make(layoutFragmentoEstoque,databaseError.getMessage(),Snackbar.LENGTH_SHORT).show();
                         } else {
@@ -154,32 +168,11 @@ public class ListaEstoqueFragment extends Fragment {
                                     trabalhoEstoque.getRaridade(),
                                     trabalhoEstoque.getNivel(),
                                     trabalhoEstoque.getExperiencia(),
-                                    trabalhoEstoque.getQuantidade()-1);
+                                    finalNovaQuantidade);
                             Snackbar.make(layoutFragmentoEstoque,"Quantidade alterada!",Snackbar.LENGTH_SHORT).show();
                             trabalhoEstoqueAdapter.altera(adapterPosition,trabalhoAlterado);
                         }
                     }));
-        }else if (botaoId == R.id.itemBotaoMaisUm){
-            minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
-                    .child(personagemId).child(CHAVE_LISTA_ESTOQUE)
-                    .child(trabalhoEstoque.getId()).child("quantidade")
-                    .setValue(trabalhoEstoque.getQuantidade() + 1, (databaseError, databaseReference) -> {
-                        if (databaseError != null){
-                            Snackbar.make(layoutFragmentoEstoque,databaseError.getMessage(),Snackbar.LENGTH_SHORT).show();
-                        } else {
-                            TrabalhoEstoque trabalhoAlterado = new TrabalhoEstoque(
-                                    trabalhoEstoque.getId(),
-                                    trabalhoEstoque.getNome(),
-                                    trabalhoEstoque.getProfissao(),
-                                    trabalhoEstoque.getRaridade(),
-                                    trabalhoEstoque.getNivel(),
-                                    trabalhoEstoque.getExperiencia(),
-                                    trabalhoEstoque.getQuantidade()+1);
-                            Snackbar.make(layoutFragmentoEstoque,"Quantidade alterada!",Snackbar.LENGTH_SHORT).show();
-                            trabalhoEstoqueAdapter.altera(adapterPosition,trabalhoAlterado);
-                        }
-                    });
-        }
     }
 
     private List<TrabalhoEstoque> pegaTodosTrabalhosEstoque() {

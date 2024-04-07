@@ -80,8 +80,8 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
     }
 
     private void configuraDropDrow() {
-        autoCompleteLicenca = findViewById(R.id.txtAutoCompleteLicencaTrabalho);
-        autoCompleteQuantidade = findViewById(R.id.txtAutoCompleteQuantidadeTrabalho);
+        autoCompleteLicenca = findViewById(R.id.txtAutoCompleteLicencaConfirmaTrabalho);
+        autoCompleteQuantidade = findViewById(R.id.txtAutoCompleteQuantidadeConfirmaTrabalho);
 
         String[] licencas = getResources().getStringArray(R.array.licencas_completas);
         String[] quantidade = getResources().getStringArray(R.array.quantidade);
@@ -101,7 +101,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
     }
 
     private void configuraBotaoCadastraTrabalho() {
-        AppCompatButton botaoCadastraTrabalho = findViewById(R.id.botao_cadastrar);
+        AppCompatButton botaoCadastraTrabalho = findViewById(R.id.botaoCadastraConfirmaTrabalho);
         botaoCadastraTrabalho.setOnClickListener(view -> {
             cadastraNovoTrabalho();
             vaiParaListaTrabalhosFragmento();
@@ -120,7 +120,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         String usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
 
         String novoId = geraIdAleatorio();
-        checkRecorrencia=findViewById(R.id.checkBoxProducaoRec);
+        checkRecorrencia=findViewById(R.id.checkBoxProducaoRecorrenteConfirmaTrabalho);
         boolean recorrencia = checkRecorrencia.isChecked();
         int experiencia = trabalhoRecebido.getExperiencia();
         if (licencaSelecionada.toLowerCase(Locale.ROOT).equals("licença de produção do principiante")){

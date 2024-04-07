@@ -37,6 +37,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.kevin.ceep.R;
+import com.kevin.ceep.databinding.ActivityTrabalhoEspecificoBinding;
 import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
@@ -46,26 +47,27 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class TrabalhoEspecificoActivity extends AppCompatActivity {
-
+    private ActivityTrabalhoEspecificoBinding binding;
     private FirebaseDatabase database;
     private DatabaseReference minhareferencia;
     private TrabalhoProducao trabalhoRecebido;
     private Profissao profissaoRecebido;
     private Raridade raridadeRecebido;
-    private TextInputEditText edtNomeTrabalho,edtNivelTrabalho,edtExperienciaTrabalho;
-    private TextInputLayout txtInputEstado, txtInputLicenca,txtInputNome,txtInputNivel,txtInputExperiencia;
-    private CheckBox checkBoxTrabalhoEspecifico;
-    private AutoCompleteTextView autoCompleteEstado,autoCompleteLicenca;
-    private String[] estadosTrabalho,licencasTrabalho;
+    private TextInputEditText edtNomeTrabalho, edtExperienciaTrabalho, edtNivelTrabalho;
+    private TextInputLayout txtInputNome, txtInputExperiencia, txtInputNivel, txtInputRaridade, txtInputTrabalhoNecessario1, txtInputTrabalhoNecessario2, txtInputQuantidade, txtInputLicenca, txtInputEstado;
+    private CheckBox checkBoxRecorrenciaTrabalho;
+    private AutoCompleteTextView autoCompleteProfissao, autoCompleteRaridade, autoCompleteTrabalhoNecessario1, autoCompleteTrabalhoNecessario2, autoCompleteQuantidade, autoCompleteLicenca, autoCompleteEstado;
+    private String[] raridadesTrabalho, estadosTrabalho, licencasTrabalho;
     private final String[] mensagemErro={"Campo requerido!","Inválido!"};
-    private String usuarioId,personagemId,trabalhoId,licencaModificada,nome,nivel,experiencia;
-    private int codigoRequisicao,posicaoEstado=0;
+    private String usuarioId, personagemId, trabalhoId, licencaModificada, nome, nivel, experiencia;
+    private int codigoRequisicao, posicaoEstado=0;
     private boolean recorrencia=true, acrescimo = false;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_trabalho_especifico);
+        binding = ActivityTrabalhoEspecificoBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         inicializaComponentes();
         recebeDadosIntent();
@@ -146,23 +148,34 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     }
 
     private void inicializaComponentes() {
-        database=FirebaseDatabase.getInstance();
-        minhareferencia=database.getReference(CHAVE_USUARIOS);
-        usuarioId= Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        database = FirebaseDatabase.getInstance();
+        minhareferencia = database.getReference(CHAVE_USUARIOS);
+        usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
 
-        edtNomeTrabalho=findViewById(R.id.edtNomeTrabalho);
-        edtNivelTrabalho=findViewById(R.id.edtNivelTrabalho);
-        edtExperienciaTrabalho=findViewById(R.id.edtExperienciaTrabalho);
-        txtInputEstado=findViewById(R.id.txtLayoutEstadoTrabalho);
-        txtInputLicenca=findViewById(R.id.txtLayoutLicencaTrabalho);
-        txtInputNome=findViewById(R.id.txtLayoutNomeTrabalho);
-        txtInputNivel=findViewById(R.id.txtLayoutNivelTrabalho);
-        txtInputExperiencia=findViewById(R.id.txtLayoutExperienciaTrabalho);
-        autoCompleteEstado=findViewById(R.id.txtAutoCompleteEstadoTrabalho);
-        autoCompleteLicenca=findViewById(R.id.txtAutoCompleteLicencaTrabalhoEspecifico);
-        licencasTrabalho=getResources().getStringArray(R.array.licencas_completas);
-        estadosTrabalho=getResources().getStringArray(R.array.estados);
-        checkBoxTrabalhoEspecifico=findViewById(R.id.checkBoxTrabalhoEspecifico);
+        edtNomeTrabalho = binding.edtNomeTrabalho;
+        edtNivelTrabalho = binding.edtNivelTrabalho;
+        edtExperienciaTrabalho = binding.edtExperienciaTrabalho;
+
+        txtInputEstado = binding.txtLayoutEstadoTrabalho;
+        txtInputLicenca = binding.txtLayoutLicencaTrabalho;
+        txtInputNome = binding.txtLayoutNomeTrabalho;
+        txtInputNivel = binding.txtLayoutNivelTrabalho;
+        txtInputQuantidade = binding.txtLayoutQuantidadeTrabalho;
+        txtInputExperiencia = binding.txtLayoutExperienciaTrabalho;
+
+        autoCompleteProfissao = binding.txtAutoCompleteProfissaoTrabalho;
+        autoCompleteRaridade = binding.txtAutoCompleteRaridadeTrabalho;
+        autoCompleteTrabalhoNecessario1 = binding.txtAutoCompleteTrabalhoNecessario;
+        autoCompleteTrabalhoNecessario2 = binding.txtAutoCompleteTrabalhoNecessario2;
+        autoCompleteQuantidade = binding.txtAutoCompleteQuantidadeTrabalho;
+        autoCompleteLicenca = binding.txtAutoCompleteLicencaTrabalho;
+        autoCompleteEstado = binding.txtAutoCompleteEstadoTrabalho;
+
+        checkBoxRecorrenciaTrabalho = binding.checkBoxRecorrenciaTrabalho;
+
+        raridadesTrabalho = getResources().getStringArray(R.array.raridades);
+        licencasTrabalho = getResources().getStringArray(R.array.licencas_completas);
+        estadosTrabalho = getResources().getStringArray(R.array.estados);
     }
 
     private void recebeDadosIntent() {
@@ -192,7 +205,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         setTitle(CHAVE_TITULO_NOVO_TRABALHO);
         txtInputLicenca.setVisibility(View.GONE);
         txtInputEstado.setVisibility(View.GONE);
-        checkBoxTrabalhoEspecifico.setVisibility(View.GONE);
+        checkBoxRecorrenciaTrabalho.setVisibility(View.GONE);
     }
 
     private void configuraComponentesAlteraTrabalho() {
@@ -200,6 +213,13 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         edtNomeTrabalho.setEnabled(false);
         edtNivelTrabalho.setEnabled(false);
         edtExperienciaTrabalho.setEnabled(false);
+        autoCompleteProfissao.setEnabled(false);
+        autoCompleteProfissao.setText(trabalhoRecebido.getProfissao());
+        autoCompleteRaridade.setEnabled(false);
+        autoCompleteRaridade.setText(trabalhoRecebido.getRaridade());
+        autoCompleteTrabalhoNecessario1.setEnabled(false);
+        autoCompleteTrabalhoNecessario2.setEnabled(false);
+        autoCompleteQuantidade.setEnabled(false);
         trabalhoId=trabalhoRecebido.getId();
         autoCompleteEstado.setText(estadosTrabalho[trabalhoRecebido.getEstado()]);
         edtNivelTrabalho.setText(String.valueOf(trabalhoRecebido.getNivel()));
@@ -209,7 +229,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         posicaoEstado=trabalhoRecebido.getEstado();
         licencaModificada=trabalhoRecebido.getTipo_licenca();
         if (trabalhoRecebido.getRecorrencia()){
-            checkBoxTrabalhoEspecifico.setChecked(true);
+            checkBoxRecorrenciaTrabalho.setChecked(true);
         }
     }
 
@@ -261,7 +281,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     }
 
     private void configuraCheckBoxRecorrencia() {
-        recorrencia = checkBoxTrabalhoEspecifico.isChecked();
+        recorrencia = checkBoxRecorrenciaTrabalho.isChecked();
     }
 
     private void modificaTrabalhoServidor(Trabalho trabalhoModificado) {
@@ -312,5 +332,11 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         vaiParaListaTrabalhos.putExtra(CHAVE_PERSONAGEM,personagemId);
         setResult(1,vaiParaListaTrabalhos);
         TrabalhoEspecificoActivity.super.onBackPressed();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        binding = null;
     }
 }
