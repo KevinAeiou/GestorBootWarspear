@@ -10,12 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.kevin.ceep.R;
+import com.kevin.ceep.model.ProfissaoTrabalho;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 import java.util.List;
 
 public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTrabalhoEspecificoAdapter.TrabalhoEspecificoViewHolder> {
 
+    private List<ProfissaoTrabalho> profissaoTrabalhos;
     private List<Trabalho> trabalhos;
     private Context context;
     private OnItemClickListener onItemClickListener;
