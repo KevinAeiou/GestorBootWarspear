@@ -8,7 +8,7 @@ public class ProfissaoTrabalho implements Serializable {
     private ArrayList<Trabalho> trabalhos;
     private boolean isExpandable;
     public ProfissaoTrabalho(){}
-    public ProfissaoTrabalho(String nome, ArrayList<Trabalho> trabalhos, boolean isExpandable){
+    public ProfissaoTrabalho(String nome, ArrayList<Trabalho> trabalhos){
         this.nome = nome;
         this.trabalhos = trabalhos;
         isExpandable = false;
@@ -16,12 +16,14 @@ public class ProfissaoTrabalho implements Serializable {
     public String getNome() {
         return nome;
     }
-
     public ArrayList<Trabalho> getTrabalhos() {
         return trabalhos;
     }
 
     public boolean isExpandable() {
         return isExpandable;
+    }
+    public void setExpandable(boolean expandable) {
+        isExpandable = expandable;
     }
 }

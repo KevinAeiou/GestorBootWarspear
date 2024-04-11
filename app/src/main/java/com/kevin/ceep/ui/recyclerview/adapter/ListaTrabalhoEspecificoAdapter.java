@@ -17,7 +17,6 @@ import java.util.List;
 
 public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTrabalhoEspecificoAdapter.TrabalhoEspecificoViewHolder> {
 
-    private List<ProfissaoTrabalho> profissaoTrabalhos;
     private List<Trabalho> trabalhos;
     private Context context;
     private OnItemClickListener onItemClickListener;
@@ -52,6 +51,9 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
 
     @Override
     public int getItemCount() {
+        if (trabalhos == null){
+            return 0;
+        }
         return trabalhos.size();
     }
 

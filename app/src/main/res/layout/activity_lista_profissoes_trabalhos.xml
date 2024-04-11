@@ -4,19 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/constraintLayoutProfissoesTrabalhos"
     tools:context=".ui.activity.ListaTrabalhosEspecificosActivity">
 
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/listaTodosTrabalhosIndicadorProgresso"
+    <ProgressBar
+        android:id="@+id/indicadorProgressoProfissoesTrabalhos"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        style="?android:attr/progressBarStyle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/listaTodosTrabalhosSwipeRefreshLayout"
+        android:id="@+id/swipeRefreshProfissoesTrabalhos"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,15 +28,15 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/listaTodosTrabalhosRecyclerView"
+            android:id="@+id/recyclerViewProfissoesTrabalhos"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            tools:listitem="@layout/item_trabalho_especifico" />
+            tools:listitem="@layout/item_profissao_trabalho" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/listaTodosTrabalhosfloatingActionButton"
+        android:id="@+id/floatingButtonProfissoesTrabalhos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
