@@ -14,6 +14,7 @@
     <color name="cor_texto_licenca_aprediz">#66ff66</color>
     <color name="cor_texto_raridade_especial">#ff6666</color>
     <color name="cor_texto_raridade_raro">#ff66ff</color>
+    <color name="cor_texto_raridade_melhorado">#ffcc00</color>
     <color name="cor_texto_raridade_comum">#FCF5EF</color>
     <color name="cor_texto_nivel">#00ff00</color>
     <!-- Cores de fundo -->

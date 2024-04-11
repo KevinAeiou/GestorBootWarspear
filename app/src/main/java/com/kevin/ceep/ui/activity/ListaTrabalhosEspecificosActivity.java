@@ -97,7 +97,6 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
     }
 
     private void filtraTrabalhosProfissao() {
-        Log.d("filtroProfissao", "Inicia filtro de profissões.");
         profissoesTrabalhos = new ArrayList<>();
         for (Trabalho trabalho : todosTrabalhos) {
             if (profissoesTrabalhos.isEmpty()){
@@ -105,14 +104,12 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
                 listaTrabalhosProfissao.add(trabalho);
                 ProfissaoTrabalho profissaoTrabalho = new ProfissaoTrabalho(trabalho.getProfissao(), listaTrabalhosProfissao);
                 profissoesTrabalhos.add(profissaoTrabalho);
-                Log.d("filtroProfissao", "Adicionou: " + profissaoTrabalho.getNome());
             } else {
                 if (!profissaoExiste(trabalho)) {
                     ArrayList<Trabalho> listaTrabalhosProfissao = new ArrayList<>();
                     listaTrabalhosProfissao.add(trabalho);
                     ProfissaoTrabalho profissaoTrabalho = new ProfissaoTrabalho(trabalho.getProfissao(), listaTrabalhosProfissao);
                     profissoesTrabalhos.add(profissaoTrabalho);
-                    Log.d("filtroProfissao", "Adicionou: " + profissaoTrabalho.getNome());
                 }
             }
         }

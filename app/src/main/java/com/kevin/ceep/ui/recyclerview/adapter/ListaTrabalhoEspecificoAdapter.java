@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.kevin.ceep.R;
-import com.kevin.ceep.model.ProfissaoTrabalho;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 import java.util.List;
@@ -73,6 +72,7 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
         private final TextView profissao_trabalho_especifico;
         private final TextView nivel_trabalho_especifico;
         private final TextView experienciaTrabalhoEspecifico;
+        private final TextView raridadeTrabalhoEspecifico;
         private Trabalho trabalho;
 
         public TrabalhoEspecificoViewHolder(@NonNull View itemView) {
@@ -81,6 +81,7 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
             profissao_trabalho_especifico = itemView.findViewById(R.id.itemProfissaoTrabalhoEspecifico);
             nivel_trabalho_especifico = itemView.findViewById(R.id.itemNivelTrabaloEspecifico);
             experienciaTrabalhoEspecifico = itemView.findViewById(R.id.itemExperienciaTrabaloEspecifico);
+            raridadeTrabalhoEspecifico = itemView.findViewById(R.id.itemRaridadeTrabalhoEspecifico);
             itemView.setOnClickListener(view -> {
                 onItemClickListener.onItemClick(trabalho,getAdapterPosition());
             });
@@ -97,14 +98,17 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
             profissao_trabalho_especifico.setTextColor(Color.WHITE);
             nivel_trabalho_especifico.setText(String.valueOf(trabalho.getNivel()));
             nivel_trabalho_especifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_nivel));
-            experienciaTrabalhoEspecifico.setText(String.valueOf(trabalho.getExperiencia()));
+            experienciaTrabalhoEspecifico.setText("Exp "+trabalho.getExperiencia());
+            raridadeTrabalhoEspecifico.setText(trabalho.getRaridade());
         }
 
         private void confiuraCorNomeTrabalo(Trabalho trabalho) {
             String raridade = trabalho.getRaridade();
             if (raridade.equals("Comum")){
                 nome_trabalho_especifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_comum));
-            }else if (raridade.equals("Raro")){
+            } else if (raridade.equals("Melhorado")) {
+                nome_trabalho_especifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_melhorado));
+            } else if (raridade.equals("Raro")){
                 nome_trabalho_especifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_raro));
             }else if (raridade.equals("Especial")){
                 nome_trabalho_especifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_especial));
