@@ -83,7 +83,7 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
             experienciaTrabalhoEspecifico = itemView.findViewById(R.id.itemExperienciaTrabaloEspecifico);
             raridadeTrabalhoEspecifico = itemView.findViewById(R.id.itemRaridadeTrabalhoEspecifico);
             itemView.setOnClickListener(view -> {
-                onItemClickListener.onItemClick(trabalho,getAdapterPosition());
+                onItemClickListener.onItemClick(trabalho, getAdapterPosition());
             });
         }
         public void vincula(Trabalho trabalho){
@@ -93,7 +93,7 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
 
         private void preencheCampo(Trabalho trabalho) {
             nome_trabalho_especifico.setText(trabalho.getNome());
-            confiuraCorNomeTrabalo(trabalho);
+            confiuraCorNomeTrabalho(trabalho);
             profissao_trabalho_especifico.setText(trabalho.getProfissao());
             profissao_trabalho_especifico.setTextColor(Color.WHITE);
             nivel_trabalho_especifico.setText(String.valueOf(trabalho.getNivel()));
@@ -102,7 +102,7 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
             raridadeTrabalhoEspecifico.setText(trabalho.getRaridade());
         }
 
-        private void confiuraCorNomeTrabalo(Trabalho trabalho) {
+        private void confiuraCorNomeTrabalho(Trabalho trabalho) {
             String raridade = trabalho.getRaridade();
             if (raridade.equals("Comum")){
                 nome_trabalho_especifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_comum));

@@ -166,6 +166,7 @@ public class ListaEstoqueFragment extends Fragment {
                                     trabalhoEstoque.getNome(),
                                     trabalhoEstoque.getProfissao(),
                                     trabalhoEstoque.getRaridade(),
+                                    trabalhoEstoque.getTrabalhoNecessario(),
                                     trabalhoEstoque.getNivel(),
                                     trabalhoEstoque.getExperiencia(),
                                     finalNovaQuantidade);

@@ -1,6 +1,6 @@
 package com.kevin.ceep.ui.activity;
 
-import static com.kevin.ceep.ui.activity.ListaPersonagemActivity.geraIdAleatorio;
+import static com.kevin.ceep.ui.Utilitario.geraIdAleatorio;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
@@ -131,6 +131,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
                 trabalhoRecebido.getNome(),
                 trabalhoRecebido.getProfissao(),
                 trabalhoRecebido.getRaridade(),
+                trabalhoRecebido.getTrabalhoNecessario(),
                 trabalhoRecebido.getNivel(),
                 experiencia,
                 licencaSelecionada,

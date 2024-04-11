@@ -160,6 +160,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
 
     private void configuraAdapter(List<ProfissaoTrabalho> profissoesTrabalhos, RecyclerView listaTrabalhos) {
         listaProfissaoTrabalhoAdapter = new ListaProfissaoTrabalhoAdapter(profissoesTrabalhos, getApplicationContext());
+
         listaTrabalhos.setAdapter(listaProfissaoTrabalhoAdapter);
     }
     @Override

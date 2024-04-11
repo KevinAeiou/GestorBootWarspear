@@ -8,16 +8,18 @@ public class Trabalho implements Serializable {
     private String nome;
     private String profissao;
     private String raridade;
+    private String trabalhoNecessario;
     private Integer nivel;
     private Integer experiencia;
 
     public Trabalho(){}
 
-    public Trabalho(String id, String nome, String profissao, String raridade, Integer nivel, Integer experiencia) {
+    public Trabalho(String id, String nome, String profissao, String raridade, String trabalhoNecessario, Integer nivel, Integer experiencia) {
         this.id = id;
         this.nome = nome;
         this.profissao = profissao;
         this.raridade = raridade;
+        this.trabalhoNecessario = trabalhoNecessario;
         this.nivel = nivel;
         this.experiencia = experiencia;
     }
@@ -48,5 +50,13 @@ public class Trabalho implements Serializable {
 
     public Integer getExperiencia() {
         return experiencia;
+    }
+
+    public String getTrabalhoNecessario() {
+        return trabalhoNecessario;
+    }
+
+    public void setTrabalhoNecessario(String trabalhoNecessario) {
+        this.trabalhoNecessario = trabalhoNecessario;
     }
 }

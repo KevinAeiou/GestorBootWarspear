@@ -111,59 +111,91 @@
             android:text="@string/stringRaridade"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/txtLayoutTrabalhoNecessario"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/linearLayoutTrabalhoNecessario1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:hint="@string/stringTrabalhoNecessario"
+        android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/txtLayoutRaridadeTrabalho"
-        app:layout_constraintEnd_toStartOf="@id/imageView"
-        app:layout_constraintStart_toStartOf="@+id/txtLayoutRaridadeTrabalho">
+        app:layout_constraintStart_toStartOf="@+id/txtLayoutRaridadeTrabalho"
+        app:layout_constraintEnd_toEndOf="@id/txtLayoutRaridadeTrabalho">
 
-        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/txtAutoCompleteTrabalhoNecessario"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearLayoutTrabalhoNecessario2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="start"
-            android:inputType="none"
-            android:padding="8dp"
-            android:text="@string/stringTrabalhoNecessario"/>
-    </com.google.android.material.textfield.TextInputLayout>
+            android:orientation="horizontal">
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/imageView"
-        android:src="@drawable/ic_adiciona"
-        app:layout_constraintStart_toEndOf="@id/txtLayoutTrabalhoNecessario"
-        app:layout_constraintEnd_toEndOf="@id/txtLayoutRaridadeTrabalho"
-        app:layout_constraintTop_toTopOf="@id/txtLayoutTrabalhoNecessario"
-        app:layout_constraintBottom_toBottomOf="@id/txtLayoutTrabalhoNecessario"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/txtLayoutTrabalhoNecessario"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/stringTrabalhoNecessario">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/txtLayoutTrabalhoNecessario2"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/txtAutoCompleteTrabalhoNecessario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:inputType="none"
+                    android:padding="8dp"
+                    android:text="@string/stringTrabalhoNecessario"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imagemTrabalhoNecessario1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_adiciona"/>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearLayoutTrabalhoNecessario3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/txtLayoutTrabalhoNecessario2"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/stringTrabalhoNecessario">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/txtAutoCompleteTrabalhoNecessario2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:inputType="none"
+                    android:padding="8dp"
+                    android:text="@string/stringTrabalhoNecessario" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imagemTrabalhoNecessario2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_subtrai"/>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <CheckBox
+        android:id="@+id/checkBoxRecorrenciaTrabalho"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:hint="@string/stringTrabalhoNecessario"
-        app:layout_constraintTop_toBottomOf="@+id/txtLayoutTrabalhoNecessario"
-        app:layout_constraintEnd_toStartOf="@id/imageView2"
-        app:layout_constraintStart_toStartOf="@+id/txtLayoutTrabalhoNecessario">
-
-        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/txtAutoCompleteTrabalhoNecessario2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="start"
-            android:inputType="none"
-            android:padding="8dp"
-            android:text="@string/stringTrabalhoNecessario" />
-    </com.google.android.material.textfield.TextInputLayout>
+        android:text="@string/stringRecorrente"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayoutTrabalhoNecessario1"
+        app:layout_constraintStart_toStartOf="@+id/linearLayoutTrabalhoNecessario1"
+        app:layout_constraintTop_toBottomOf="@id/linearLayoutTrabalhoNecessario1" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/txtLayoutQuantidadeTrabalho"
@@ -171,8 +203,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/stringQuantidade"
-        app:layout_constraintEnd_toEndOf="@+id/imageView"
-        app:layout_constraintStart_toStartOf="@+id/txtLayoutTrabalhoNecessario"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayoutTrabalhoNecessario1"
+        app:layout_constraintStart_toStartOf="@+id/linearLayoutTrabalhoNecessario1"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxRecorrenciaTrabalho">
 
         <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -185,25 +217,6 @@
             android:padding="8dp"
             android:text="@string/stringQuantidade"/>
     </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/imageView2"
-        android:src="@drawable/ic_adiciona"
-        app:layout_constraintStart_toEndOf="@id/txtLayoutTrabalhoNecessario2"
-        app:layout_constraintEnd_toEndOf="@id/imageView"
-        app:layout_constraintTop_toTopOf="@id/txtLayoutTrabalhoNecessario2"
-        app:layout_constraintBottom_toBottomOf="@id/txtLayoutTrabalhoNecessario2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <CheckBox
-        android:id="@+id/checkBoxRecorrenciaTrabalho"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/stringRecorrente"
-        app:layout_constraintEnd_toEndOf="@+id/imageView2"
-        app:layout_constraintStart_toStartOf="@+id/txtLayoutTrabalhoNecessario2"
-        app:layout_constraintTop_toBottomOf="@id/txtLayoutTrabalhoNecessario2" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/txtLayoutLicencaTrabalho"
