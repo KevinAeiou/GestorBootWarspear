@@ -84,11 +84,10 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
             nivelTrabalhoEspecifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_nivel));
             experienciaTrabalhoEspecifico.setText("Exp "+trabalho.getExperiencia());
             raridadeTrabalhoEspecifico.setText(trabalho.getRaridade());
-            if (!trabalho.getTrabalhoNecessario().isEmpty()){
-                trabalhoNecessarioTrabalhoEspecifico.setText(trabalho.getTrabalhoNecessario());
-            } else {
-              trabalhoNecessarioTrabalhoEspecifico.setVisibility(View.GONE);
+            if (trabalho.getRaridade().equals("Comum") || trabalho.getRaridade().equals("Especial")) {
+                trabalhoNecessarioTrabalhoEspecifico.setVisibility(View.GONE);
             }
+            trabalhoNecessarioTrabalhoEspecifico.setText(trabalho.getTrabalhoNecessario());
         }
 
         private void confiuraCorNomeTrabalho(Trabalho trabalho) {
