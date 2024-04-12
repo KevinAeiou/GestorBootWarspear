@@ -35,6 +35,14 @@
             tools:text="Raridade" />
 
         <TextView
+            android:id="@+id/itemTrabalhoNecessarioTrabalhoEspecifico"
+            style="@style/txtSubtituloCard"
+            app:layout_constraintStart_toStartOf="@+id/itemRaridadeTrabalhoEspecifico"
+            app:layout_constraintEnd_toEndOf="@id/itemRaridadeTrabalhoEspecifico"
+            app:layout_constraintTop_toBottomOf="@+id/itemRaridadeTrabalhoEspecifico"
+            tools:text="Trabalho necessário" />
+
+        <TextView
             android:id="@+id/itemNivelTrabaloEspecifico"
             style="@style/txtSubtituloCard"
             android:layout_marginEnd="16dp"
@@ -48,9 +56,9 @@
             style="@style/txtSubtituloCard"
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/itemRaridadeTrabalhoEspecifico"
-            app:layout_constraintStart_toStartOf="@id/itemRaridadeTrabalhoEspecifico"
-            app:layout_constraintTop_toBottomOf="@id/itemRaridadeTrabalhoEspecifico"
+            app:layout_constraintEnd_toEndOf="@+id/itemTrabalhoNecessarioTrabalhoEspecifico"
+            app:layout_constraintStart_toStartOf="@id/itemTrabalhoNecessarioTrabalhoEspecifico"
+            app:layout_constraintTop_toBottomOf="@id/itemTrabalhoNecessarioTrabalhoEspecifico"
             tools:text="Experiência" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

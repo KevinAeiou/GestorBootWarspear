@@ -55,6 +55,7 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
         private final TextView nomeTrabalhoEspecifico;
         private final TextView profissaoTrabalhoEspecifico;
         private final TextView raridadeTrabalhoEspecifico;
+        private final TextView trabalhoNecessarioTrabalhoEspecifico;
         private final TextView experienciaTrabalhoEspecifico;
         private final TextView nivelTrabalhoEspecifico;
         private Trabalho trabalhoEspecifico;
@@ -64,8 +65,9 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
             nomeTrabalhoEspecifico = itemView.findViewById(R.id.itemNomeTrabaloEspecifico);
             profissaoTrabalhoEspecifico = itemView.findViewById(R.id.itemProfissaoTrabalhoEspecifico);
             nivelTrabalhoEspecifico = itemView.findViewById(R.id.itemNivelTrabaloEspecifico);
-            experienciaTrabalhoEspecifico = itemView.findViewById(R.id.itemExperienciaTrabaloEspecifico);
             raridadeTrabalhoEspecifico = itemView.findViewById(R.id.itemRaridadeTrabalhoEspecifico);
+            trabalhoNecessarioTrabalhoEspecifico = itemView.findViewById(R.id.itemTrabalhoNecessarioTrabalhoEspecifico);
+            experienciaTrabalhoEspecifico = itemView.findViewById(R.id.itemExperienciaTrabaloEspecifico);
             itemView.setOnClickListener(view -> onItemClickListener.onItemClick(trabalhoEspecifico, 0));
         }
         public void vincula(Trabalho trabalho){
@@ -82,6 +84,11 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
             nivelTrabalhoEspecifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_nivel));
             experienciaTrabalhoEspecifico.setText("Exp "+trabalho.getExperiencia());
             raridadeTrabalhoEspecifico.setText(trabalho.getRaridade());
+            if (!trabalho.getTrabalhoNecessario().isEmpty()){
+                trabalhoNecessarioTrabalhoEspecifico.setText(trabalho.getTrabalhoNecessario());
+            } else {
+              trabalhoNecessarioTrabalhoEspecifico.setVisibility(View.GONE);
+            }
         }
 
         private void confiuraCorNomeTrabalho(Trabalho trabalho) {
