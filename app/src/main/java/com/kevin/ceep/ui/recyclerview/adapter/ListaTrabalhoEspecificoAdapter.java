@@ -17,7 +17,7 @@ import java.util.List;
 public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTrabalhoEspecificoAdapter.TrabalhoEspecificoViewHolder> {
 
     private List<Trabalho> trabalhos;
-    private Context context;
+    private final Context context;
     private OnItemClickListener onItemClickListener;
 
     public ListaTrabalhoEspecificoAdapter(Context context,List<Trabalho> trabalho) {
@@ -28,12 +28,6 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){
         this.onItemClickListener = onItemClickListener;
     }
-
-    public void setListaFiltrada(List<Trabalho> listaFiltrada){
-        this.trabalhos=listaFiltrada;
-        notifyDataSetChanged();
-    }
-
     @NonNull
     @Override
     public TrabalhoEspecificoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -56,48 +50,36 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
         return trabalhos.size();
     }
 
-    public void remove(int posicao){
-        if (posicao<0 || posicao>=trabalhos.size()){
-            return;
-        }
-        trabalhos.remove(posicao);
-        notifyItemRemoved(posicao);
-        notifyItemRangeChanged(posicao,trabalhos.size());
-        notifyDataSetChanged();
-    }
-
     public class TrabalhoEspecificoViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView nome_trabalho_especifico;
-        private final TextView profissao_trabalho_especifico;
-        private final TextView nivel_trabalho_especifico;
-        private final TextView experienciaTrabalhoEspecifico;
+        private final TextView nomeTrabalhoEspecifico;
+        private final TextView profissaoTrabalhoEspecifico;
         private final TextView raridadeTrabalhoEspecifico;
-        private Trabalho trabalho;
+        private final TextView experienciaTrabalhoEspecifico;
+        private final TextView nivelTrabalhoEspecifico;
+        private Trabalho trabalhoEspecifico;
 
         public TrabalhoEspecificoViewHolder(@NonNull View itemView) {
             super(itemView);
-            nome_trabalho_especifico = itemView.findViewById(R.id.itemNomeTrabaloEspecifico);
-            profissao_trabalho_especifico = itemView.findViewById(R.id.itemProfissaoTrabalhoEspecifico);
-            nivel_trabalho_especifico = itemView.findViewById(R.id.itemNivelTrabaloEspecifico);
+            nomeTrabalhoEspecifico = itemView.findViewById(R.id.itemNomeTrabaloEspecifico);
+            profissaoTrabalhoEspecifico = itemView.findViewById(R.id.itemProfissaoTrabalhoEspecifico);
+            nivelTrabalhoEspecifico = itemView.findViewById(R.id.itemNivelTrabaloEspecifico);
             experienciaTrabalhoEspecifico = itemView.findViewById(R.id.itemExperienciaTrabaloEspecifico);
             raridadeTrabalhoEspecifico = itemView.findViewById(R.id.itemRaridadeTrabalhoEspecifico);
-            itemView.setOnClickListener(view -> {
-                onItemClickListener.onItemClick(trabalho, getAdapterPosition());
-            });
+            itemView.setOnClickListener(view -> onItemClickListener.onItemClick(trabalhoEspecifico, 0));
         }
         public void vincula(Trabalho trabalho){
-            this.trabalho = trabalho;
+            this.trabalhoEspecifico = trabalho;
             preencheCampo(trabalho);
         }
 
         private void preencheCampo(Trabalho trabalho) {
-            nome_trabalho_especifico.setText(trabalho.getNome());
+            nomeTrabalhoEspecifico.setText(trabalho.getNome());
             confiuraCorNomeTrabalho(trabalho);
-            profissao_trabalho_especifico.setText(trabalho.getProfissao());
-            profissao_trabalho_especifico.setTextColor(Color.WHITE);
-            nivel_trabalho_especifico.setText(String.valueOf(trabalho.getNivel()));
-            nivel_trabalho_especifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_nivel));
+            profissaoTrabalhoEspecifico.setText(trabalho.getProfissao());
+            profissaoTrabalhoEspecifico.setTextColor(Color.WHITE);
+            nivelTrabalhoEspecifico.setText(String.valueOf(trabalho.getNivel()));
+            nivelTrabalhoEspecifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_nivel));
             experienciaTrabalhoEspecifico.setText("Exp "+trabalho.getExperiencia());
             raridadeTrabalhoEspecifico.setText(trabalho.getRaridade());
         }
@@ -105,13 +87,13 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
         private void confiuraCorNomeTrabalho(Trabalho trabalho) {
             String raridade = trabalho.getRaridade();
             if (raridade.equals("Comum")){
-                nome_trabalho_especifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_comum));
+                nomeTrabalhoEspecifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_comum));
             } else if (raridade.equals("Melhorado")) {
-                nome_trabalho_especifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_melhorado));
+                nomeTrabalhoEspecifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_melhorado));
             } else if (raridade.equals("Raro")){
-                nome_trabalho_especifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_raro));
+                nomeTrabalhoEspecifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_raro));
             }else if (raridade.equals("Especial")){
-                nome_trabalho_especifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_especial));
+                nomeTrabalhoEspecifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_especial));
             }
         }
     }

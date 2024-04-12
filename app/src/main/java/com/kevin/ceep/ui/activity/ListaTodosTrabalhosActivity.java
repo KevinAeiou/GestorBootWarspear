@@ -13,18 +13,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,18 +28,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
-import com.kevin.ceep.databinding.ActivityListaProfissoesTrabalhosBinding;
+import com.kevin.ceep.databinding.ActivityListaTodosTrabalhosBinding;
 import com.kevin.ceep.model.ProfissaoTrabalho;
 import com.kevin.ceep.model.Trabalho;
-import com.kevin.ceep.ui.recyclerview.adapter.ListaProfissaoTrabalhoAdapter;
+import com.kevin.ceep.ui.recyclerview.adapter.ListaTodosTrabalhosAdapter;
+import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoAdapter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
-    private ActivityListaProfissoesTrabalhosBinding binding;
-    private ListaProfissaoTrabalhoAdapter listaProfissaoTrabalhoAdapter;
+public class ListaTodosTrabalhosActivity extends AppCompatActivity {
+    private ActivityListaTodosTrabalhosBinding binding;
+    private ListaTodosTrabalhosAdapter listaTodosTrabalhosAdapter;
+    private ListaTrabalhoEspecificoAdapter listaTrabalhoEspecificoAdapter;
     private FloatingActionButton botaoNovoTrabalho;
     private RecyclerView meuRecycler;
     private List<ProfissaoTrabalho> profissoesTrabalhos;
@@ -53,7 +51,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityListaProfissoesTrabalhosBinding.inflate(getLayoutInflater());
+        binding = ActivityListaTodosTrabalhosBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         inicializaComponentes();
         atualizaListaProfissoesTrabalhos();
@@ -114,7 +112,7 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
             }
         }
         indicadorProgresso.setVisibility(View.GONE);
-        listaProfissaoTrabalhoAdapter.setListaFiltrada(profissoesTrabalhos);
+        listaTodosTrabalhosAdapter.setListaFiltrada(profissoesTrabalhos);
     }
 
     private boolean profissaoExiste(Trabalho trabalho) {
@@ -159,9 +157,8 @@ public class ListaTrabalhosEspecificosActivity extends AppCompatActivity {
     }
 
     private void configuraAdapter(List<ProfissaoTrabalho> profissoesTrabalhos, RecyclerView listaTrabalhos) {
-        listaProfissaoTrabalhoAdapter = new ListaProfissaoTrabalhoAdapter(profissoesTrabalhos, getApplicationContext());
-
-        listaTrabalhos.setAdapter(listaProfissaoTrabalhoAdapter);
+        listaTodosTrabalhosAdapter = new ListaTodosTrabalhosAdapter(profissoesTrabalhos, getApplicationContext());
+        listaTrabalhos.setAdapter(listaTodosTrabalhosAdapter);
     }
     @Override
     protected void onStop() {

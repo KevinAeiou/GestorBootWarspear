@@ -169,7 +169,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
     }
 
     private void vaiParaListaTodosTrabalhos() {
-        Intent iniciaVaiParaListaTodosTrabalhos = new Intent(getApplicationContext(), ListaTrabalhosEspecificosActivity.class);
+        Intent iniciaVaiParaListaTodosTrabalhos = new Intent(getApplicationContext(), ListaTodosTrabalhosActivity.class);
         startActivity(iniciaVaiParaListaTodosTrabalhos);
     }
 

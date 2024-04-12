@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -33,7 +32,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.model.Profissao;
-import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEstoqueAdapter;
@@ -116,22 +114,10 @@ public class ListaEstoqueFragment extends Fragment {
             public void onItemClick(Profissao profissao, int posicao) {
 
             }
-
-            @Override
-            public void onItemClick(Personagem personagem, int posicao) {
-
-            }
-
             @Override
             public void onItemClick(Trabalho trabalho, int adapterPosition) {
 
             }
-
-            @Override
-            public void onItemClick(Raridade raridade, int adapterPosition) {
-
-            }
-
             @Override
             public void onItemClick(TrabalhoEstoque trabalhoEstoque, int adapterPosition, int botaoId) {
                 alteraQuantidade(trabalhoEstoque, adapterPosition, botaoId);

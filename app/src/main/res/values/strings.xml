@@ -99,4 +99,8 @@
     <string name="stringAdicionar">Adicionar</string>
     <string name="stringUm">1</string>
     <string name="stringNovoTrabalho">Novo trabalho</string>
+    <string name="stringTodos">Todos</string>
+    <string name="stringProduzir">Produzir</string>
+    <string name="stringProduzindo">Produzindo</string>
+    <string name="stringPronto">Pronto</string>
 </resources>

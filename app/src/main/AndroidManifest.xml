@@ -28,9 +28,6 @@
             android:name=".ui.activity.TrabalhoEspecificoActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activity.ListaPersonagemActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.activity.MenuNavegacaoLateral"
             android:exported="false"
             android:theme="@style/Theme.Ceep.NoActionBar" />
@@ -47,16 +44,10 @@
             android:name=".ui.activity.ConfirmaTrabalhoActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activity.ListaTrabalhosEspecificosActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.ListaRaridadeActivity"
+            android:name=".ui.activity.ListaTodosTrabalhosActivity"
             android:exported="false" />
         <activity
             android:name=".ui.activity.ListaProfissoesActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.ListaTrabalhosActivity"
             android:exported="false" />
     </application>
 

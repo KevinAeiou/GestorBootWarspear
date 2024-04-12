@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayoutFragmentoListaTrabalhos"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.activity.ListaTrabalhosActivity">
+    android:layout_height="match_parent">
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/chipGrupId"
@@ -26,7 +25,7 @@
             style="@style/Widget.MaterialComponents.Chip.Choice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Todos"/>
+            android:text="@string/stringTodos"/>
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipFiltroProduzir"
@@ -35,7 +34,7 @@
             style="@style/Widget.MaterialComponents.Chip.Choice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Produzir"/>
+            android:text="@string/stringProduzir"/>
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipFiltroProduzindo"
@@ -43,7 +42,7 @@
             style="@style/Widget.MaterialComponents.Chip.Choice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Produzindo"/>
+            android:text="@string/stringProduzindo"/>
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipFiltroPronto"
@@ -51,7 +50,7 @@
             style="@style/Widget.MaterialComponents.Chip.Choice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pronto"/>
+            android:text="@string/stringPronto"/>
 
     </com.google.android.material.chip.ChipGroup>
 
@@ -81,7 +80,7 @@
             android:id="@+id/listaTrabalhoRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listitem="@layout/item_trabalho" />
+            tools:listitem="@layout/item_trabalho_producao" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

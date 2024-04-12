@@ -19,12 +19,12 @@ import com.kevin.ceep.model.Trabalho;
 
 import java.util.List;
 
-public class ListaProfissaoTrabalhoAdapter extends RecyclerView.Adapter<ListaProfissaoTrabalhoAdapter.ProfissaoTrabalhoViewHolder> {
+public class ListaTodosTrabalhosAdapter extends RecyclerView.Adapter<ListaTodosTrabalhosAdapter.ProfissaoTrabalhoViewHolder> {
     private List<ProfissaoTrabalho> profissoes;
     private List<Trabalho> trabalhos;
     private final Context context;
 
-    public ListaProfissaoTrabalhoAdapter(List<ProfissaoTrabalho> profissaoTrabalhos, Context context) {
+    public ListaTodosTrabalhosAdapter(List<ProfissaoTrabalho> profissaoTrabalhos, Context context) {
         this.profissoes = profissaoTrabalhos;
         this.context = context;
     }
@@ -41,7 +41,7 @@ public class ListaProfissaoTrabalhoAdapter extends RecyclerView.Adapter<ListaPro
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ListaProfissaoTrabalhoAdapter.ProfissaoTrabalhoViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ListaTodosTrabalhosAdapter.ProfissaoTrabalhoViewHolder holder, int position) {
         ProfissaoTrabalho profissaoTrabalho = profissoes.get(position);
         holder.vincula(profissaoTrabalho);
         configuraRecyclerViewExpancivel(holder, profissaoTrabalho);

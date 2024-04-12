@@ -39,7 +39,7 @@ public class ListaTrabalhoProducaoAdapter extends RecyclerView.Adapter<ListaTrab
     @Override
     public TrabalhoProducaoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View viewCriada = LayoutInflater.from(context)
-                .inflate(R.layout.item_trabalho,parent,false);
+                .inflate(R.layout.item_trabalho_producao,parent,false);
         return new TrabalhoProducaoViewHolder(viewCriada);
     }
 

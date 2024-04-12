@@ -3,25 +3,18 @@ package com.kevin.ceep.ui.activity;
 import static com.kevin.ceep.ui.Utilitario.comparaString;
 import static com.kevin.ceep.ui.Utilitario.geraIdAleatorio;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_PROFISSAO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_RARIDADE;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_NOVO_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.LinearLayoutCompat;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INVALIDA;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +24,11 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.LinearLayoutCompat;
 
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.snackbar.Snackbar;
@@ -44,8 +42,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.ActivityTrabalhoEspecificoBinding;
-import com.kevin.ceep.model.Profissao;
-import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoProducao;
 
@@ -58,24 +54,20 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private FirebaseDatabase meuBanco;
     private DatabaseReference minhareferencia;
     private TrabalhoProducao trabalhoRecebido;
-    private Profissao profissaoRecebido;
-    private Raridade raridadeRecebido;
-
     private LinearLayoutCompat linearLayoutTrabalhoNecessario, linearLayoutTrabalhoNecessario2;
     private TextInputEditText edtNomeTrabalho, edtExperienciaTrabalho, edtNivelTrabalho;
-    private TextInputLayout txtInputNome, txtInputProfissao, txtInputExperiencia, txtInputNivel, txtInputRaridade, txtInputTrabalhoNecessario1, txtInputTrabalhoNecessario2, txtInputQuantidade, txtInputLicenca, txtInputEstado;
+    private TextInputLayout txtInputNome, txtInputProfissao, txtInputExperiencia, txtInputNivel, txtInputRaridade, txtInputQuantidade, txtInputLicenca, txtInputEstado;
     private CheckBox checkBoxRecorrenciaTrabalho;
     private AutoCompleteTextView autoCompleteProfissao, autoCompleteRaridade, autoCompleteTrabalhoNecessario1, autoCompleteTrabalhoNecessario2, autoCompleteQuantidade, autoCompleteLicenca, autoCompleteEstado;
     private ShapeableImageView imagemTrabalhoNecessario1, imagemTrabalhoNecessario2;
-    private String[] raridadesTrabalho, estadosTrabalho, licencasTrabalho;
+    private String[] estadosTrabalho;
+    private String[] licencasTrabalho;
     private ArrayList<Trabalho> todosTrabalhoComunsMelhorados;
-    private ArrayAdapter<String> profissoesAdapter, raridadeAdapter;
     private final String[] mensagemErro={"Campo requerido!","Inválido!"};
     private String usuarioId, personagemId, trabalhoId, licencaModificada, nome, profissao, experiencia, nivel, raridade, trabalhoNecessario1, trabalhoNecessario2;
-    private int codigoRequisicao, posicaoEstado=0;
+    private int codigoRequisicao = CODIGO_REQUISICAO_INVALIDA, posicaoEstado=0;
     private boolean recorrencia=true, acrescimo = false;
-    // vou modificar
-    private String[] profissoesTrabalho;
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,40 +163,17 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
             licencaModificada = licencasTrabalho[i];
             if (licencaModificada.toLowerCase(Locale.ROOT).equals("licença de produção do principiante")){
                 Log.d("LICENCA", licencaModificada);
-                int novaExperiencia = (int) (1.50 * Integer.parseInt(edtExperienciaTrabalho.getText().toString()));
+                int novaExperiencia = (int) (1.50 * Integer.parseInt(Objects.requireNonNull(edtExperienciaTrabalho.getText()).toString()));
                 Log.d("LICENCA", String.valueOf(novaExperiencia));
                 edtExperienciaTrabalho.setText(String.valueOf(novaExperiencia));
                 acrescimo = true;
             } else if (acrescimo) {
-                int novaExperiencia = (int) ((Integer.parseInt(edtExperienciaTrabalho.getText().toString())) / 1.5);
+                int novaExperiencia = (int) ((Integer.parseInt(Objects.requireNonNull(edtExperienciaTrabalho.getText()).toString())) / 1.5);
                 Log.d("LICENCA", String.valueOf(novaExperiencia));
                 edtExperienciaTrabalho.setText(String.valueOf(novaExperiencia));
                 acrescimo = false;
             }
         });
-    }
-
-    private void configuraAcaoTrabalho(int codigoRequisicao, ProgressDialog progressDialog) {
-        progressDialog.dismiss();
-        if(codigoRequisicao==CODIGO_REQUISICAO_INSERE_TRABALHO){
-            cadastraNovoTrabalho();
-            vaiParaListaTrabalhosEspecificosActivity();
-        }else if(codigoRequisicao==CODIGO_REQUISICAO_ALTERA_TRABALHO){
-            TrabalhoProducao trabalhoModificado=new TrabalhoProducao(
-                    trabalhoRecebido.getId(),
-                    trabalhoRecebido.getNome(),
-                    trabalhoRecebido.getProfissao(),
-                    trabalhoRecebido.getRaridade(),
-                    trabalhoRecebido.getTrabalhoNecessario(),
-                    trabalhoRecebido.getNivel(),
-                    Integer.parseInt(edtExperienciaTrabalho.getText().toString()),
-                    licencaModificada,
-                    posicaoEstado,
-                    recorrencia);
-            modificaTrabalhoServidor(trabalhoModificado);
-            vaiParaListaTrabalhosActivity();
-        }
-        finish();
     }
     private void configuraDropdownEstados() {
         ArrayAdapter<String> adapterLicenca= new ArrayAdapter<>(this,
@@ -249,12 +218,13 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
         checkBoxRecorrenciaTrabalho = binding.checkBoxRecorrenciaTrabalho;
 
-        raridadesTrabalho = getResources().getStringArray(R.array.raridades);
+        String[] raridadesTrabalho = getResources().getStringArray(R.array.raridades);
         licencasTrabalho = getResources().getStringArray(R.array.licencas_completas);
         estadosTrabalho = getResources().getStringArray(R.array.estados);
-        profissoesTrabalho = getResources().getStringArray(R.array.profissoes);
-        profissoesAdapter = new ArrayAdapter<>(getApplication(), R.layout.item_dropdrown, profissoesTrabalho);
-        raridadeAdapter = new ArrayAdapter<>(getApplication(), R.layout.item_dropdrown, raridadesTrabalho);
+        // vou modificar
+        String[] profissoesTrabalho = getResources().getStringArray(R.array.profissoes);
+        ArrayAdapter<String> profissoesAdapter = new ArrayAdapter<>(getApplication(), R.layout.item_dropdrown, profissoesTrabalho);
+        ArrayAdapter<String> raridadeAdapter = new ArrayAdapter<>(getApplication(), R.layout.item_dropdrown, raridadesTrabalho);
         profissoesAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         raridadeAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         autoCompleteProfissao.setAdapter(profissoesAdapter);
@@ -266,16 +236,18 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         if (dadosRecebidos.hasExtra(CHAVE_TRABALHO)){
             codigoRequisicao = (int) dadosRecebidos
                     .getSerializableExtra(CHAVE_TRABALHO);
-            personagemId= (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
-            if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO){
-                trabalhoRecebido = (TrabalhoProducao) dadosRecebidos
-                        .getSerializableExtra(CHAVE_NOME_TRABALHO);
-                if (trabalhoRecebido.getTipo_licenca().toLowerCase(Locale.ROOT).equals("licença de produção do principiante")){
-                    acrescimo = true;
+            personagemId = (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
+            if (codigoRequisicao != CODIGO_REQUISICAO_INVALIDA){
+                if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO){
+                    trabalhoRecebido = (TrabalhoProducao) dadosRecebidos
+                            .getSerializableExtra(CHAVE_NOME_TRABALHO);
+                    if (trabalhoRecebido != null && trabalhoRecebido.getTipo_licenca().toLowerCase(Locale.ROOT).equals("licença de produção do principiante")) {
+                        acrescimo = true;
+                    }
+                    configuraComponentesAlteraTrabalho();
+                }else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO){
+                    configuraLayoutNovoTrabalho();
                 }
-                configuraComponentesAlteraTrabalho();
-            }else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO){
-                configuraLayoutNovoTrabalho();
             }
         }
     }
@@ -287,9 +259,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         txtInputEstado.setVisibility(View.GONE);
         txtInputQuantidade.setVisibility(View.GONE);
         checkBoxRecorrenciaTrabalho.setVisibility(View.GONE);
-
-        //autoCompleteProfissao.setText(profissoesTrabalho[0]);
-        //autoCompleteRaridade.setText(raridadesTrabalho[0]);
     }
 
     private void configuraComponentesAlteraTrabalho() {
@@ -326,12 +295,11 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId()==R.id.itemMenuSalvaTrabalho) {
-            if (codigoRequisicao==CODIGO_REQUISICAO_ALTERA_TRABALHO) {
+        if (item.getItemId() == R.id.itemMenuSalvaTrabalho) {
+            if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO) {
                 if (verificaTrabalhoModificado()) {
 
                 }else{
-                    vaiParaListaTrabalhosActivity();
                     finish();
                 }
             } else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO) {
@@ -420,26 +388,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private void salvaNovoTrabalhoNoServidor(Trabalho novoTrabalho) {
         DatabaseReference minhaReferencia = meuBanco.getReference(CHAVE_LISTA_TRABALHO);
         minhaReferencia.child(novoTrabalho.getId()).setValue(novoTrabalho);
-    }
-
-    private void vaiParaListaTrabalhosEspecificosActivity() {
-        Intent vaiParaListaTrabalhos=
-                new Intent(getApplicationContext()
-                        ,ListaTrabalhosEspecificosActivity.class);
-        vaiParaListaTrabalhos.putExtra(CHAVE_PERSONAGEM,personagemId);
-        vaiParaListaTrabalhos.putExtra(CHAVE_NOME_PROFISSAO,profissaoRecebido);
-        vaiParaListaTrabalhos.putExtra(CHAVE_NOME_RARIDADE,raridadeRecebido);
-        setResult(1,vaiParaListaTrabalhos);
-        TrabalhoEspecificoActivity.super.onBackPressed();
-    }
-
-    private void vaiParaListaTrabalhosActivity() {
-        Intent vaiParaListaTrabalhos=
-                new Intent(getApplicationContext()
-                        ,ListaTrabalhosActivity.class);
-        vaiParaListaTrabalhos.putExtra(CHAVE_PERSONAGEM,personagemId);
-        setResult(1,vaiParaListaTrabalhos);
-        TrabalhoEspecificoActivity.super.onBackPressed();
     }
     @Override
     protected void onStop() {

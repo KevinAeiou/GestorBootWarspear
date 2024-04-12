@@ -9,7 +9,6 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO;
 
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -47,11 +46,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.model.Profissao;
-import com.kevin.ceep.model.Raridade;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.model.TrabalhoProducao;
-import com.kevin.ceep.ui.activity.ListaRaridadeActivity;
+import com.kevin.ceep.ui.activity.ListaTodosTrabalhosActivity;
 import com.kevin.ceep.ui.activity.TrabalhoEspecificoActivity;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoProducaoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
@@ -91,7 +89,7 @@ public class ListaTrabalhosFragment extends Fragment {
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
         requireActivity().setTitle(CHAVE_TITULO_TRABALHO);
-        return inflater.inflate(R.layout.fragment_lista_trabalhos, container, false);
+        return inflater.inflate(R.layout.fragment_lista_trabalhos_producao, container, false);
     }
 
     @Override
@@ -253,11 +251,9 @@ public class ListaTrabalhosFragment extends Fragment {
     private void vaiParaRaridadeActivity() {
         Intent iniciaListaRaridade =
                 new Intent(getContext(),
-                        ListaRaridadeActivity.class);
+                        ListaTodosTrabalhosActivity.class);
         iniciaListaRaridade.putExtra(CHAVE_PERSONAGEM, personagemId);
-        startActivity(iniciaListaRaridade,
-                ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
-        //startActivityForResult(iniciaFormularioNota, CODIGO_REQUISICAO_INSERE_NOTA);
+        startActivity(iniciaListaRaridade);
     }
 
     private void inicializaComponentes(View view) {
@@ -289,22 +285,10 @@ public class ListaTrabalhosFragment extends Fragment {
             public void onItemClick(Profissao profissao, int posicao) {
 
             }
-
-            @Override
-            public void onItemClick(Personagem personagem, int posicao) {
-
-            }
-
             @Override
             public void onItemClick(Trabalho trabalho, int adapterPosition) {
                 vaiParaTrabalhoEspecificoActivity(trabalho);
             }
-
-            @Override
-            public void onItemClick(Raridade raridade, int adapterPosition) {
-
-            }
-
             @Override
             public void onItemClick(TrabalhoEstoque trabalhoEstoque, int adapterPosition, int botaoId) {
 
