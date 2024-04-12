@@ -45,6 +45,7 @@ import com.kevin.ceep.databinding.ActivityTrabalhoEspecificoBinding;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoProducao;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
@@ -54,7 +55,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private FirebaseDatabase meuBanco;
     private DatabaseReference minhareferencia;
     private TrabalhoProducao trabalhoRecebido;
-    private LinearLayoutCompat linearLayoutTrabalhoNecessario, linearLayoutTrabalhoNecessario2;
+    private LinearLayoutCompat linearLayoutTrabalhoNecessario1, linearLayoutTrabalhoNecessario2, linearLayoutTrabalhoNecessario3;
     private TextInputEditText edtNomeTrabalho, edtExperienciaTrabalho, edtNivelTrabalho;
     private TextInputLayout txtInputNome, txtInputProfissao, txtInputExperiencia, txtInputNivel, txtInputRaridade, txtInputQuantidade, txtInputLicenca, txtInputEstado;
     private CheckBox checkBoxRecorrenciaTrabalho;
@@ -86,10 +87,10 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     }
 
     private void configuraAcaoImagem() {
-        imagemTrabalhoNecessario1.setOnClickListener(view -> linearLayoutTrabalhoNecessario2.setVisibility(View.VISIBLE));
+        imagemTrabalhoNecessario1.setOnClickListener(view -> linearLayoutTrabalhoNecessario3.setVisibility(View.VISIBLE));
         imagemTrabalhoNecessario2.setOnClickListener(view -> {
             autoCompleteTrabalhoNecessario2.setText("");
-            linearLayoutTrabalhoNecessario2.setVisibility(View.GONE);
+            linearLayoutTrabalhoNecessario3.setVisibility(View.GONE);
         });
     }
 
@@ -123,10 +124,10 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         autoCompleteRaridade.setOnItemClickListener((adapterView, view, i, l) -> {
             String raridadeClicada = adapterView.getAdapter().getItem(i).toString();
             if (comparaString(raridadeClicada, "Melhorado") || comparaString(raridadeClicada, "Raro")) {
-                linearLayoutTrabalhoNecessario.setVisibility(View.VISIBLE);
+                linearLayoutTrabalhoNecessario2.setVisibility(View.VISIBLE);
                 configuraDropdownTrabalhoNecessario(raridadeClicada);
             } else {
-                linearLayoutTrabalhoNecessario.setVisibility(View.GONE);
+                linearLayoutTrabalhoNecessario2.setVisibility(View.GONE);
             }
         });
     }
@@ -191,8 +192,9 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         minhareferencia = meuBanco.getReference(CHAVE_USUARIOS);
         usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
 
-        linearLayoutTrabalhoNecessario = binding.linearLayoutTrabalhoNecessario1;
-        linearLayoutTrabalhoNecessario2 = binding.linearLayoutTrabalhoNecessario3;
+        linearLayoutTrabalhoNecessario1 = binding.linearLayoutTrabalhoNecessario1;
+        linearLayoutTrabalhoNecessario2 = binding.linearLayoutTrabalhoNecessario1;
+        linearLayoutTrabalhoNecessario3 = binding.linearLayoutTrabalhoNecessario3;
         edtNomeTrabalho = binding.edtNomeTrabalho;
         edtNivelTrabalho = binding.edtNivelTrabalho;
         edtExperienciaTrabalho = binding.edtExperienciaTrabalho;
@@ -241,7 +243,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO){
                     trabalhoRecebido = (TrabalhoProducao) dadosRecebidos
                             .getSerializableExtra(CHAVE_NOME_TRABALHO);
-                    if (trabalhoRecebido != null && trabalhoRecebido.getTipo_licenca().toLowerCase(Locale.ROOT).equals("licença de produção do principiante")) {
+                    if (trabalhoRecebido != null && comparaString(trabalhoRecebido.getTipo_licenca(), "licença de produção do principiante")) {
                         acrescimo = true;
                     }
                     configuraComponentesAlteraTrabalho();
@@ -254,7 +256,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private void configuraLayoutNovoTrabalho() {
         setTitle(CHAVE_TITULO_NOVO_TRABALHO);
-        linearLayoutTrabalhoNecessario.setVisibility(View.GONE);
+        linearLayoutTrabalhoNecessario2.setVisibility(View.GONE);
         txtInputLicenca.setVisibility(View.GONE);
         txtInputEstado.setVisibility(View.GONE);
         txtInputQuantidade.setVisibility(View.GONE);
@@ -262,28 +264,42 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     }
 
     private void configuraComponentesAlteraTrabalho() {
+        // linearLayoutTrabalhoNecessario1.setVisibility(View.GONE);
+
         setTitle(trabalhoRecebido.getNome());
         edtNomeTrabalho.setEnabled(false);
-        edtNivelTrabalho.setEnabled(false);
-        edtExperienciaTrabalho.setEnabled(false);
         autoCompleteProfissao.setEnabled(false);
-        autoCompleteProfissao.setText(trabalhoRecebido.getProfissao());
+        edtExperienciaTrabalho.setEnabled(false);
+        edtNivelTrabalho.setEnabled(false);
         autoCompleteRaridade.setEnabled(false);
-        autoCompleteRaridade.setText(trabalhoRecebido.getRaridade());
         autoCompleteTrabalhoNecessario1.setEnabled(false);
+        imagemTrabalhoNecessario1.setEnabled(false);
         autoCompleteTrabalhoNecessario2.setEnabled(false);
-        autoCompleteQuantidade.setEnabled(false);
-        trabalhoId=trabalhoRecebido.getId();
-        autoCompleteEstado.setText(estadosTrabalho[trabalhoRecebido.getEstado()]);
-        edtNivelTrabalho.setText(String.valueOf(trabalhoRecebido.getNivel()));
-        edtExperienciaTrabalho.setText(String.valueOf(trabalhoRecebido.getExperiencia()));
-        autoCompleteLicenca.setText(trabalhoRecebido.getTipo_licenca());
+        imagemTrabalhoNecessario2.setEnabled(false);
+
+        txtInputQuantidade.setVisibility(View.GONE);
+
         edtNomeTrabalho.setText(trabalhoRecebido.getNome());
-        posicaoEstado=trabalhoRecebido.getEstado();
-        licencaModificada=trabalhoRecebido.getTipo_licenca();
+        autoCompleteProfissao.setText(trabalhoRecebido.getProfissao());
+        edtExperienciaTrabalho.setText(String.valueOf(trabalhoRecebido.getExperiencia()));
+        edtNivelTrabalho.setText(String.valueOf(trabalhoRecebido.getNivel()));
+        autoCompleteRaridade.setText(trabalhoRecebido.getRaridade());
+        String[] trabalhosNecessarios = trabalhoRecebido.getTrabalhoNecessario().split(",");
+        if (trabalhosNecessarios.length > 1) {
+            autoCompleteTrabalhoNecessario1.setText(trabalhosNecessarios[0]);
+            autoCompleteTrabalhoNecessario2.setText(trabalhosNecessarios[1]);
+        } else {
+            autoCompleteTrabalhoNecessario1.setText(trabalhosNecessarios[0]);
+        }
         if (trabalhoRecebido.getRecorrencia()){
             checkBoxRecorrenciaTrabalho.setChecked(true);
         }
+        autoCompleteLicenca.setText(trabalhoRecebido.getTipo_licenca());
+        autoCompleteEstado.setText(estadosTrabalho[trabalhoRecebido.getEstado()]);
+        posicaoEstado = trabalhoRecebido.getEstado();
+        licencaModificada = trabalhoRecebido.getTipo_licenca();
+
+        trabalhoId = trabalhoRecebido.getId();
     }
 
     @Override
