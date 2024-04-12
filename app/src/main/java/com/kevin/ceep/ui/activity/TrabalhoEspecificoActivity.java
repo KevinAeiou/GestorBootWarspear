@@ -96,7 +96,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private void pegaTodosTrabalhosComunsMelhorados() {
         todosTrabalhoComunsMelhorados = new ArrayList<>();
         DatabaseReference minhaReferenciaTrabalhos = meuBanco.getReference(CHAVE_LISTA_TRABALHO);
-        minhaReferenciaTrabalhos.addListenerForSingleValueEvent(new ValueEventListener() {
+        minhaReferenciaTrabalhos.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 todosTrabalhoComunsMelhorados.clear();
@@ -312,6 +312,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 trabalhoNecessario2 = Objects.requireNonNull(autoCompleteTrabalhoNecessario2).getText().toString().trim();
                 if (verificaCamposNovoTrabalho()) {
                     cadastraNovoTrabalho();
+                    edtNomeTrabalho.setText("");
+                    edtNomeTrabalho.requestFocus();
                 }
             }
         }
@@ -388,6 +390,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private void salvaNovoTrabalhoNoServidor(Trabalho novoTrabalho) {
         DatabaseReference minhaReferencia = meuBanco.getReference(CHAVE_LISTA_TRABALHO);
         minhaReferencia.child(novoTrabalho.getId()).setValue(novoTrabalho);
+        Snackbar.make(Objects.requireNonNull(getCurrentFocus()), novoTrabalho.getNome()+" foi cadastrado com sucesso!", Snackbar.LENGTH_LONG).show();
     }
     @Override
     protected void onStop() {
