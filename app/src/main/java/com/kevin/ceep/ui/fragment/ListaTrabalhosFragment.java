@@ -44,11 +44,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
-import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.model.TrabalhoProducao;
+import com.kevin.ceep.ui.activity.ListaNovaProducaoActivity;
 import com.kevin.ceep.ui.activity.ListaTodosTrabalhosActivity;
 import com.kevin.ceep.ui.activity.TrabalhoEspecificoActivity;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoProducaoAdapter;
@@ -246,14 +246,14 @@ public class ListaTrabalhosFragment extends Fragment {
     }
     private void configuraBotaoInsereTrabalho(View view) {
         FloatingActionButton botaoInsereTrabaho = view.findViewById(R.id.floatingActionButton);
-        botaoInsereTrabaho.setOnClickListener(v -> vaiParaRaridadeActivity());
+        botaoInsereTrabaho.setOnClickListener(v -> vaiParaListaNovaProducaoActivity());
     }
-    private void vaiParaRaridadeActivity() {
-        Intent iniciaListaRaridade =
+    private void vaiParaListaNovaProducaoActivity() {
+        Intent iniciaVaiParaListaNovaProducaoActivity =
                 new Intent(getContext(),
-                        ListaTodosTrabalhosActivity.class);
-        iniciaListaRaridade.putExtra(CHAVE_PERSONAGEM, personagemId);
-        startActivity(iniciaListaRaridade);
+                        ListaNovaProducaoActivity.class);
+        iniciaVaiParaListaNovaProducaoActivity.putExtra(CHAVE_PERSONAGEM, personagemId);
+        startActivity(iniciaVaiParaListaNovaProducaoActivity);
     }
 
     private void inicializaComponentes(View view) {

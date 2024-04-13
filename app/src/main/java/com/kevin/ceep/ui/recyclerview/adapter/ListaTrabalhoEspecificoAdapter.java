@@ -24,7 +24,10 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
         this.trabalhos = trabalho;
         this.context = context;
     }
-
+    public void setListaFiltrada(List<Trabalho> listaFiltrada) {
+        this.trabalhos = listaFiltrada;
+        notifyDataSetChanged();
+    }
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){
         this.onItemClickListener = onItemClickListener;
     }

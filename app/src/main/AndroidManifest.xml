@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -12,15 +11,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Ceep">
         <activity
-            android:theme="@style/TelaCheia"
+            android:name=".ui.activity.ListaNovaProducaoActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.activity.SplashscreenActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/TelaCheia">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.activity.AtributosPersonagemActivity"
             android:exported="false" />
@@ -39,7 +41,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.activity.EntrarUsuarioActivity"
-            android:exported="true"/>
+            android:exported="true" />
         <activity
             android:name=".ui.activity.ConfirmaTrabalhoActivity"
             android:exported="false" />

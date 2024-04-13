@@ -6,6 +6,7 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_CONFIRMA;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
 
@@ -53,9 +54,9 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
 
     private void recebeDadosIntent() {
         Intent dadosRecebidos = getIntent();
-        if (dadosRecebidos.hasExtra(CHAVE_NOME_TRABALHO)) {
+        if (dadosRecebidos.hasExtra(CHAVE_TRABALHO)) {
             trabalhoRecebido = (Trabalho) dadosRecebidos
-                    .getSerializableExtra(CHAVE_NOME_TRABALHO);
+                    .getSerializableExtra(CHAVE_TRABALHO);
             if (trabalhoRecebido != null) {
                 setTitle(trabalhoRecebido.getNome());
             }
@@ -71,14 +72,6 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         configuraQuantidadeSelecionada();
         Log.i(TAG_ACTIVITY,"onResumeConfirma");
     }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        finish();
-        Log.i(TAG_ACTIVITY,"onStopConfirma");
-    }
-
     private void configuraDropDrow() {
         autoCompleteLicenca = findViewById(R.id.txtAutoCompleteLicencaConfirmaTrabalho);
         autoCompleteQuantidade = findViewById(R.id.txtAutoCompleteQuantidadeConfirmaTrabalho);
@@ -104,7 +97,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         AppCompatButton botaoCadastraTrabalho = findViewById(R.id.botaoCadastraConfirmaTrabalho);
         botaoCadastraTrabalho.setOnClickListener(view -> {
             cadastraNovoTrabalho();
-            vaiParaListaTrabalhosFragmento();
+            finish();
         });
     }
 
