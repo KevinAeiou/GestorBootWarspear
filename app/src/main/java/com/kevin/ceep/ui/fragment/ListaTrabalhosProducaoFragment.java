@@ -137,6 +137,11 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_personagem, menu);
         MenuItem itemBusca = menu.findItem(R.id.itemMenuBusca);
+        configuraCampoDeBusca(itemBusca);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private void configuraCampoDeBusca(MenuItem itemBusca) {
         SearchView busca = (SearchView) itemBusca.getActionView();
         busca.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -150,8 +155,8 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
                 return false;
             }
         });
-        super.onCreateOptionsMenu(menu, inflater);
     }
+
     private List<TrabalhoProducao> filtroListaChip(int estado, List<TrabalhoProducao> todosTrabalhos) {
         // creating a new array list to filter our data.
         List<TrabalhoProducao> listaFiltrada = new ArrayList<>();

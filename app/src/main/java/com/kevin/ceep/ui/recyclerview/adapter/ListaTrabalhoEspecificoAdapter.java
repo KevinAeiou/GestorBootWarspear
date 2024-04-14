@@ -52,6 +52,10 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
         }
         return trabalhos.size();
     }
+    public void limpaLista() {
+        trabalhos.clear();
+        notifyDataSetChanged();
+    }
 
     public class TrabalhoEspecificoViewHolder extends RecyclerView.ViewHolder {
 

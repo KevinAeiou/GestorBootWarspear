@@ -1,5 +1,6 @@
 package com.kevin.ceep.ui.activity;
 
+import static com.kevin.ceep.ui.Utilitario.comparaString;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
@@ -7,12 +8,17 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -48,6 +54,46 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
         inicializaComponentes();
         recebeDadosIntent();
         atualizaListaTodosTrabalhos();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_personagem, menu);
+        MenuItem itemBusca = menu.findItem(R.id.itemMenuBusca);
+        configuraCampoDeVBusca(itemBusca);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    private void configuraCampoDeVBusca(MenuItem itemBusca) {
+        androidx.appcompat.widget.SearchView busca = (androidx.appcompat.widget.SearchView) itemBusca.getActionView();
+        busca.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filtroLista(newText);
+                return false;
+            }
+        });
+    }
+
+    private void filtroLista(String newText) {
+        List<Trabalho> listaFiltrada = new ArrayList<>();
+        for (Trabalho trabalho : todosTrabalhos) {
+            if (comparaString(trabalho.getNome(), newText)) {
+                listaFiltrada.add(trabalho);
+            }
+        }
+        if (listaFiltrada.isEmpty()) {
+            listaTrabalhoEspecificoAdapter.limpaLista();
+            Snackbar.make(binding.getRoot(),"Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
+        } else {
+            listaTrabalhoEspecificoAdapter.setListaFiltrada(listaFiltrada);
+        }
     }
 
     private void recebeDadosIntent() {
