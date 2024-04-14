@@ -45,9 +45,7 @@ import com.kevin.ceep.databinding.ActivityTrabalhoEspecificoBinding;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoProducao;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Objects;
 
 public class TrabalhoEspecificoActivity extends AppCompatActivity {
@@ -55,19 +53,20 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private FirebaseDatabase meuBanco;
     private DatabaseReference minhareferencia;
     private TrabalhoProducao trabalhoRecebido;
-    private LinearLayoutCompat linearLayoutTrabalhoNecessario1, linearLayoutTrabalhoNecessario2, linearLayoutTrabalhoNecessario3;
+    private LinearLayoutCompat linearLayoutTrabalhoNecessario2, linearLayoutTrabalhoNecessario3;
     private TextInputEditText edtNomeTrabalho, edtExperienciaTrabalho, edtNivelTrabalho;
-    private TextInputLayout txtInputNome, txtInputProfissao, txtInputExperiencia, txtInputNivel, txtInputRaridade, txtInputQuantidade, txtInputLicenca, txtInputEstado;
+    private TextInputLayout txtInputNome, txtInputProfissao, txtInputExperiencia, txtInputNivel, txtInputRaridade, txtInputLicenca, txtInputEstado;
     private CheckBox checkBoxRecorrenciaTrabalho;
-    private AutoCompleteTextView autoCompleteProfissao, autoCompleteRaridade, autoCompleteTrabalhoNecessario1, autoCompleteTrabalhoNecessario2, autoCompleteQuantidade, autoCompleteLicenca, autoCompleteEstado;
+    private AutoCompleteTextView autoCompleteProfissao, autoCompleteRaridade, autoCompleteTrabalhoNecessario1, autoCompleteTrabalhoNecessario2, autoCompleteLicenca, autoCompleteEstado;
     private ShapeableImageView imagemTrabalhoNecessario1, imagemTrabalhoNecessario2;
     private String[] estadosTrabalho;
     private String[] licencasTrabalho;
     private ArrayList<Trabalho> todosTrabalhoComunsMelhorados;
+    private ArrayAdapter<String> adapterEstado;
     private final String[] mensagemErro={"Campo requerido!","Inválido!"};
-    private String usuarioId, personagemId, trabalhoId, licencaModificada, nome, profissao, experiencia, nivel, raridade, trabalhoNecessario1, trabalhoNecessario2;
-    private int codigoRequisicao = CODIGO_REQUISICAO_INVALIDA, posicaoEstado=0;
-    private boolean recorrencia=true, acrescimo = false;
+    private String usuarioId, personagemId, licencaModificada, nome, profissao, experiencia, nivel, raridade, trabalhoNecessario1, trabalhoNecessario2;
+    private int codigoRequisicao = CODIGO_REQUISICAO_INVALIDA, posicaoEstadoModificado;
+    private boolean acrescimo = false, recorrenciaModificada;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -83,7 +82,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         configuraAcaoImagem();
 
         configuraDropdownEstados();
-        modificaEstado();
+        configuraDropdownLicencas();
     }
 
     private void configuraAcaoImagem() {
@@ -158,32 +157,30 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         autoCompleteTrabalhoNecessario2.setAdapter(trabalhoNecessarioAdapter);
     }
 
-    private void modificaEstado() {
-        autoCompleteEstado.setOnItemClickListener((adapterView, view, i, l) -> posicaoEstado=i);
+    private void configuraDropdownLicencas() {
+        ArrayAdapter<String> adapterLicenca= new ArrayAdapter<>(this,
+                R.layout.item_dropdrown, licencasTrabalho);
+        adapterLicenca.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        autoCompleteLicenca.setAdapter(adapterLicenca);
+
         autoCompleteLicenca.setOnItemClickListener((adapterView, view, i, l) -> {
-            licencaModificada = licencasTrabalho[i];
-            if (licencaModificada.toLowerCase(Locale.ROOT).equals("licença de produção do principiante")){
-                Log.d("LICENCA", licencaModificada);
-                int novaExperiencia = (int) (1.50 * Integer.parseInt(Objects.requireNonNull(edtExperienciaTrabalho.getText()).toString()));
-                Log.d("LICENCA", String.valueOf(novaExperiencia));
-                edtExperienciaTrabalho.setText(String.valueOf(novaExperiencia));
-                acrescimo = true;
-            } else if (acrescimo) {
+            if (comparaString(autoCompleteLicenca.getText().toString(), "licença de produção do principiante")) {
+                if (!acrescimo) {
+                    int novaExperiencia = (int) (1.50 * Integer.parseInt(Objects.requireNonNull(edtExperienciaTrabalho.getText()).toString()));
+                    edtExperienciaTrabalho.setText(String.valueOf(novaExperiencia));
+                    acrescimo = true;
+                }
+            } else if (acrescimo){
                 int novaExperiencia = (int) ((Integer.parseInt(Objects.requireNonNull(edtExperienciaTrabalho.getText()).toString())) / 1.5);
-                Log.d("LICENCA", String.valueOf(novaExperiencia));
                 edtExperienciaTrabalho.setText(String.valueOf(novaExperiencia));
                 acrescimo = false;
             }
         });
     }
     private void configuraDropdownEstados() {
-        ArrayAdapter<String> adapterLicenca= new ArrayAdapter<>(this,
-                R.layout.item_dropdrown, licencasTrabalho);
-        ArrayAdapter<String> adapterEstado= new ArrayAdapter<>(this,
+        adapterEstado= new ArrayAdapter<>(this,
                 R.layout.item_dropdrown, estadosTrabalho);
-        adapterLicenca.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         adapterEstado.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        autoCompleteLicenca.setAdapter(adapterLicenca);
         autoCompleteEstado.setAdapter(adapterEstado);
     }
 
@@ -192,8 +189,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         minhareferencia = meuBanco.getReference(CHAVE_USUARIOS);
         usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
 
-        linearLayoutTrabalhoNecessario1 = binding.linearLayoutTrabalhoNecessario1;
-        linearLayoutTrabalhoNecessario2 = binding.linearLayoutTrabalhoNecessario1;
+        linearLayoutTrabalhoNecessario2 = binding.linearLayoutTrabalhoNecessario2;
         linearLayoutTrabalhoNecessario3 = binding.linearLayoutTrabalhoNecessario3;
         edtNomeTrabalho = binding.edtNomeTrabalho;
         edtNivelTrabalho = binding.edtNivelTrabalho;
@@ -206,13 +202,11 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         txtInputExperiencia = binding.txtLayoutExperienciaTrabalho;
         txtInputNivel = binding.txtLayoutNivelTrabalho;
         txtInputRaridade = binding.txtLayoutRaridadeTrabalho;
-        txtInputQuantidade = binding.txtLayoutQuantidadeTrabalho;
 
         autoCompleteProfissao = binding.txtAutoCompleteProfissaoTrabalho;
         autoCompleteRaridade = binding.txtAutoCompleteRaridadeTrabalho;
         autoCompleteTrabalhoNecessario1 = binding.txtAutoCompleteTrabalhoNecessario;
         autoCompleteTrabalhoNecessario2 = binding.txtAutoCompleteTrabalhoNecessario2;
-        autoCompleteQuantidade = binding.txtAutoCompleteQuantidadeTrabalho;
         autoCompleteLicenca = binding.txtAutoCompleteLicencaTrabalho;
         autoCompleteEstado = binding.txtAutoCompleteEstadoTrabalho;
         imagemTrabalhoNecessario1 = binding.imagemTrabalhoNecessario1;
@@ -223,7 +217,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         String[] raridadesTrabalho = getResources().getStringArray(R.array.raridades);
         licencasTrabalho = getResources().getStringArray(R.array.licencas_completas);
         estadosTrabalho = getResources().getStringArray(R.array.estados);
-        // vou modificar
         String[] profissoesTrabalho = getResources().getStringArray(R.array.profissoes);
         ArrayAdapter<String> profissoesAdapter = new ArrayAdapter<>(getApplication(), R.layout.item_dropdrown, profissoesTrabalho);
         ArrayAdapter<String> raridadeAdapter = new ArrayAdapter<>(getApplication(), R.layout.item_dropdrown, raridadesTrabalho);
@@ -243,9 +236,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO){
                     trabalhoRecebido = (TrabalhoProducao) dadosRecebidos
                             .getSerializableExtra(CHAVE_NOME_TRABALHO);
-                    if (trabalhoRecebido != null && comparaString(trabalhoRecebido.getTipo_licenca(), "licença de produção do principiante")) {
-                        acrescimo = true;
-                    }
                     configuraComponentesAlteraTrabalho();
                 }else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO){
                     configuraLayoutNovoTrabalho();
@@ -259,13 +249,10 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         linearLayoutTrabalhoNecessario2.setVisibility(View.GONE);
         txtInputLicenca.setVisibility(View.GONE);
         txtInputEstado.setVisibility(View.GONE);
-        txtInputQuantidade.setVisibility(View.GONE);
         checkBoxRecorrenciaTrabalho.setVisibility(View.GONE);
     }
 
     private void configuraComponentesAlteraTrabalho() {
-        // linearLayoutTrabalhoNecessario1.setVisibility(View.GONE);
-
         setTitle(trabalhoRecebido.getNome());
         edtNomeTrabalho.setEnabled(false);
         autoCompleteProfissao.setEnabled(false);
@@ -277,29 +264,31 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         autoCompleteTrabalhoNecessario2.setEnabled(false);
         imagemTrabalhoNecessario2.setEnabled(false);
 
-        txtInputQuantidade.setVisibility(View.GONE);
-
         edtNomeTrabalho.setText(trabalhoRecebido.getNome());
         autoCompleteProfissao.setText(trabalhoRecebido.getProfissao());
         edtExperienciaTrabalho.setText(String.valueOf(trabalhoRecebido.getExperiencia()));
         edtNivelTrabalho.setText(String.valueOf(trabalhoRecebido.getNivel()));
         autoCompleteRaridade.setText(trabalhoRecebido.getRaridade());
-        String[] trabalhosNecessarios = trabalhoRecebido.getTrabalhoNecessario().split(",");
-        if (trabalhosNecessarios.length > 1) {
-            autoCompleteTrabalhoNecessario1.setText(trabalhosNecessarios[0]);
-            autoCompleteTrabalhoNecessario2.setText(trabalhosNecessarios[1]);
-        } else {
-            autoCompleteTrabalhoNecessario1.setText(trabalhosNecessarios[0]);
+        if (trabalhoRecebido.getTrabalhoNecessario() != null) {
+            linearLayoutTrabalhoNecessario2.setVisibility(View.VISIBLE);
+            String[] trabalhosNecessarios = trabalhoRecebido.getTrabalhoNecessario().split(",");
+            if (trabalhosNecessarios.length > 1) {
+                autoCompleteTrabalhoNecessario1.setText(trabalhosNecessarios[0]);
+                autoCompleteTrabalhoNecessario2.setText(trabalhosNecessarios[1]);
+            } else {
+                autoCompleteTrabalhoNecessario1.setText(trabalhosNecessarios[0]);
+            }
         }
-        if (trabalhoRecebido.getRecorrencia()){
-            checkBoxRecorrenciaTrabalho.setChecked(true);
-        }
-        autoCompleteLicenca.setText(trabalhoRecebido.getTipo_licenca());
-        autoCompleteEstado.setText(estadosTrabalho[trabalhoRecebido.getEstado()]);
-        posicaoEstado = trabalhoRecebido.getEstado();
+        recorrenciaModificada = trabalhoRecebido.getRecorrencia();
+        checkBoxRecorrenciaTrabalho.setChecked(recorrenciaModificada);
         licencaModificada = trabalhoRecebido.getTipo_licenca();
-
-        trabalhoId = trabalhoRecebido.getId();
+        autoCompleteLicenca.setText(licencaModificada);
+        if (trabalhoRecebido != null && comparaString(licencaModificada, "licença de produção do principiante")) {
+            Log.d("alteraTrabalho", "Acrecimo definido como verdadeiro.");
+            acrescimo = true;
+        }
+        posicaoEstadoModificado = trabalhoRecebido.getEstado();
+        autoCompleteEstado.setText(estadosTrabalho[posicaoEstadoModificado]);
     }
 
     @Override
@@ -314,10 +303,13 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.itemMenuSalvaTrabalho) {
             if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO) {
                 if (verificaTrabalhoModificado()) {
-
-                }else{
-                    finish();
+                    TrabalhoProducao trabalhoModificado = trabalhoRecebido;
+                    trabalhoModificado.setRecorrencia(checkBoxRecorrenciaTrabalho.isChecked());
+                    trabalhoModificado.setTipo_licenca(autoCompleteLicenca.getText().toString());
+                    trabalhoModificado.setEstado(adapterEstado.getPosition(autoCompleteEstado.getText().toString()));
+                    modificaTrabalhoServidor(trabalhoModificado);
                 }
+                finish();
             } else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO) {
                 nome = Objects.requireNonNull(edtNomeTrabalho.getText()).toString().trim();
                 profissao = Objects.requireNonNull(autoCompleteProfissao).getText().toString().trim();
@@ -345,24 +337,33 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     }
 
     private boolean verificaTrabalhoModificado() {
-        return !(licencaModificada.equals(trabalhoRecebido.getTipo_licenca())) ||
-                posicaoEstado!=trabalhoRecebido.getEstado()||
+        return verificaLicencaModificada() ||
+                verificaEstadoModificado() ||
                 verificaCheckModificado();
     }
 
-    private boolean verificaCheckModificado() {
-        configuraCheckBoxRecorrencia();
-        return recorrencia != trabalhoRecebido.getRecorrencia();
+    private boolean verificaLicencaModificada() {
+        Log.d("alteraTrabalho", "Licença recebida: "+licencaModificada);
+        if (!comparaString(licencaModificada, autoCompleteLicenca.getText().toString())) {
+            Log.d("alteraTrabalho", "Licença modificada!");
+        } else {
+            Log.d("alteraTrabalho", "Licença não modificada!");
+        }
+        return !comparaString(licencaModificada, autoCompleteLicenca.getText().toString());
     }
 
-    private void configuraCheckBoxRecorrencia() {
-        recorrencia = checkBoxRecorrenciaTrabalho.isChecked();
+    private boolean verificaEstadoModificado() {
+        return adapterEstado.getPosition(autoCompleteEstado.getText().toString()) != posicaoEstadoModificado;
+    }
+
+    private boolean verificaCheckModificado() {
+        return checkBoxRecorrenciaTrabalho.isChecked() != recorrenciaModificada;
     }
 
     private void modificaTrabalhoServidor(Trabalho trabalhoModificado) {
         minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
                 .child(personagemId).child(CHAVE_LISTA_DESEJO)
-                .child(trabalhoId).setValue(trabalhoModificado);
+                .child(trabalhoRecebido.getId()).setValue(trabalhoModificado);
     }
 
     private Boolean verificaValorCampo(String stringCampo, TextInputLayout inputLayout, int posicaoErro) {

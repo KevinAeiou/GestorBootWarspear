@@ -21,8 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -36,7 +34,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -59,11 +56,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 public class ListaTrabalhosProducaoFragment extends Fragment {
-    ActivityResultLauncher<Intent> activityLauncher=registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-            }
-    );
     private DatabaseReference databaseReference;
     private ListaTrabalhoProducaoAdapter trabalhoAdapter;
     private RecyclerView recyclerView;
@@ -231,7 +223,6 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             if (personagemId != null){
                 pegaTodosTrabalhos();
-            } else {
             }
         });
     }
@@ -292,7 +283,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_TRABALHO, CODIGO_REQUISICAO_ALTERA_TRABALHO);
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_TRABALHO, trabalho);
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_PERSONAGEM, personagemId);
-        activityLauncher.launch(iniciaTrabalhoEspecificoActivity);
+        startActivity(iniciaTrabalhoEspecificoActivity);
     }
     private void pegaTodosTrabalhos() {
         trabalhos = new ArrayList<>();

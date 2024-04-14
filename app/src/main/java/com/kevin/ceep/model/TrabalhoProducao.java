@@ -3,7 +3,6 @@ package com.kevin.ceep.model;
 import java.io.Serializable;
 
 public class TrabalhoProducao extends Trabalho implements Serializable {
-
     private String tipo_licenca;
     private Integer estado;
     private Boolean recorrencia;
@@ -27,4 +26,17 @@ public class TrabalhoProducao extends Trabalho implements Serializable {
     public String getTipo_licenca() {
         return tipo_licenca;
     }
+
+    public void setTipo_licenca(String tipo_licenca) {
+        this.tipo_licenca = tipo_licenca;
+    }
+
+    public void setEstado(Integer estado) {
+        this.estado = estado;
+    }
+
+    public void setRecorrencia(Boolean recorrencia) {
+        this.recorrencia = recorrencia;
+    }
+
 }

@@ -124,6 +124,7 @@
             android:id="@+id/linearLayoutTrabalhoNecessario2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:orientation="horizontal">
 
             <com.google.android.material.textfield.TextInputLayout
@@ -186,80 +187,50 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_subtrai"/>
         </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <CheckBox
+            android:id="@+id/checkBoxRecorrenciaTrabalho"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/stringRecorrente" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/txtLayoutLicencaTrabalho"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/stringLicenca">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/txtAutoCompleteLicencaTrabalho"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:inputType="none"
+                android:padding="8dp"
+                android:text="@string/stringLicenca"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/txtLayoutEstadoTrabalho"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:hint="@string/string_estado"
+            android:labelFor="@id/txtAutoCompleteEstadoTrabalho"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <AutoCompleteTextView
+                android:id="@+id/txtAutoCompleteEstadoTrabalho"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:inputType="none"
+                android:padding="8dp"
+                android:text="@string/string_estado"/>
+        </com.google.android.material.textfield.TextInputLayout>
     </androidx.appcompat.widget.LinearLayoutCompat>
 
-    <CheckBox
-        android:id="@+id/checkBoxRecorrenciaTrabalho"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/stringRecorrente"
-        app:layout_constraintEnd_toEndOf="@+id/linearLayoutTrabalhoNecessario1"
-        app:layout_constraintStart_toStartOf="@+id/linearLayoutTrabalhoNecessario1"
-        app:layout_constraintTop_toBottomOf="@id/linearLayoutTrabalhoNecessario1" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/txtLayoutLicencaTrabalho"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:hint="@string/stringLicenca"
-        app:layout_constraintEnd_toEndOf="@+id/linearLayoutTrabalhoNecessario1"
-        app:layout_constraintStart_toStartOf="@+id/linearLayoutTrabalhoNecessario1"
-        app:layout_constraintTop_toBottomOf="@id/checkBoxRecorrenciaTrabalho">
-
-        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/txtAutoCompleteLicencaTrabalho"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="start"
-            android:inputType="none"
-            android:padding="8dp"
-            android:text="@string/stringLicenca"/>
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/txtLayoutEstadoTrabalho"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:hint="@string/string_estado"
-        android:labelFor="@id/txtAutoCompleteEstadoTrabalho"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        app:layout_constraintEnd_toEndOf="@+id/txtLayoutLicencaTrabalho"
-        app:layout_constraintStart_toStartOf="@+id/txtLayoutLicencaTrabalho"
-        app:layout_constraintTop_toBottomOf="@id/txtLayoutLicencaTrabalho">
-
-        <AutoCompleteTextView
-            android:id="@+id/txtAutoCompleteEstadoTrabalho"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="start"
-            android:inputType="none"
-            android:padding="8dp"
-            android:text="@string/string_estado"/>
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/txtLayoutQuantidadeTrabalho"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/stringQuantidade"
-        app:layout_constraintEnd_toEndOf="@+id/txtLayoutEstadoTrabalho"
-        app:layout_constraintStart_toStartOf="@+id/txtLayoutEstadoTrabalho"
-        app:layout_constraintTop_toBottomOf="@+id/txtLayoutEstadoTrabalho">
-
-        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/txtAutoCompleteQuantidadeTrabalho"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="start"
-            android:inputType="none"
-            android:padding="8dp"
-            android:text="@string/stringQuantidade"/>
-    </com.google.android.material.textfield.TextInputLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
