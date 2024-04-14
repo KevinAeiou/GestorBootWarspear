@@ -19,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -49,7 +50,6 @@ import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.model.TrabalhoProducao;
 import com.kevin.ceep.ui.activity.ListaNovaProducaoActivity;
-import com.kevin.ceep.ui.activity.ListaTodosTrabalhosActivity;
 import com.kevin.ceep.ui.activity.TrabalhoEspecificoActivity;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoProducaoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
@@ -58,8 +58,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-public class ListaTrabalhosFragment extends Fragment {
-    private static final String TAG="ListaTrabalhosFragment";
+public class ListaTrabalhosProducaoFragment extends Fragment {
     ActivityResultLauncher<Intent> activityLauncher=registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -71,23 +70,21 @@ public class ListaTrabalhosFragment extends Fragment {
     private List<TrabalhoProducao> trabalhos, trabalhosFiltrados;
     private String usuarioId, personagemId;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private LinearProgressIndicator indicadorProgresso;
+    private ProgressBar indicadorProgresso;
     private ChipGroup grupoChipFiltro;
     private ConstraintLayout layoutFragmentoTrabalhos;
-    public ListaTrabalhosFragment() {
+    public ListaTrabalhosProducaoFragment() {
         // Required empty public constructor
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        Log.d(TAG, "onCreate");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView");
         requireActivity().setTitle(CHAVE_TITULO_TRABALHO);
         return inflater.inflate(R.layout.fragment_lista_trabalhos_producao, container, false);
     }
@@ -95,7 +92,6 @@ public class ListaTrabalhosFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d(TAG, "onViewCreated");
         inicializaComponentes(view);
         recebePersonagemId();
         configuraRecyclerView(trabalhos);
@@ -134,24 +130,20 @@ public class ListaTrabalhosFragment extends Fragment {
     }
 
     private void recebePersonagemId() {
-        Log.d(TAG, "inicio recebe dados");
         Bundle dadosRecebidos = getArguments();
         if (dadosRecebidos != null) {
             if (dadosRecebidos.containsKey(CHAVE_PERSONAGEM)){
                 personagemId = dadosRecebidos.getString(CHAVE_PERSONAGEM);
-                Log.d(TAG,"ID do personagem recebido: "+personagemId);
                 if (personagemId != null){
                     pegaTodosTrabalhos();
                 }
             }
         }
-        Log.d(TAG, "fim recebe dados");
     }
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_personagem, menu);
-        Log.d(TAG, "onCreateOptionsMenu");
         MenuItem itemBusca = menu.findItem(R.id.itemMenuBusca);
         SearchView busca = (SearchView) itemBusca.getActionView();
         busca.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -240,7 +232,6 @@ public class ListaTrabalhosFragment extends Fragment {
             if (personagemId != null){
                 pegaTodosTrabalhos();
             } else {
-                Log.d(TAG, "ID do personagem está vazio!");
             }
         });
     }
@@ -304,7 +295,6 @@ public class ListaTrabalhosFragment extends Fragment {
         activityLauncher.launch(iniciaTrabalhoEspecificoActivity);
     }
     private void pegaTodosTrabalhos() {
-        Log.d(TAG, "inicio pegaTodosTrabalhos");
         trabalhos = new ArrayList<>();
         databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 child(personagemId).child(CHAVE_LISTA_DESEJO).
@@ -321,7 +311,6 @@ public class ListaTrabalhosFragment extends Fragment {
                         trabalhoAdapter.notifyDataSetChanged();
                         indicadorProgresso.setVisibility(View.GONE);
                         swipeRefreshLayout.setRefreshing(false);
-                        Log.d(TAG, "Todos trabalhos: "+trabalhos);
                         atualizaListaTrabalho();
                     }
 
@@ -330,6 +319,5 @@ public class ListaTrabalhosFragment extends Fragment {
 
                     }
                 });
-        Log.d(TAG, "fim pegaTodosTrabalhos");
     }
 }
