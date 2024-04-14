@@ -60,7 +60,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private AutoCompleteTextView autoCompleteProfissao, autoCompleteRaridade, autoCompleteTrabalhoNecessario1, autoCompleteTrabalhoNecessario2, autoCompleteLicenca, autoCompleteEstado;
     private ShapeableImageView imagemTrabalhoNecessario1, imagemTrabalhoNecessario2;
     private String[] estadosTrabalho;
-    private String[] licencasTrabalho;
     private ArrayList<Trabalho> todosTrabalhoComunsMelhorados;
     private ArrayAdapter<String> adapterEstado;
     private final String[] mensagemErro={"Campo requerido!","Inválido!"};
@@ -78,11 +77,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         inicializaComponentes();
         pegaTodosTrabalhosComunsMelhorados();
         recebeDadosIntent();
-        configuraDropdownRaridades();
         configuraAcaoImagem();
-
-        configuraDropdownEstados();
-        configuraDropdownLicencas();
     }
 
     private void configuraAcaoImagem() {
@@ -118,8 +113,17 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
             }
         });
     }
-
+    private void configuraDropdownProfissoes() {
+        String[] profissoesTrabalho = getResources().getStringArray(R.array.profissoes);
+        ArrayAdapter<String> profissoesAdapter = new ArrayAdapter<>(getApplication(), R.layout.item_dropdrown, profissoesTrabalho);
+        profissoesAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        autoCompleteProfissao.setAdapter(profissoesAdapter);
+    }
     private void configuraDropdownRaridades() {
+        String[] raridadesTrabalho = getResources().getStringArray(R.array.raridades);
+        ArrayAdapter<String> raridadeAdapter = new ArrayAdapter<>(getApplication(), R.layout.item_dropdrown, raridadesTrabalho);
+        raridadeAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        autoCompleteRaridade.setAdapter(raridadeAdapter);
         autoCompleteRaridade.setOnItemClickListener((adapterView, view, i, l) -> {
             String raridadeClicada = adapterView.getAdapter().getItem(i).toString();
             if (comparaString(raridadeClicada, "Melhorado") || comparaString(raridadeClicada, "Raro")) {
@@ -158,6 +162,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     }
 
     private void configuraDropdownLicencas() {
+        String[] licencasTrabalho = getResources().getStringArray(R.array.licencas_completas);
         ArrayAdapter<String> adapterLicenca= new ArrayAdapter<>(this,
                 R.layout.item_dropdrown, licencasTrabalho);
         adapterLicenca.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
@@ -214,16 +219,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
         checkBoxRecorrenciaTrabalho = binding.checkBoxRecorrenciaTrabalho;
 
-        String[] raridadesTrabalho = getResources().getStringArray(R.array.raridades);
-        licencasTrabalho = getResources().getStringArray(R.array.licencas_completas);
         estadosTrabalho = getResources().getStringArray(R.array.estados);
-        String[] profissoesTrabalho = getResources().getStringArray(R.array.profissoes);
-        ArrayAdapter<String> profissoesAdapter = new ArrayAdapter<>(getApplication(), R.layout.item_dropdrown, profissoesTrabalho);
-        ArrayAdapter<String> raridadeAdapter = new ArrayAdapter<>(getApplication(), R.layout.item_dropdrown, raridadesTrabalho);
-        profissoesAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        raridadeAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        autoCompleteProfissao.setAdapter(profissoesAdapter);
-        autoCompleteRaridade.setAdapter(raridadeAdapter);
     }
 
     private void recebeDadosIntent() {
@@ -236,7 +232,9 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO){
                     trabalhoRecebido = (TrabalhoProducao) dadosRecebidos
                             .getSerializableExtra(CHAVE_NOME_TRABALHO);
-                    configuraComponentesAlteraTrabalho();
+                    if (trabalhoRecebido != null){
+                        configuraComponentesAlteraTrabalho();
+                    }
                 }else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO){
                     configuraLayoutNovoTrabalho();
                 }
@@ -287,7 +285,9 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
             Log.d("alteraTrabalho", "Acrecimo definido como verdadeiro.");
             acrescimo = true;
         }
-        posicaoEstadoModificado = trabalhoRecebido.getEstado();
+        if (trabalhoRecebido != null) {
+            posicaoEstadoModificado = trabalhoRecebido.getEstado();
+        }
         autoCompleteEstado.setText(estadosTrabalho[posicaoEstadoModificado]);
     }
 
@@ -409,6 +409,16 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         minhaReferencia.child(novoTrabalho.getId()).setValue(novoTrabalho);
         Snackbar.make(Objects.requireNonNull(getCurrentFocus()), novoTrabalho.getNome()+" foi cadastrado com sucesso!", Snackbar.LENGTH_LONG).show();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        configuraDropdownProfissoes();
+        configuraDropdownRaridades();
+        configuraDropdownLicencas();
+        configuraDropdownEstados();
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
