@@ -8,20 +8,25 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -48,6 +53,9 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
     private List<Trabalho> todosTrabalhos;
     private ListaTrabalhoEspecificoAdapter listaTrabalhoEspecificoAdapter;
     private String personagemId;
+    private LinearLayoutCompat linearLayoutGruposChips;
+    private ChipGroup grupoChipsProfissoes;
+    private List<String> listaProfissoes;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,11 +64,49 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
         atualizaListaTodosTrabalhos();
     }
 
+    private void configuraGrupoChipsProfissoes() {
+        Log.d("configuraGrupo","Passou aqui");
+        listaProfissoes.clear();
+        for (Trabalho trabalho : todosTrabalhos) {
+            if (listaProfissoes.isEmpty()) {
+                listaProfissoes.add(trabalho.getProfissao());
+            } else {
+                if (profissaoNaoExiste(trabalho)) {
+                    listaProfissoes.add(trabalho.getProfissao());
+                }
+            }
+        }
+        /*if (!listaProfissoes.isEmpty()) {
+            int idProfissao = 0;
+            for (String profissao : listaProfissoes) {
+                Chip chipProfissao = (Chip) LayoutInflater.from(getApplicationContext()).inflate(R.layout.item_chip, null);
+                chipProfissao.setText(profissao);
+                chipProfissao.setId(idProfissao);
+                grupoChipsProfissoes.addView(chipProfissao);
+                idProfissao += 1;
+            }
+        }*/
+    }
+
+    private boolean profissaoNaoExiste(Trabalho trabalho) {
+        for (String profissao : listaProfissoes) {
+            if (comparaString(profissao, trabalho.getProfissao())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_personagem, menu);
         MenuItem itemBusca = menu.findItem(R.id.itemMenuBusca);
+        itemBusca.setOnMenuItemClickListener(item -> {
+            linearLayoutGruposChips.setVisibility(View.VISIBLE);
+            return true;
+        });
+
         configuraCampoDeVBusca(itemBusca);
         return super.onCreateOptionsMenu(menu);
     }
@@ -157,6 +203,7 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
                     }
                 }
                 todosTrabalhos.sort(Comparator.comparing(Trabalho::getProfissao).thenComparing(Trabalho::getRaridade).thenComparing(Trabalho::getNivel).thenComparing(Trabalho::getNome));
+                configuraGrupoChipsProfissoes();
                 indicadorProgresso.setVisibility(View.GONE);
                 listaTrabalhoEspecificoAdapter.setListaFiltrada(todosTrabalhos);
             }
@@ -177,6 +224,9 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
         meuRecycler = binding.recyclerViewListaNovaProducao;
         FirebaseDatabase meuBanco = FirebaseDatabase.getInstance();
         minhaReferencia = meuBanco.getReference(CHAVE_LISTA_TRABALHO);
+        linearLayoutGruposChips = binding.linearLayoutGrupoChipsListaNovaProducao;
+        grupoChipsProfissoes = binding.grupoProfissoesChipListaNovaProducao;
+        listaProfissoes = new ArrayList<>();
     }
 
     @Override
