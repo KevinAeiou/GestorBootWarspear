@@ -137,8 +137,10 @@ public class ListaTrabalhoProducaoAdapter extends RecyclerView.Adapter<ListaTrab
                     nome_trabalho.setTextColor(ContextCompat.getColor(context, R.color.cor_texto_raridade_comum));
                     break;
                 case "Raro":
-                case "Melhorado":
                     nome_trabalho.setTextColor(ContextCompat.getColor(context, R.color.cor_texto_raridade_raro));
+                    break;
+                case "Melhorado":
+                    nome_trabalho.setTextColor(ContextCompat.getColor(context, R.color.cor_texto_raridade_melhorado));
                     break;
                 case "Especial":
                     nome_trabalho.setTextColor(ContextCompat.getColor(context, R.color.cor_texto_raridade_especial));

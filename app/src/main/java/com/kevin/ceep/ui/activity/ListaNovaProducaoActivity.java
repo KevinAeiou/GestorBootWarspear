@@ -8,7 +8,6 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,12 +16,12 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.HorizontalScrollView;
 import android.widget.ProgressBar;
 
 import com.google.android.material.chip.Chip;
@@ -50,10 +49,10 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
     private ProgressBar indicadorProgresso;
     private RecyclerView meuRecycler;
     private DatabaseReference minhaReferencia;
-    private List<Trabalho> todosTrabalhos;
+    private List<Trabalho> listaTrabalhosFiltrada;
     private ListaTrabalhoEspecificoAdapter listaTrabalhoEspecificoAdapter;
     private String personagemId;
-    private LinearLayoutCompat linearLayoutGruposChips;
+    private HorizontalScrollView linearLayoutGruposChips;
     private ChipGroup grupoChipsProfissoes;
     private List<String> listaProfissoes;
     @Override
@@ -64,7 +63,7 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
         atualizaListaTodosTrabalhos();
     }
 
-    private void configuraGrupoChipsProfissoes() {
+    private void configuraGrupoChipsProfissoes(List<Trabalho> todosTrabalhos) {
         Log.d("configuraGrupo","Passou aqui");
         listaProfissoes.clear();
         for (Trabalho trabalho : todosTrabalhos) {
@@ -76,7 +75,7 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
                 }
             }
         }
-        /*if (!listaProfissoes.isEmpty()) {
+        if (!listaProfissoes.isEmpty()) {
             int idProfissao = 0;
             for (String profissao : listaProfissoes) {
                 Chip chipProfissao = (Chip) LayoutInflater.from(getApplicationContext()).inflate(R.layout.item_chip, null);
@@ -85,7 +84,33 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
                 grupoChipsProfissoes.addView(chipProfissao);
                 idProfissao += 1;
             }
-        }*/
+            List<String> profissoesSelecionadas = new ArrayList<>();
+            grupoChipsProfissoes.setOnCheckedStateChangeListener((grupo, listaIds) -> {
+                profissoesSelecionadas.clear();
+                for (int id : listaIds) {
+                    profissoesSelecionadas.add(listaProfissoes.get(id));
+                }
+                if (!profissoesSelecionadas.isEmpty()) {
+                    listaTrabalhosFiltrada = new ArrayList<>();
+                    for (String profissao : profissoesSelecionadas) {
+                        Log.d("configuraGrupo", "Selecionada: "+profissao);
+                    }
+                    for (Trabalho trabalho: todosTrabalhos) {
+                        if (profissaoNaoExiste(trabalho)) {
+                            listaTrabalhosFiltrada.add(trabalho);
+                        }
+                    }/*
+                    if (listaTrabalhosFiltrada.isEmpty()) {
+                        listaTrabalhoEspecificoAdapter.limpaLista();
+                        Snackbar.make(binding.constrintLayoutListaNovaProducao, "Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
+                    }*/
+                } else {
+                    Log.d("configuraGrupo", "Nenhuma selecionada!");
+                    listaTrabalhosFiltrada = todosTrabalhos;
+                }
+                listaTrabalhoEspecificoAdapter.setListaFiltrada(listaTrabalhosFiltrada);
+            });
+        }
     }
 
     private boolean profissaoNaoExiste(Trabalho trabalho) {
@@ -129,7 +154,7 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
 
     private void filtroLista(String newText) {
         List<Trabalho> listaFiltrada = new ArrayList<>();
-        for (Trabalho trabalho : todosTrabalhos) {
+        for (Trabalho trabalho : listaTrabalhosFiltrada) {
             if (comparaString(trabalho.getNome(), newText)) {
                 listaFiltrada.add(trabalho);
             }
@@ -150,7 +175,7 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
     }
 
     private void atualizaListaTodosTrabalhos() {
-        todosTrabalhos = pegaTodosTrabalhos();
+        List<Trabalho> todosTrabalhos = pegaTodosTrabalhos();
         configuraMeuRecycler(todosTrabalhos);
     }
 
@@ -190,7 +215,8 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
     }
 
     private List<Trabalho> pegaTodosTrabalhos() {
-        todosTrabalhos = new ArrayList<>();
+        List<Trabalho> todosTrabalhos = new ArrayList<>();
+        listaTrabalhosFiltrada = new ArrayList<>();
         minhaReferencia.addListenerForSingleValueEvent(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
@@ -203,9 +229,10 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
                     }
                 }
                 todosTrabalhos.sort(Comparator.comparing(Trabalho::getProfissao).thenComparing(Trabalho::getRaridade).thenComparing(Trabalho::getNivel).thenComparing(Trabalho::getNome));
-                configuraGrupoChipsProfissoes();
+                listaTrabalhosFiltrada = todosTrabalhos;
+                configuraGrupoChipsProfissoes(todosTrabalhos);
                 indicadorProgresso.setVisibility(View.GONE);
-                listaTrabalhoEspecificoAdapter.setListaFiltrada(todosTrabalhos);
+                listaTrabalhoEspecificoAdapter.setListaFiltrada(listaTrabalhosFiltrada);
             }
 
             @Override

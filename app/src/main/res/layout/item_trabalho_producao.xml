@@ -13,6 +13,7 @@
             android:id="@+id/itemNomeTrabalho"
             style="@style/txtTituloCard"
             android:gravity="start"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Trabalho" />
@@ -21,17 +22,34 @@
             android:id="@+id/itemTipoLicenca"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:maxLines="1"
-            android:textSize="20sp"
+            android:paddingTop="8dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="@+id/itemNomeTrabalho"
             app:layout_constraintStart_toStartOf="@id/itemNomeTrabalho"
             app:layout_constraintTop_toBottomOf="@id/itemNomeTrabalho"
             tools:text="Licença" />
 
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearLayoutItemTrabalhoProducao"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintStart_toStartOf="@id/itemTipoLicenca"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/itemTipoLicenca"
+            app:layout_constraintTop_toBottomOf="@id/itemTipoLicenca">
+
         <TextView
             android:id="@+id/itemProfissaoTrabalho"
-            style="@style/txtSubtituloCard"
-            android:layout_marginBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="8dp"
+            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/itemTipoLicenca"
             app:layout_constraintTop_toBottomOf="@+id/itemTipoLicenca"
@@ -39,12 +57,17 @@
 
         <TextView
             android:id="@+id/itemNivelTrabalho"
-            style="@style/txtSubtituloCard"
-            android:layout_marginEnd="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:textSize="20sp"
+            android:padding="8dp"
+            android:layout_marginEnd="8dp"
             app:layout_constraintBottom_toBottomOf="@+id/itemProfissaoTrabalho"
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="Nível" />
 
+        </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>
