@@ -15,93 +15,95 @@
         <TextView
             android:id="@+id/itemNomeTrabalhoEstoque"
             style="@style/txtTituloCard"
+            android:gravity="center"
             android:contentDescription="Nome do item em estoque"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Nome do trabalho estoque" />
 
         <TextView
             android:id="@+id/itemProfissaoTrabalhoEstoque"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textSize="20sp"
             android:contentDescription="Profissão do item em estoque"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textSize="18sp"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="@+id/itemNomeTrabalhoEstoque"
             app:layout_constraintStart_toStartOf="@id/itemNomeTrabalhoEstoque"
             app:layout_constraintTop_toBottomOf="@id/itemNomeTrabalhoEstoque"
             tools:text="Profissão do trabalho estoque" />
 
         <TextView
             android:id="@+id/itemNivelTrabalhoEstoque"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:textSize="20sp"
             android:contentDescription="Nível do item em estoque"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textSize="20sp"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="@+id/itemProfissaoTrabalhoEstoque"
             app:layout_constraintStart_toStartOf="@id/itemProfissaoTrabalhoEstoque"
             app:layout_constraintTop_toBottomOf="@id/itemProfissaoTrabalhoEstoque"
-            app:layout_constraintBottom_toBottomOf="parent"
             tools:text="Nível do trabalho estoque" />
 
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/itemBotaoMenosCinquenta"
-            android:layout_width="wrap_content"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearLayoutItemTrabalhoEstoque"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_menos_um"
-            app:layout_constraintBottom_toBottomOf="@+id/itemTxtQuantidadeTrabalhosEstoque"
-            app:layout_constraintEnd_toStartOf="@+id/itemTxtQuantidadeTrabalhosEstoque"
-            app:layout_constraintTop_toTopOf="@+id/itemTxtQuantidadeTrabalhosEstoque" />
-
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/itemBotaoMenosUm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_menos_um"
-            app:layout_constraintBottom_toBottomOf="@+id/itemBotaoMenosCinquenta"
-            app:layout_constraintEnd_toStartOf="@+id/itemBotaoMenosCinquenta"
-            app:layout_constraintTop_toTopOf="@+id/itemBotaoMenosCinquenta"
-            />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/itemTxtQuantidadeTrabalhosEstoque"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
-            android:gravity="center"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/itemBotaoMaisCinquenta"
-            app:layout_constraintTop_toBottomOf="@id/itemNomeTrabalhoEstoque">
+            app:layout_constraintStart_toStartOf="@+id/itemNivelTrabalhoEstoque"
+            app:layout_constraintEnd_toEndOf="@id/itemNivelTrabalhoEstoque"
+            app:layout_constraintTop_toBottomOf="@id/itemNivelTrabalhoEstoque"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/itemEdtQuantidadeTrabalhoEstoque"
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/itemBotaoMenosCinquenta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:contentDescription="Campo para editar quantidade"
-                android:inputType="numberSigned"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:src="@drawable/ic_menos_um" />
 
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/itemBotaoMaisCinquenta"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_mais_um"
-            app:layout_constraintBottom_toBottomOf="@+id/itemTxtQuantidadeTrabalhosEstoque"
-            app:layout_constraintEnd_toStartOf="@id/itemBotaoMaisUm"
-            app:layout_constraintTop_toTopOf="@+id/itemTxtQuantidadeTrabalhosEstoque" />
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/itemBotaoMenosUm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_menos_um"
+                />
 
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/itemBotaoMaisUm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_mais_um"
-            app:layout_constraintBottom_toBottomOf="@+id/itemBotaoMaisCinquenta"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/itemBotaoMaisCinquenta" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/itemTxtQuantidadeTrabalhosEstoque"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:hint="Quant">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/itemEdtQuantidadeTrabalhoEstoque"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:contentDescription="Campo para editar quantidade"
+                    android:inputType="none"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/itemBotaoMaisCinquenta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_mais_um"/>
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/itemBotaoMaisUm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_mais_um"/>
+        </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

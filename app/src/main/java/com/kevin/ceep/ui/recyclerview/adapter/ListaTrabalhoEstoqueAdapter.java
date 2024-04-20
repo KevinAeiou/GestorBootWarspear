@@ -9,10 +9,12 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 import com.kevin.ceep.R;
+import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.model.TrabalhoProducao;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
@@ -88,10 +90,23 @@ public class ListaTrabalhoEstoqueAdapter extends RecyclerView.Adapter<ListaTraba
             preencheCampos(trabalhoEstoque);
         }
         private void preencheCampos(TrabalhoEstoque trabalhoEstoque) {
+                confiuraCorNomeTrabalho(trabalhoEstoque);
                 nomeTrabalho.setText(trabalhoEstoque.getNome());
                 profissaoTrabalho.setText(trabalhoEstoque.getProfissao());
                 nivelTrabalho.setText("Nível "+trabalhoEstoque.getNivel());
                 quantidadeTrabalho.setText(String.valueOf(trabalhoEstoque.getQuantidade()));
+        }
+        private void confiuraCorNomeTrabalho(Trabalho trabalhoEstoque) {
+            String raridade = trabalhoEstoque.getRaridade();
+            if (raridade.equals("Comum")){
+                nomeTrabalho.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_comum));
+            } else if (raridade.equals("Melhorado")) {
+                nomeTrabalho.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_melhorado));
+            } else if (raridade.equals("Raro")){
+                nomeTrabalho.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_raro));
+            }else if (raridade.equals("Especial")){
+                nomeTrabalho.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_especial));
+            }
         }
     }
 

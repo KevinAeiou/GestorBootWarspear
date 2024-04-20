@@ -31,6 +31,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -59,6 +60,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private CheckBox checkBoxRecorrenciaTrabalho;
     private AutoCompleteTextView autoCompleteProfissao, autoCompleteRaridade, autoCompleteTrabalhoNecessario1, autoCompleteTrabalhoNecessario2, autoCompleteLicenca, autoCompleteEstado;
     private ShapeableImageView imagemTrabalhoNecessario1, imagemTrabalhoNecessario2;
+    private LinearProgressIndicator indicadorProgresso;
     private String[] estadosTrabalho;
     private ArrayList<Trabalho> todosTrabalhoComunsMelhorados;
     private ArrayAdapter<String> adapterEstado;
@@ -218,6 +220,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         imagemTrabalhoNecessario2 = binding.imagemTrabalhoNecessario2;
 
         checkBoxRecorrenciaTrabalho = binding.checkBoxRecorrenciaTrabalho;
+        indicadorProgresso = binding.indicadorProgressoTrabalhoEspecifico;
 
         estadosTrabalho = getResources().getStringArray(R.array.estados);
     }
@@ -307,6 +310,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                     trabalhoModificado.setRecorrencia(checkBoxRecorrenciaTrabalho.isChecked());
                     trabalhoModificado.setTipo_licenca(autoCompleteLicenca.getText().toString());
                     trabalhoModificado.setEstado(adapterEstado.getPosition(autoCompleteEstado.getText().toString()));
+                    indicadorProgresso.setVisibility(View.VISIBLE);
                     modificaTrabalhoServidor(trabalhoModificado);
                 }
                 finish();
@@ -319,6 +323,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 trabalhoNecessario1 = Objects.requireNonNull(autoCompleteTrabalhoNecessario1).getText().toString().trim();
                 trabalhoNecessario2 = Objects.requireNonNull(autoCompleteTrabalhoNecessario2).getText().toString().trim();
                 if (verificaCamposNovoTrabalho()) {
+                    indicadorProgresso.setVisibility(View.VISIBLE);
                     cadastraNovoTrabalho();
                     edtNomeTrabalho.setText("");
                     edtNomeTrabalho.requestFocus();
@@ -364,6 +369,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
                 .child(personagemId).child(CHAVE_LISTA_DESEJO)
                 .child(trabalhoRecebido.getId()).setValue(trabalhoModificado);
+
     }
 
     private Boolean verificaValorCampo(String stringCampo, TextInputLayout inputLayout, int posicaoErro) {
@@ -407,6 +413,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private void salvaNovoTrabalhoNoServidor(Trabalho novoTrabalho) {
         DatabaseReference minhaReferencia = meuBanco.getReference(CHAVE_LISTA_TRABALHO);
         minhaReferencia.child(novoTrabalho.getId()).setValue(novoTrabalho);
+        indicadorProgresso.setVisibility(View.GONE);
         Snackbar.make(Objects.requireNonNull(getCurrentFocus()), novoTrabalho.getNome()+" foi cadastrado com sucesso!", Snackbar.LENGTH_LONG).show();
     }
 
