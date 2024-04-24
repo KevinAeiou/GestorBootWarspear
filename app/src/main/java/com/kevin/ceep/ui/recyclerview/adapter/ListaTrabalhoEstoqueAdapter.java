@@ -13,10 +13,10 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.textview.MaterialTextView;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
-import com.kevin.ceep.model.TrabalhoProducao;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.List;
@@ -58,11 +58,10 @@ public class ListaTrabalhoEstoqueAdapter extends RecyclerView.Adapter<ListaTraba
         notifyDataSetChanged();
     }
     public class TrabalhoEstoqueViewHolder extends RecyclerView.ViewHolder{
-        private final MaterialCardView cardTrabalho;
         private final TextView nomeTrabalho;
         private final TextView profissaoTrabalho;
         private final TextView nivelTrabalho;
-        private final EditText quantidadeTrabalho;
+        private final MaterialTextView quantidadeTrabalho;
         private TrabalhoEstoque trabalhoEstoque;
         private ImageButton botaoMenosUm;
         private ImageButton botaoMenosCinquenta;
@@ -70,11 +69,10 @@ public class ListaTrabalhoEstoqueAdapter extends RecyclerView.Adapter<ListaTraba
         private ImageButton botaoMaisCinquenta;
         public TrabalhoEstoqueViewHolder(@NonNull View itemView) {
             super(itemView);
-            cardTrabalho = itemView.findViewById(R.id.itemCardTrabalhoEstoque);
             nomeTrabalho = itemView.findViewById(R.id.itemNomeTrabalhoEstoque);
             profissaoTrabalho = itemView.findViewById(R.id.itemProfissaoTrabalhoEstoque);
             nivelTrabalho = itemView.findViewById(R.id.itemNivelTrabalhoEstoque);
-            quantidadeTrabalho = itemView.findViewById(R.id.itemEdtQuantidadeTrabalhoEstoque);
+            quantidadeTrabalho = itemView.findViewById(R.id.itemTxtQuantidadeTrabalhoEstoque);
             botaoMenosUm = itemView.findViewById(R.id.itemBotaoMenosUm);
             botaoMenosCinquenta = itemView.findViewById(R.id.itemBotaoMenosCinquenta);
             botaoMaisUm = itemView.findViewById(R.id.itemBotaoMaisUm);

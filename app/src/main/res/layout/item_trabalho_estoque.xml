@@ -64,45 +64,41 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
             <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/itemBotaoMenosCinquenta"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_menos_um" />
-
-            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/itemBotaoMenosUm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_menos_um"
-                />
+                style="@style/Widget.Material3.MaterialTimePicker.ImageButton"
+                android:src="@drawable/ic_menos_um" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/itemTxtQuantidadeTrabalhosEstoque"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/itemBotaoMenosCinquenta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:hint="Quant">
+                style="@style/Widget.Material3.MaterialTimePicker.ImageButton"
+                android:src="@drawable/ic_menos_um" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/itemEdtQuantidadeTrabalhoEstoque"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:contentDescription="Campo para editar quantidade"
-                    android:inputType="none"/>
-            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/itemTxtQuantidadeTrabalhoEstoque"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="22sp"
+                android:padding="8dp"
+                android:textStyle="bold"
+                tools:text="0"/>
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/itemBotaoMaisCinquenta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                style="@style/Widget.Material3.MaterialTimePicker.ImageButton"
                 android:src="@drawable/ic_mais_um"/>
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/itemBotaoMaisUm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                style="@style/Widget.Material3.MaterialTimePicker.ImageButton"
                 android:src="@drawable/ic_mais_um"/>
         </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.constraintlayout.widget.ConstraintLayout>
