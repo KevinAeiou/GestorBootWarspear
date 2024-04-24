@@ -6,7 +6,7 @@ public class Utilitario {
         return Normalizer.normalize(string, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
     }
     public static boolean comparaString(String string1, String string2) {
-        return removeAcentos(string1).toLowerCase().replace(" ","").contains(removeAcentos(string2).toLowerCase().replace(" ",""));
+        return removeAcentos(string1).toLowerCase().replace(" ","").equals(removeAcentos(string2).toLowerCase().replace(" ",""));
     }
 
     public static String geraIdAleatorio() {

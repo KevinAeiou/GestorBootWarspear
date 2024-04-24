@@ -9,7 +9,6 @@
 
     <ProgressBar
         android:id="@+id/indicadorProgressoProfissoesTrabalhos"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="?android:attr/progressBarStyle"
@@ -31,6 +30,7 @@
             android:id="@+id/recyclerViewProfissoesTrabalhos"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:paddingBottom="8dp"
             tools:listitem="@layout/item_profissao_trabalho" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

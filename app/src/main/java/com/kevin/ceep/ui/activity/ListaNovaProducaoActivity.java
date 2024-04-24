@@ -186,7 +186,7 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
     }
 
     private void configuraAdapter(List<Trabalho> todosTrabalhos, RecyclerView meuRecycler) {
-        listaTrabalhoEspecificoAdapter = new ListaTrabalhoEspecificoAdapter(getApplicationContext(), todosTrabalhos);
+        listaTrabalhoEspecificoAdapter = new ListaTrabalhoEspecificoAdapter(getApplicationContext(), todosTrabalhos, null);
         meuRecycler.setAdapter(listaTrabalhoEspecificoAdapter);
         listaTrabalhoEspecificoAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override

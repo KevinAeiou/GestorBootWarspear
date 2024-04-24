@@ -2,6 +2,7 @@ package com.kevin.ceep.ui.recyclerview.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,27 +10,35 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.kevin.ceep.R;
+import com.kevin.ceep.model.ProfissaoTrabalho;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTrabalhoEspecificoAdapter.TrabalhoEspecificoViewHolder> {
 
     private List<Trabalho> trabalhos;
+    private List<ProfissaoTrabalho> profissoesTrabalhos;
     private final Context context;
     private OnItemClickListener onItemClickListener;
 
-    public ListaTrabalhoEspecificoAdapter(Context context,List<Trabalho> trabalho) {
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public ListaTrabalhoEspecificoAdapter(Context context, List<Trabalho> trabalho, List<ProfissaoTrabalho> profissoesTrabalhos) {
+        this.profissoesTrabalhos = profissoesTrabalhos;
         this.trabalhos = trabalho;
         this.context = context;
     }
     public void setListaFiltrada(List<Trabalho> listaFiltrada) {
         this.trabalhos = listaFiltrada;
         notifyDataSetChanged();
-    }
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener){
-        this.onItemClickListener = onItemClickListener;
     }
     @NonNull
     @Override
@@ -66,7 +75,6 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
         private final TextView experienciaTrabalhoEspecifico;
         private final TextView nivelTrabalhoEspecifico;
         private Trabalho trabalhoEspecifico;
-
         public TrabalhoEspecificoViewHolder(@NonNull View itemView) {
             super(itemView);
             nomeTrabalhoEspecifico = itemView.findViewById(R.id.itemNomeTrabaloEspecifico);
@@ -75,7 +83,12 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
             raridadeTrabalhoEspecifico = itemView.findViewById(R.id.itemRaridadeTrabalhoEspecifico);
             trabalhoNecessarioTrabalhoEspecifico = itemView.findViewById(R.id.itemTrabalhoNecessarioTrabalhoEspecifico);
             experienciaTrabalhoEspecifico = itemView.findViewById(R.id.itemExperienciaTrabaloEspecifico);
-            itemView.setOnClickListener(view -> onItemClickListener.onItemClick(trabalhoEspecifico, 0));
+            itemView.setOnClickListener(v -> {
+                ProfissaoTrabalho profissaoTrabalho = profissoesTrabalhos.get(ListaTodosTrabalhosAdapter.posicaoPai);
+                ArrayList<Trabalho> trabalhos = profissaoTrabalho.getTrabalhos();
+                // Snackbar.make(itemView, "Profissão: "+profissaoTrabalho.getNome() +"Trabalho: "+trabalhos.get(getAdapterPosition()).getNome(), Snackbar.LENGTH_LONG).show();
+                onItemClickListener.onItemClick(trabalhos.get(getAdapterPosition()), getAdapterPosition());
+            });
         }
         public void vincula(Trabalho trabalho){
             this.trabalhoEspecifico = trabalho;
@@ -92,7 +105,7 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
             experienciaTrabalhoEspecifico.setText("Exp "+trabalho.getExperiencia());
             raridadeTrabalhoEspecifico.setText(trabalho.getRaridade());
             String trabalhoNecessario = trabalho.getTrabalhoNecessario();
-            if (trabalhoNecessario == null) {
+            if (trabalhoNecessario == null || trabalhoNecessario.isEmpty()) {
                 trabalhoNecessarioTrabalhoEspecifico.setVisibility(View.GONE);
             } else {
                 trabalhoNecessarioTrabalhoEspecifico.setText(trabalho.getTrabalhoNecessario());

@@ -29,10 +29,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.ActivityListaTodosTrabalhosBinding;
+import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.ProfissaoTrabalho;
 import com.kevin.ceep.model.Trabalho;
+import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTodosTrabalhosAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoAdapter;
+import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.ArrayList;
 import java.util.Comparator;

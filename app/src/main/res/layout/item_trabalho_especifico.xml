@@ -9,57 +9,87 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/itemNomeTrabaloEspecifico"
-            style="@style/txtTituloCard"
-            android:gravity="center"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearLayoutItemTrabalhoEspecifico"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            tools:text="Trabalho" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/itemNomeTrabaloEspecifico"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="8dp"
+                android:layout_marginTop="8dp"
+                android:textSize="22sp"
+                android:gravity="center"
+                tools:text="Trabalho" />
+
+            <TextView
+                android:id="@+id/itemProfissaoTrabalhoEspecifico"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:textSize="18sp"
+                android:gravity="center"
+                tools:text="Profissão" />
+
+            <TextView
+                android:id="@+id/itemRaridadeTrabalhoEspecifico"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:textSize="18sp"
+                android:gravity="center"
+                tools:text="Raridade" />
+
+            <TextView
+                android:id="@+id/itemTrabalhoNecessarioTrabalhoEspecifico"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:textSize="18sp"
+                android:gravity="center"
+                tools:text="Trabalho necessário" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <TextView
-            android:id="@+id/itemProfissaoTrabalhoEspecifico"
-            style="@style/txtSubtituloCard"
-            app:layout_constraintStart_toStartOf="@+id/itemNomeTrabaloEspecifico"
-            app:layout_constraintEnd_toEndOf="@id/itemNomeTrabaloEspecifico"
-            app:layout_constraintTop_toBottomOf="@+id/itemNomeTrabaloEspecifico"
-            tools:text="Profissão" />
-
-        <TextView
-            android:id="@+id/itemRaridadeTrabalhoEspecifico"
-            style="@style/txtSubtituloCard"
-            app:layout_constraintStart_toStartOf="@+id/itemProfissaoTrabalhoEspecifico"
-            app:layout_constraintEnd_toEndOf="@id/itemProfissaoTrabalhoEspecifico"
-            app:layout_constraintTop_toBottomOf="@+id/itemProfissaoTrabalhoEspecifico"
-            tools:text="Raridade" />
-
-        <TextView
-            android:id="@+id/itemTrabalhoNecessarioTrabalhoEspecifico"
-            style="@style/txtSubtituloCard"
-            app:layout_constraintStart_toStartOf="@+id/itemRaridadeTrabalhoEspecifico"
-            app:layout_constraintEnd_toEndOf="@id/itemRaridadeTrabalhoEspecifico"
-            app:layout_constraintTop_toBottomOf="@+id/itemRaridadeTrabalhoEspecifico"
-            tools:text="Trabalho necessário" />
+            android:id="@+id/itemExperienciaTrabaloEspecifico"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="8dp"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/linearLayoutItemTrabalhoEspecifico"
+            app:layout_constraintStart_toStartOf="@id/linearLayoutItemTrabalhoEspecifico"
+            app:layout_constraintTop_toBottomOf="@id/linearLayoutItemTrabalhoEspecifico"
+            tools:text="Experiência" />
 
         <TextView
             android:id="@+id/itemNivelTrabaloEspecifico"
-            style="@style/txtSubtituloCard"
-            android:layout_marginEnd="16dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:paddingEnd="8dp"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_marginEnd="8dp"
             app:layout_constraintBottom_toBottomOf="@+id/itemExperienciaTrabaloEspecifico"
             app:layout_constraintTop_toTopOf="@id/itemExperienciaTrabaloEspecifico"
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="Nivel" />
-
-        <TextView
-            android:id="@+id/itemExperienciaTrabaloEspecifico"
-            style="@style/txtSubtituloCard"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/itemTrabalhoNecessarioTrabalhoEspecifico"
-            app:layout_constraintStart_toStartOf="@id/itemTrabalhoNecessarioTrabalhoEspecifico"
-            app:layout_constraintTop_toBottomOf="@id/itemTrabalhoNecessarioTrabalhoEspecifico"
-            tools:text="Experiência" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

@@ -42,6 +42,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
+import com.kevin.ceep.databinding.FragmentListaTrabalhosProducaoBinding;
 import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
@@ -56,6 +57,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 public class ListaTrabalhosProducaoFragment extends Fragment {
+    private FragmentListaTrabalhosProducaoBinding binding;
     private DatabaseReference databaseReference;
     private ListaTrabalhoProducaoAdapter trabalhoAdapter;
     private RecyclerView recyclerView;
@@ -77,8 +79,9 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        binding = FragmentListaTrabalhosProducaoBinding.inflate(inflater, container, false);
         requireActivity().setTitle(CHAVE_TITULO_TRABALHO);
-        return inflater.inflate(R.layout.fragment_lista_trabalhos_producao, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -115,7 +118,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         trabalhosFiltrados = filtroListaChip(estado, trabalhos);
         if (trabalhosFiltrados.isEmpty()) {
             trabalhoAdapter.limpaLista();
-            Snackbar.make(layoutFragmentoTrabalhos, "Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(binding.getRoot(), "Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
         } else {
             trabalhoAdapter.setListaFiltrada(trabalhosFiltrados);
         }
@@ -191,7 +194,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         }
         if (listaFiltrada.isEmpty()) {
             trabalhoAdapter.limpaLista();
-            Snackbar.make(layoutFragmentoTrabalhos,"Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(binding.getRoot(),"Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
         } else {
             trabalhosFiltrados = listaFiltrada;
             trabalhoAdapter.setListaFiltrada(listaFiltrada);

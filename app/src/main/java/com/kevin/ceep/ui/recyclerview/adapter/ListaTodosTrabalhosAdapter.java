@@ -1,6 +1,12 @@
 package com.kevin.ceep.ui.recyclerview.adapter;
 
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
+
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +18,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 import com.kevin.ceep.R;
+import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.ProfissaoTrabalho;
 import com.kevin.ceep.model.Trabalho;
+import com.kevin.ceep.model.TrabalhoEstoque;
+import com.kevin.ceep.ui.activity.TrabalhoEspecificoActivity;
+import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.List;
 
@@ -23,6 +34,7 @@ public class ListaTodosTrabalhosAdapter extends RecyclerView.Adapter<ListaTodosT
     private List<ProfissaoTrabalho> profissoes;
     private List<Trabalho> trabalhos;
     private final Context context;
+    public static int posicaoPai = -1;
 
     public ListaTodosTrabalhosAdapter(List<ProfissaoTrabalho> profissaoTrabalhos, Context context) {
         this.profissoes = profissaoTrabalhos;
@@ -43,11 +55,43 @@ public class ListaTodosTrabalhosAdapter extends RecyclerView.Adapter<ListaTodosT
     @Override
     public void onBindViewHolder(@NonNull ListaTodosTrabalhosAdapter.ProfissaoTrabalhoViewHolder holder, int position) {
         ProfissaoTrabalho profissaoTrabalho = profissoes.get(position);
+        trabalhos = profissaoTrabalho.getTrabalhos();
         holder.vincula(profissaoTrabalho);
         configuraRecyclerViewExpancivel(holder, profissaoTrabalho);
     }
 
     private void configuraRecyclerViewExpancivel(@NonNull ProfissaoTrabalhoViewHolder holder, ProfissaoTrabalho profissaoTrabalho) {
+        ListaTrabalhoEspecificoAdapter trabalhoEspecificoAdapter = new ListaTrabalhoEspecificoAdapter(context, trabalhos, profissoes);
+        holder.recyclerViewExpansivelItemProfissaoTrabalho.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
+        holder.recyclerViewExpansivelItemProfissaoTrabalho.setHasFixedSize(true);
+        holder.recyclerViewExpansivelItemProfissaoTrabalho.setAdapter(trabalhoEspecificoAdapter);
+        holder.linearLayoutItemProfissaoTrabalho.setOnClickListener(view -> {
+            posicaoPai = holder.getAdapterPosition();
+            profissaoTrabalho.setExpandable(!profissaoTrabalho.isExpandable());
+            // trabalhos = profissaoTrabalho.getTrabalhos();
+            notifyItemChanged(holder.getAdapterPosition());
+        });
+        trabalhoEspecificoAdapter.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(Profissao profissao, int posicao) {
+
+            }
+
+            @Override
+            public void onItemClick(Trabalho trabalho, int adapterPosition) {
+                Intent iniciaVaiParaCadastraNovoTrabalho = new Intent(context,
+                        TrabalhoEspecificoActivity.class);
+                iniciaVaiParaCadastraNovoTrabalho.putExtra(CHAVE_TRABALHO, CODIGO_REQUISICAO_ALTERA_TRABALHO);
+                iniciaVaiParaCadastraNovoTrabalho.putExtra(CHAVE_NOME_TRABALHO, trabalho);
+                iniciaVaiParaCadastraNovoTrabalho.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(iniciaVaiParaCadastraNovoTrabalho);
+            }
+
+            @Override
+            public void onItemClick(TrabalhoEstoque trabalhoEstoque, int adapterPosition, int botaoId) {
+
+            }
+        });
         boolean isExpandable = profissaoTrabalho.isExpandable();
         holder.constraintLayoutItemProfissaoTrabalho.setVisibility(isExpandable ? View.VISIBLE : View.GONE);
         if (isExpandable) {
@@ -55,17 +99,7 @@ public class ListaTodosTrabalhosAdapter extends RecyclerView.Adapter<ListaTodosT
         } else {
             holder.shapeableImageViewItemProfissaoTrabalho.setImageResource(R.drawable.ic_baixo);
         }
-        ListaTrabalhoEspecificoAdapter trabalhoEspecificoAdapter = new ListaTrabalhoEspecificoAdapter(context, trabalhos);
-        holder.recyclerViewExpansivelItemProfissaoTrabalho.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
-        holder.recyclerViewExpansivelItemProfissaoTrabalho.setHasFixedSize(true);
-        holder.recyclerViewExpansivelItemProfissaoTrabalho.setAdapter(trabalhoEspecificoAdapter);
-        holder.linearLayoutItemProfissaoTrabalho.setOnClickListener(view -> {
-            profissaoTrabalho.setExpandable(!profissaoTrabalho.isExpandable());
-            trabalhos = profissaoTrabalho.getTrabalhos();
-            notifyItemChanged(holder.getAdapterPosition());
-        });
     }
-
     @Override
     public int getItemCount() {
         return profissoes.size();

@@ -11,6 +11,7 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_NOV
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO_PRODUCAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INVALIDA;
 
@@ -30,6 +31,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
@@ -52,8 +54,9 @@ import java.util.Objects;
 public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private ActivityTrabalhoEspecificoBinding binding;
     private FirebaseDatabase meuBanco;
-    private DatabaseReference minhareferencia;
-    private TrabalhoProducao trabalhoRecebido;
+    private DatabaseReference minhareferenciaUsuario, minhaReferenciaTrabalhos;
+    private TrabalhoProducao trabalhoProducaoRecebido;
+    private Trabalho trabalhoRecebido;
     private LinearLayoutCompat linearLayoutTrabalhoNecessario2, linearLayoutTrabalhoNecessario3;
     private TextInputEditText edtNomeTrabalho, edtExperienciaTrabalho, edtNivelTrabalho;
     private TextInputLayout txtInputNome, txtInputProfissao, txtInputExperiencia, txtInputNivel, txtInputRaridade, txtInputLicenca, txtInputEstado;
@@ -92,7 +95,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private void pegaTodosTrabalhosComunsMelhorados() {
         todosTrabalhoComunsMelhorados = new ArrayList<>();
-        DatabaseReference minhaReferenciaTrabalhos = meuBanco.getReference(CHAVE_LISTA_TRABALHO);
         minhaReferenciaTrabalhos.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -193,7 +195,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private void inicializaComponentes() {
         meuBanco = FirebaseDatabase.getInstance();
-        minhareferencia = meuBanco.getReference(CHAVE_USUARIOS);
+        minhareferenciaUsuario = meuBanco.getReference(CHAVE_USUARIOS);
+        minhaReferenciaTrabalhos = meuBanco.getReference(CHAVE_LISTA_TRABALHO);
         usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
 
         linearLayoutTrabalhoNecessario2 = binding.linearLayoutTrabalhoNecessario2;
@@ -233,37 +236,29 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
             personagemId = (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
             if (codigoRequisicao != CODIGO_REQUISICAO_INVALIDA){
                 if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO){
-                    trabalhoRecebido = (TrabalhoProducao) dadosRecebidos
+                    trabalhoRecebido = (Trabalho) dadosRecebidos
                             .getSerializableExtra(CHAVE_NOME_TRABALHO);
                     if (trabalhoRecebido != null){
                         configuraComponentesAlteraTrabalho();
                     }
                 }else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO){
                     configuraLayoutNovoTrabalho();
+                }else if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO_PRODUCAO){
+                    trabalhoProducaoRecebido = (TrabalhoProducao) dadosRecebidos
+                            .getSerializableExtra(CHAVE_NOME_TRABALHO);
+                    if (trabalhoProducaoRecebido != null){
+                        configuraComponentesAlteraTrabalhoProducao();
+                    }
                 }
             }
         }
     }
 
-    private void configuraLayoutNovoTrabalho() {
-        setTitle(CHAVE_TITULO_NOVO_TRABALHO);
-        linearLayoutTrabalhoNecessario2.setVisibility(View.GONE);
+    private void configuraComponentesAlteraTrabalho() {
+        checkBoxRecorrenciaTrabalho.setVisibility(View.GONE);
         txtInputLicenca.setVisibility(View.GONE);
         txtInputEstado.setVisibility(View.GONE);
-        checkBoxRecorrenciaTrabalho.setVisibility(View.GONE);
-    }
-
-    private void configuraComponentesAlteraTrabalho() {
         setTitle(trabalhoRecebido.getNome());
-        edtNomeTrabalho.setEnabled(false);
-        autoCompleteProfissao.setEnabled(false);
-        edtExperienciaTrabalho.setEnabled(false);
-        edtNivelTrabalho.setEnabled(false);
-        autoCompleteRaridade.setEnabled(false);
-        autoCompleteTrabalhoNecessario1.setEnabled(false);
-        imagemTrabalhoNecessario1.setEnabled(false);
-        autoCompleteTrabalhoNecessario2.setEnabled(false);
-        imagemTrabalhoNecessario2.setEnabled(false);
 
         edtNomeTrabalho.setText(trabalhoRecebido.getNome());
         autoCompleteProfissao.setText(trabalhoRecebido.getProfissao());
@@ -280,16 +275,53 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 autoCompleteTrabalhoNecessario1.setText(trabalhosNecessarios[0]);
             }
         }
-        recorrenciaModificada = trabalhoRecebido.getRecorrencia();
+    }
+
+    private void configuraLayoutNovoTrabalho() {
+        setTitle(CHAVE_TITULO_NOVO_TRABALHO);
+        linearLayoutTrabalhoNecessario2.setVisibility(View.GONE);
+        txtInputLicenca.setVisibility(View.GONE);
+        txtInputEstado.setVisibility(View.GONE);
+        checkBoxRecorrenciaTrabalho.setVisibility(View.GONE);
+    }
+
+    private void configuraComponentesAlteraTrabalhoProducao() {
+        setTitle(trabalhoProducaoRecebido.getNome());
+        edtNomeTrabalho.setEnabled(false);
+        autoCompleteProfissao.setEnabled(false);
+        edtExperienciaTrabalho.setEnabled(false);
+        edtNivelTrabalho.setEnabled(false);
+        autoCompleteRaridade.setEnabled(false);
+        autoCompleteTrabalhoNecessario1.setEnabled(false);
+        imagemTrabalhoNecessario1.setEnabled(false);
+        autoCompleteTrabalhoNecessario2.setEnabled(false);
+        imagemTrabalhoNecessario2.setEnabled(false);
+
+        edtNomeTrabalho.setText(trabalhoProducaoRecebido.getNome());
+        autoCompleteProfissao.setText(trabalhoProducaoRecebido.getProfissao());
+        edtExperienciaTrabalho.setText(String.valueOf(trabalhoProducaoRecebido.getExperiencia()));
+        edtNivelTrabalho.setText(String.valueOf(trabalhoProducaoRecebido.getNivel()));
+        autoCompleteRaridade.setText(trabalhoProducaoRecebido.getRaridade());
+        if (trabalhoProducaoRecebido.getTrabalhoNecessario() != null) {
+            linearLayoutTrabalhoNecessario2.setVisibility(View.VISIBLE);
+            String[] trabalhosNecessarios = trabalhoProducaoRecebido.getTrabalhoNecessario().split(",");
+            if (trabalhosNecessarios.length > 1) {
+                autoCompleteTrabalhoNecessario1.setText(trabalhosNecessarios[0]);
+                autoCompleteTrabalhoNecessario2.setText(trabalhosNecessarios[1]);
+            } else {
+                autoCompleteTrabalhoNecessario1.setText(trabalhosNecessarios[0]);
+            }
+        }
+        recorrenciaModificada = trabalhoProducaoRecebido.getRecorrencia();
         checkBoxRecorrenciaTrabalho.setChecked(recorrenciaModificada);
-        licencaModificada = trabalhoRecebido.getTipo_licenca();
+        licencaModificada = trabalhoProducaoRecebido.getTipo_licenca();
         autoCompleteLicenca.setText(licencaModificada);
-        if (trabalhoRecebido != null && comparaString(licencaModificada, "licença de produção do principiante")) {
+        if (trabalhoProducaoRecebido != null && comparaString(licencaModificada, "licença de produção do principiante")) {
             Log.d("alteraTrabalho", "Acrecimo definido como verdadeiro.");
             acrescimo = true;
         }
-        if (trabalhoRecebido != null) {
-            posicaoEstadoModificado = trabalhoRecebido.getEstado();
+        if (trabalhoProducaoRecebido != null) {
+            posicaoEstadoModificado = trabalhoProducaoRecebido.getEstado();
         }
         autoCompleteEstado.setText(estadosTrabalho[posicaoEstadoModificado]);
     }
@@ -304,33 +336,82 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.itemMenuSalvaTrabalho) {
-            if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO) {
-                if (verificaTrabalhoModificado()) {
-                    TrabalhoProducao trabalhoModificado = trabalhoRecebido;
+            nome = Objects.requireNonNull(edtNomeTrabalho.getText()).toString().trim();
+            profissao = Objects.requireNonNull(autoCompleteProfissao).getText().toString().trim();
+            experiencia = Objects.requireNonNull(edtExperienciaTrabalho.getText()).toString().trim();
+            nivel = Objects.requireNonNull(edtNivelTrabalho.getText()).toString().trim();
+            raridade = Objects.requireNonNull(autoCompleteRaridade).getText().toString().trim();
+            trabalhoNecessario1 = Objects.requireNonNull(autoCompleteTrabalhoNecessario1).getText().toString().trim();
+            trabalhoNecessario2 = Objects.requireNonNull(autoCompleteTrabalhoNecessario2).getText().toString().trim();
+
+            String trabalhoNecessario = "";
+            if (comparaString(trabalhoNecessario1, "Trabalho necessário")){
+                trabalhoNecessario1 = "";
+            }
+            if (comparaString(trabalhoNecessario2, "Trabalho necessário")){
+                trabalhoNecessario2 = "";
+            }
+            if (!trabalhoNecessario1.isEmpty() && !trabalhoNecessario2.isEmpty()){
+                trabalhoNecessario = trabalhoNecessario1+ ","+ trabalhoNecessario2;
+            } else if (!trabalhoNecessario1.isEmpty()){
+                trabalhoNecessario = trabalhoNecessario1;
+            } else if (!trabalhoNecessario2.isEmpty()){
+                trabalhoNecessario = trabalhoNecessario2;
+            }
+            if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO_PRODUCAO) {
+                if (verificaTrabalhoProducaoModificado()) {
+                    TrabalhoProducao trabalhoModificado = trabalhoProducaoRecebido;
                     trabalhoModificado.setRecorrencia(checkBoxRecorrenciaTrabalho.isChecked());
                     trabalhoModificado.setTipo_licenca(autoCompleteLicenca.getText().toString());
                     trabalhoModificado.setEstado(adapterEstado.getPosition(autoCompleteEstado.getText().toString()));
                     indicadorProgresso.setVisibility(View.VISIBLE);
+                    modificaTrabalhoProducaoServidor(trabalhoModificado);
+                }
+            } else if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO) {
+                if (verificaTrabalhoModificado()) {
+                    Trabalho trabalhoModificado = new Trabalho(
+                            trabalhoRecebido.getId(),
+                            nome,
+                            profissao,
+                            raridade,
+                            trabalhoNecessario,
+                            Integer.parseInt(nivel),
+                            Integer.parseInt(experiencia));
+                    indicadorProgresso.setVisibility(View.VISIBLE);
                     modificaTrabalhoServidor(trabalhoModificado);
                 }
-                finish();
             } else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO) {
-                nome = Objects.requireNonNull(edtNomeTrabalho.getText()).toString().trim();
-                profissao = Objects.requireNonNull(autoCompleteProfissao).getText().toString().trim();
-                experiencia = Objects.requireNonNull(edtExperienciaTrabalho.getText()).toString().trim();
-                nivel = Objects.requireNonNull(edtNivelTrabalho.getText()).toString().trim();
-                raridade = Objects.requireNonNull(autoCompleteRaridade).getText().toString().trim();
-                trabalhoNecessario1 = Objects.requireNonNull(autoCompleteTrabalhoNecessario1).getText().toString().trim();
-                trabalhoNecessario2 = Objects.requireNonNull(autoCompleteTrabalhoNecessario2).getText().toString().trim();
                 if (verificaCamposNovoTrabalho()) {
                     indicadorProgresso.setVisibility(View.VISIBLE);
-                    cadastraNovoTrabalho();
+                    cadastraNovoTrabalho(trabalhoNecessario);
                     edtNomeTrabalho.setText("");
                     edtNomeTrabalho.requestFocus();
                 }
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void modificaTrabalhoServidor(Trabalho trabalhoModificado) {
+        minhaReferenciaTrabalhos.child(trabalhoModificado.getId()).setValue(trabalhoModificado)
+                .addOnSuccessListener(task -> {
+                    indicadorProgresso.setVisibility(View.GONE);
+                    finish();
+                })
+                .addOnFailureListener(e -> Snackbar.make(binding.getRoot(), "Erro ao modificar trabalho: "+ e, Snackbar.LENGTH_LONG).show());
+    }
+
+    private boolean verificaTrabalhoModificado() {
+        return verificaCampoModificado(nome, trabalhoRecebido.getNome()) ||
+                verificaCampoModificado(profissao, trabalhoRecebido.getProfissao()) ||
+                verificaCampoModificado(experiencia, trabalhoRecebido.getExperiencia().toString()) ||
+                verificaCampoModificado(nivel, trabalhoRecebido.getNivel().toString()) ||
+                verificaCampoModificado(raridade, trabalhoRecebido.getRaridade());
+    }
+
+    private boolean verificaCampoModificado(String campo, String valorRecebido) {
+        Snackbar.make(binding.getRoot(), "Campo modificado? "+!comparaString(campo, valorRecebido), Snackbar.LENGTH_LONG).show();
+        return !comparaString(campo, valorRecebido);
     }
 
     private boolean verificaCamposNovoTrabalho() {
@@ -341,19 +422,13 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 & verificaValorCampo(raridade, txtInputRaridade, 1);
     }
 
-    private boolean verificaTrabalhoModificado() {
+    private boolean verificaTrabalhoProducaoModificado() {
         return verificaLicencaModificada() ||
                 verificaEstadoModificado() ||
                 verificaCheckModificado();
     }
 
     private boolean verificaLicencaModificada() {
-        Log.d("alteraTrabalho", "Licença recebida: "+licencaModificada);
-        if (!comparaString(licencaModificada, autoCompleteLicenca.getText().toString())) {
-            Log.d("alteraTrabalho", "Licença modificada!");
-        } else {
-            Log.d("alteraTrabalho", "Licença não modificada!");
-        }
         return !comparaString(licencaModificada, autoCompleteLicenca.getText().toString());
     }
 
@@ -365,11 +440,10 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         return checkBoxRecorrenciaTrabalho.isChecked() != recorrenciaModificada;
     }
 
-    private void modificaTrabalhoServidor(Trabalho trabalhoModificado) {
-        minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
+    private void modificaTrabalhoProducaoServidor(Trabalho trabalhoModificado) {
+        minhareferenciaUsuario.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
                 .child(personagemId).child(CHAVE_LISTA_DESEJO)
-                .child(trabalhoRecebido.getId()).setValue(trabalhoModificado);
-
+                .child(trabalhoProducaoRecebido.getId()).setValue(trabalhoModificado).addOnCompleteListener(task -> finish());
     }
 
     private Boolean verificaValorCampo(String stringCampo, TextInputLayout inputLayout, int posicaoErro) {
@@ -383,22 +457,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         return true;
     }
 
-    private void cadastraNovoTrabalho() {
+    private void cadastraNovoTrabalho(String trabalhoNecessario) {
         String novoId = geraIdAleatorio();
-        String trabalhoNecessario = "";
-        if (comparaString(trabalhoNecessario1, "Trabalho necessário")){
-            trabalhoNecessario1 = "";
-        }
-        if (comparaString(trabalhoNecessario2, "Trabalho necessário")){
-            trabalhoNecessario2 = "";
-        }
-        if (!trabalhoNecessario1.isEmpty() && !trabalhoNecessario2.isEmpty()){
-            trabalhoNecessario = trabalhoNecessario1+ ","+ trabalhoNecessario2;
-        } else if (!trabalhoNecessario1.isEmpty()){
-            trabalhoNecessario = trabalhoNecessario1;
-        } else if (!trabalhoNecessario2.isEmpty()){
-            trabalhoNecessario = trabalhoNecessario2;
-        }
         Trabalho novoTrabalho = new Trabalho(
                 novoId,
                 nome,
