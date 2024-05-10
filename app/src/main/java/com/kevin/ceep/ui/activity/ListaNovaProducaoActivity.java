@@ -1,6 +1,7 @@
 package com.kevin.ceep.ui.activity;
 
 import static com.kevin.ceep.ui.Utilitario.comparaString;
+import static com.kevin.ceep.ui.Utilitario.stringContemString;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
@@ -38,11 +39,13 @@ import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoAdapter;
+import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoNovaProducaoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ListaNovaProducaoActivity extends AppCompatActivity {
     private ActivityListaNovaProducaoBinding binding;
@@ -50,7 +53,7 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
     private RecyclerView meuRecycler;
     private DatabaseReference minhaReferencia;
     private List<Trabalho> listaTrabalhosFiltrada;
-    private ListaTrabalhoEspecificoAdapter listaTrabalhoEspecificoAdapter;
+    private ListaTrabalhoEspecificoNovaProducaoAdapter listaTrabalhoEspecificoAdapter;
     private String personagemId;
     private HorizontalScrollView linearLayoutGruposChips;
     private ChipGroup grupoChipsProfissoes;
@@ -91,7 +94,6 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
                     profissoesSelecionadas.add(listaProfissoes.get(id));
                 }
                 if (!profissoesSelecionadas.isEmpty()) {
-                    listaTrabalhosFiltrada = new ArrayList<>();
                     for (String profissao : profissoesSelecionadas) {
                         Log.d("configuraGrupo", "Selecionada: "+profissao);
                     }
@@ -145,26 +147,23 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
-                filtroLista(newText);
+            public boolean onQueryTextChange(String texto) {
+                filtroLista(texto);
                 return false;
             }
         });
     }
 
-    private void filtroLista(String newText) {
-        List<Trabalho> listaFiltrada = new ArrayList<>();
-        for (Trabalho trabalho : listaTrabalhosFiltrada) {
-            if (comparaString(trabalho.getNome(), newText)) {
-                listaFiltrada.add(trabalho);
-            }
-        }
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void filtroLista(String texto) {
+        List<Trabalho> listaFiltrada =
+                listaTrabalhosFiltrada.stream().filter(
+                        trabalho -> stringContemString(trabalho.getNome(), texto))
+                        .collect(Collectors.toList());
         if (listaFiltrada.isEmpty()) {
-            listaTrabalhoEspecificoAdapter.limpaLista();
-            Snackbar.make(binding.getRoot(),"Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
-        } else {
-            listaTrabalhoEspecificoAdapter.setListaFiltrada(listaFiltrada);
+            Snackbar.make(binding.constrintLayoutListaNovaProducao, "Nem um trabalho encontrado!", Snackbar.LENGTH_LONG).show();
         }
+        listaTrabalhoEspecificoAdapter.setListaFiltrada(listaFiltrada);
     }
 
     private void recebeDadosIntent() {
@@ -186,17 +185,23 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
     }
 
     private void configuraAdapter(List<Trabalho> todosTrabalhos, RecyclerView meuRecycler) {
-        listaTrabalhoEspecificoAdapter = new ListaTrabalhoEspecificoAdapter(getApplicationContext(), todosTrabalhos, null);
+        listaTrabalhoEspecificoAdapter = new ListaTrabalhoEspecificoNovaProducaoAdapter(getApplicationContext(), todosTrabalhos);
         meuRecycler.setAdapter(listaTrabalhoEspecificoAdapter);
         listaTrabalhoEspecificoAdapter.setOnItemClickListener(new OnItemClickListener() {
+
             @Override
-            public void onItemClick(Profissao profissao, int posicao) {
+            public void onItemClick(Profissao profissao, int adapterPosition) {
 
             }
 
             @Override
             public void onItemClick(Trabalho trabalho, int adapterPosition) {
                 vaiParaConfirmaTrabalhoActivity(trabalho);
+            }
+
+            @Override
+            public void onItemClick(ListaTrabalhoEspecificoAdapter trabalhoEspecificoAdapter) {
+
             }
 
             @Override
@@ -216,7 +221,6 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
 
     private List<Trabalho> pegaTodosTrabalhos() {
         List<Trabalho> todosTrabalhos = new ArrayList<>();
-        listaTrabalhosFiltrada = new ArrayList<>();
         minhaReferencia.addListenerForSingleValueEvent(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
@@ -246,7 +250,6 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
     private void inicializaComponentes() {
         binding = ActivityListaNovaProducaoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         indicadorProgresso = binding.indicadorProgressoListaNovaProducao;
         meuRecycler = binding.recyclerViewListaNovaProducao;
         FirebaseDatabase meuBanco = FirebaseDatabase.getInstance();
@@ -254,6 +257,7 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
         linearLayoutGruposChips = binding.linearLayoutGrupoChipsListaNovaProducao;
         grupoChipsProfissoes = binding.grupoProfissoesChipListaNovaProducao;
         listaProfissoes = new ArrayList<>();
+        listaTrabalhosFiltrada = new ArrayList<>();
     }
 
     @Override

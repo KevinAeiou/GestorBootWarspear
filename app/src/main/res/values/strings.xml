@@ -103,4 +103,5 @@
     <string name="stringProduzir">Produzir</string>
     <string name="stringProduzindo">Produzindo</string>
     <string name="stringPronto">Pronto</string>
+    <string name="stringDesfazer">Desfazer</string>
 </resources>

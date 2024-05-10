@@ -61,7 +61,7 @@ public class ListaProfissaoAdapter extends RecyclerView.Adapter<ListaProfissaoAd
             nome_profissao = itemView.findViewById(R.id.itemNomeProfissao);
             experiencia_profissao = itemView.findViewById(R.id.itemExperienciaProfissao);
 
-            itemView.setOnClickListener(v -> onItemClickListener.onItemClick(profissao,getAdapterPosition()));
+            itemView.setOnClickListener(v -> onItemClickListener.onItemClick(profissao, getAdapterPosition()));
         }
 
         public void vincula(Profissao profissao) {

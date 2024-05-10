@@ -2,7 +2,6 @@ package com.kevin.ceep.ui.recyclerview.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,31 +9,24 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.snackbar.Snackbar;
 import com.kevin.ceep.R;
-import com.kevin.ceep.model.ProfissaoTrabalho;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTrabalhoEspecificoAdapter.TrabalhoEspecificoViewHolder> {
-
+public class ListaTrabalhoEspecificoNovaProducaoAdapter extends RecyclerView.Adapter<ListaTrabalhoEspecificoNovaProducaoAdapter.TrabalhoEspecificoNovaProducaoViewHolder> {
     private List<Trabalho> trabalhos;
-    private List<ProfissaoTrabalho> profissoesTrabalhos;
     private final Context context;
     private OnItemClickListener onItemClickListener;
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        this.onItemClickListener = onItemClickListener;
+    public ListaTrabalhoEspecificoNovaProducaoAdapter(Context context, List<Trabalho> trabalhos) {
+        this.trabalhos = trabalhos;
+        this.context = context;
     }
 
-    public ListaTrabalhoEspecificoAdapter(Context context, List<Trabalho> trabalho, List<ProfissaoTrabalho> profissoesTrabalhos) {
-        this.profissoesTrabalhos = profissoesTrabalhos;
-        this.trabalhos = trabalho;
-        this.context = context;
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
     }
     public void setListaFiltrada(List<Trabalho> listaFiltrada) {
         this.trabalhos = listaFiltrada;
@@ -42,14 +34,13 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
     }
     @NonNull
     @Override
-    public TrabalhoEspecificoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TrabalhoEspecificoNovaProducaoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View viewCriada = LayoutInflater.from(context)
                 .inflate(R.layout.item_trabalho_especifico,parent,false);
-        return new TrabalhoEspecificoViewHolder(viewCriada);
+        return new TrabalhoEspecificoNovaProducaoViewHolder(viewCriada);
     }
-
     @Override
-    public void onBindViewHolder(@NonNull TrabalhoEspecificoViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull TrabalhoEspecificoNovaProducaoViewHolder holder, int position) {
         Trabalho trabalho = trabalhos.get(position);
         holder.vincula(trabalho);
     }
@@ -65,8 +56,7 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
         trabalhos.clear();
         notifyDataSetChanged();
     }
-    public class TrabalhoEspecificoViewHolder extends RecyclerView.ViewHolder {
-
+    public class TrabalhoEspecificoNovaProducaoViewHolder extends RecyclerView.ViewHolder {
         private final TextView nomeTrabalhoEspecifico;
         private final TextView profissaoTrabalhoEspecifico;
         private final TextView raridadeTrabalhoEspecifico;
@@ -74,7 +64,8 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
         private final TextView experienciaTrabalhoEspecifico;
         private final TextView nivelTrabalhoEspecifico;
         private Trabalho trabalhoEspecifico;
-        public TrabalhoEspecificoViewHolder(@NonNull View itemView) {
+
+        public TrabalhoEspecificoNovaProducaoViewHolder(@NonNull View itemView) {
             super(itemView);
             nomeTrabalhoEspecifico = itemView.findViewById(R.id.itemNomeTrabaloEspecifico);
             profissaoTrabalhoEspecifico = itemView.findViewById(R.id.itemProfissaoTrabalhoEspecifico);
@@ -83,17 +74,13 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
             trabalhoNecessarioTrabalhoEspecifico = itemView.findViewById(R.id.itemTrabalhoNecessarioTrabalhoEspecifico);
             experienciaTrabalhoEspecifico = itemView.findViewById(R.id.itemExperienciaTrabaloEspecifico);
             itemView.setOnClickListener(v -> {
-                ProfissaoTrabalho profissaoTrabalho = profissoesTrabalhos.get(ListaTodosTrabalhosAdapter.posicaoPai);
-                ArrayList<Trabalho> trabalhos = profissaoTrabalho.getTrabalhos();
-                // Snackbar.make(itemView, "Profissão: "+profissaoTrabalho.getNome() +"Trabalho: "+trabalhos.get(getAdapterPosition()).getNome(), Snackbar.LENGTH_LONG).show();
-                onItemClickListener.onItemClick(trabalhos.get(getAdapterPosition()), getAdapterPosition());
+                onItemClickListener.onItemClick(trabalhoEspecifico, getAdapterPosition());
             });
         }
         public void vincula(Trabalho trabalho){
             this.trabalhoEspecifico = trabalho;
             preencheCampo(trabalho);
         }
-
         private void preencheCampo(Trabalho trabalho) {
             nomeTrabalhoEspecifico.setText(trabalho.getNome());
             confiuraCorNomeTrabalho(trabalho);
@@ -110,7 +97,6 @@ public class ListaTrabalhoEspecificoAdapter extends RecyclerView.Adapter<ListaTr
                 trabalhoNecessarioTrabalhoEspecifico.setText(trabalho.getTrabalhoNecessario());
             }
         }
-
         private void confiuraCorNomeTrabalho(Trabalho trabalho) {
             String raridade = trabalho.getRaridade();
             if (raridade.equals("Comum")){

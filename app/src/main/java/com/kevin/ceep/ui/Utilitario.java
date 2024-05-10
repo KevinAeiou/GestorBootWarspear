@@ -8,6 +8,9 @@ public class Utilitario {
     public static boolean comparaString(String string1, String string2) {
         return removeAcentos(string1).toLowerCase().replace(" ","").equals(removeAcentos(string2).toLowerCase().replace(" ",""));
     }
+    public static boolean stringContemString(String string1, String string2) {
+        return removeAcentos(string1).toLowerCase().replace(" ","").contains(removeAcentos(string2).toLowerCase().replace(" ",""));
+    }
 
     public static String geraIdAleatorio() {
         // chose a Character random from this String

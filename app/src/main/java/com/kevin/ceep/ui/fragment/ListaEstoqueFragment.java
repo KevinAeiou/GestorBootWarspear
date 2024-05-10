@@ -30,10 +30,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
-import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.model.Profissao;
+import com.kevin.ceep.model.ProfissaoTrabalho;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
+import com.kevin.ceep.ui.recyclerview.adapter.ListaTodosTrabalhosAdapter;
+import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEstoqueAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
@@ -110,14 +112,22 @@ public class ListaEstoqueFragment extends Fragment {
         trabalhoEstoqueAdapter = new ListaTrabalhoEstoqueAdapter(todosTrabalhosEstoque,getContext());
         listaTrabalhos.setAdapter(trabalhoEstoqueAdapter);
         trabalhoEstoqueAdapter.setOnItemClickListener(new OnItemClickListener() {
+
             @Override
-            public void onItemClick(Profissao profissao, int posicao) {
+            public void onItemClick(Profissao profissao, int adapterPosition) {
 
             }
+
             @Override
             public void onItemClick(Trabalho trabalho, int adapterPosition) {
 
             }
+
+            @Override
+            public void onItemClick(ListaTrabalhoEspecificoAdapter trabalhoEspecificoAdapter) {
+
+            }
+
             @Override
             public void onItemClick(TrabalhoEstoque trabalhoEstoque, int adapterPosition, int botaoId) {
                 alteraQuantidade(trabalhoEstoque, adapterPosition, botaoId);

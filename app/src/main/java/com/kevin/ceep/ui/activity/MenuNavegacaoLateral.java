@@ -86,11 +86,6 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
             subItens.add(0, indice, indice, personagem.getNome());
             indice += 1;
         }
-        SubMenu subMenuTeste = menuNavigation.addSubMenu(9,99,1,"Sub Menu teste");
-        subMenuTeste.add(9,0,0,"Testee1");
-        subMenuTeste.add(9,1,1,"Testee2");
-        subMenuTeste.add(9,2,2,"Testee3");
-        subMenuTeste.getItem().setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
         if (personagemSelecionado == null) {
             MenuItem itemMenu = subItens.getItem(0);
             personagemSelecionado = personagens.get(itemMenu.getOrder());

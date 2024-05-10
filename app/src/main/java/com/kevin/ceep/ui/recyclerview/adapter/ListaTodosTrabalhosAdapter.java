@@ -68,7 +68,6 @@ public class ListaTodosTrabalhosAdapter extends RecyclerView.Adapter<ListaTodosT
         holder.linearLayoutItemProfissaoTrabalho.setOnClickListener(view -> {
             posicaoPai = holder.getAdapterPosition();
             profissaoTrabalho.setExpandable(!profissaoTrabalho.isExpandable());
-            // trabalhos = profissaoTrabalho.getTrabalhos();
             notifyItemChanged(holder.getAdapterPosition());
         });
         trabalhoEspecificoAdapter.setOnItemClickListener(new OnItemClickListener() {
@@ -79,12 +78,18 @@ public class ListaTodosTrabalhosAdapter extends RecyclerView.Adapter<ListaTodosT
 
             @Override
             public void onItemClick(Trabalho trabalho, int adapterPosition) {
+                // Snackbar.make(holder.itemView, "Trabalho: "+ trabalho.getNome(), Snackbar.LENGTH_LONG).show();
                 Intent iniciaVaiParaCadastraNovoTrabalho = new Intent(context,
                         TrabalhoEspecificoActivity.class);
                 iniciaVaiParaCadastraNovoTrabalho.putExtra(CHAVE_TRABALHO, CODIGO_REQUISICAO_ALTERA_TRABALHO);
                 iniciaVaiParaCadastraNovoTrabalho.putExtra(CHAVE_NOME_TRABALHO, trabalho);
                 iniciaVaiParaCadastraNovoTrabalho.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(iniciaVaiParaCadastraNovoTrabalho);
+            }
+
+            @Override
+            public void onItemClick(ListaTrabalhoEspecificoAdapter trabalhoEspecificoAdapter) {
+
             }
 
             @Override

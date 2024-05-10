@@ -8,6 +8,7 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_TRA
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO_PRODUCAO;
 
 import android.content.Intent;
 import android.os.Build;
@@ -49,6 +50,7 @@ import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.model.TrabalhoProducao;
 import com.kevin.ceep.ui.activity.ListaNovaProducaoActivity;
 import com.kevin.ceep.ui.activity.TrabalhoEspecificoActivity;
+import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoProducaoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
@@ -209,11 +211,23 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                int posicaoDeslize = viewHolder.getAdapterPosition();
+                int itemPosicao = viewHolder.getAdapterPosition();
                 ListaTrabalhoProducaoAdapter trabalhoAdapter = (ListaTrabalhoProducaoAdapter) recyclerView.getAdapter();
-                removeTrabalhoLista(posicaoDeslize);
                 if (trabalhoAdapter != null) {
-                    trabalhoAdapter.remove(posicaoDeslize);
+                    TrabalhoProducao trabalhoremovido = trabalhosFiltrados.get(itemPosicao);
+                    trabalhoAdapter.remove(itemPosicao);
+                    Snackbar snackbarDesfazer = Snackbar.make(binding.getRoot(), trabalhoremovido.getNome()+ " excluido", Snackbar.LENGTH_LONG);
+                    snackbarDesfazer.addCallback(new Snackbar.Callback(){
+                        @Override
+                        public void onDismissed(Snackbar transientBottomBar, int event) {
+                            super.onDismissed(transientBottomBar, event);
+                            if (event != DISMISS_EVENT_ACTION){
+                                removeTrabalhoLista(trabalhoremovido);
+                            }
+                        }
+                    });
+                    snackbarDesfazer.setAction(getString(R.string.stringDesfazer), v -> trabalhoAdapter.adiciona(trabalhoremovido, itemPosicao));
+                    snackbarDesfazer.show();
                 }
             }
         };
@@ -221,11 +235,10 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    private void removeTrabalhoLista(int swipePosicao) {
-        String idTrabalho = trabalhosFiltrados.get(swipePosicao).getId();
+    private void removeTrabalhoLista(TrabalhoProducao trabalhoRemovido) {
         databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 child(personagemId).child(CHAVE_LISTA_DESEJO).
-                child(idTrabalho).removeValue();
+                child(trabalhoRemovido.getId()).removeValue();
     }
     private void configuraSwipeRefreshLayout() {
         swipeRefreshLayout.setOnRefreshListener(() -> {
@@ -272,13 +285,20 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         listaTrabalhos.setAdapter(trabalhoAdapter);
         trabalhoAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(Profissao profissao, int posicao) {
+            public void onItemClick(Profissao profissao, int adapterPosition) {
 
             }
+
             @Override
             public void onItemClick(Trabalho trabalho, int adapterPosition) {
                 vaiParaTrabalhoEspecificoActivity(trabalho);
             }
+
+            @Override
+            public void onItemClick(ListaTrabalhoEspecificoAdapter trabalhoEspecificoAdapter) {
+
+            }
+
             @Override
             public void onItemClick(TrabalhoEstoque trabalhoEstoque, int adapterPosition, int botaoId) {
 
@@ -288,7 +308,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
     private void vaiParaTrabalhoEspecificoActivity(Trabalho trabalho) {
         Intent iniciaTrabalhoEspecificoActivity=
                 new Intent(getActivity(), TrabalhoEspecificoActivity.class);
-        iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_TRABALHO, CODIGO_REQUISICAO_ALTERA_TRABALHO);
+        iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_TRABALHO, CODIGO_REQUISICAO_ALTERA_TRABALHO_PRODUCAO);
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_NOME_TRABALHO, trabalho);
         iniciaTrabalhoEspecificoActivity.putExtra(CHAVE_PERSONAGEM, personagemId);
         startActivity(iniciaTrabalhoEspecificoActivity);
@@ -306,7 +326,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
                             TrabalhoProducao trabalho = dn.getValue(TrabalhoProducao.class);
                             trabalhos.add(trabalho);
                         }
-                        trabalhos.sort(Comparator.comparing(TrabalhoProducao::getProfissao).thenComparing(Trabalho::getRaridade).thenComparing(TrabalhoProducao::getNivel).thenComparing(TrabalhoProducao::getNome));
+                        trabalhos.sort(Comparator.comparing(TrabalhoProducao::getEstado).thenComparing(Trabalho::getProfissao).thenComparing(Trabalho::getRaridade).thenComparing(TrabalhoProducao::getNivel).thenComparing(TrabalhoProducao::getNome));
                         trabalhoAdapter.notifyDataSetChanged();
                         indicadorProgresso.setVisibility(View.GONE);
                         swipeRefreshLayout.setRefreshing(false);

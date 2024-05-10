@@ -58,7 +58,15 @@ public class ListaTrabalhoProducaoAdapter extends RecyclerView.Adapter<ListaTrab
         trabalhosProducao.set(posicao,trabalhoProducao);
         notifyDataSetChanged();
     }
-
+    public void adiciona(TrabalhoProducao trabalhoProducao, int posicao){
+        if (posicao < 0 || posicao >= trabalhosProducao.size()){
+            return;
+        }
+        trabalhosProducao.add(posicao, trabalhoProducao);
+        notifyItemInserted(posicao);
+        notifyItemRangeChanged(posicao, trabalhosProducao.size());
+        notifyDataSetChanged();
+    }
     public void remove(int posicao){
         if (posicao<0 || posicao>=trabalhosProducao.size()){
             return;
@@ -147,9 +155,5 @@ public class ListaTrabalhoProducaoAdapter extends RecyclerView.Adapter<ListaTrab
                     break;
             }
         }
-    }
-    public void adiciona(TrabalhoProducao trabalhoProducao){
-        trabalhosProducao.add(trabalhoProducao);
-        notifyDataSetChanged();
     }
 }
