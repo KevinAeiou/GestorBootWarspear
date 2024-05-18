@@ -144,6 +144,10 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
                 fragmentoSelecionado = new ListaEstoqueFragment();
                 fragmentoSelecionado.setArguments(argumento);
                 break;
+            case R.id.nav_produtos_vendidos:
+                fragmentoSelecionado = new ListaTrabalhosProducaoFragment();
+                fragmentoSelecionado.setArguments(argumento);
+                break;
             case R.id.nav_configuracao:
                 vaiParaAtributosPersonagem(CODIGO_REQUISICAO_ALTERA_TRABALHO);
                 break;
