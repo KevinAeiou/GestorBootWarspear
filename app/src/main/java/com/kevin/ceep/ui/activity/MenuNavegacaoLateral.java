@@ -40,6 +40,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.ui.fragment.ListaEstoqueFragment;
+import com.kevin.ceep.ui.fragment.ListaProdutosVendidosFragment;
 import com.kevin.ceep.ui.fragment.ListaTrabalhosProducaoFragment;
 
 import java.util.ArrayList;
@@ -145,7 +146,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
                 fragmentoSelecionado.setArguments(argumento);
                 break;
             case R.id.nav_produtos_vendidos:
-                fragmentoSelecionado = new ListaTrabalhosProducaoFragment();
+                fragmentoSelecionado = new ListaProdutosVendidosFragment();
                 fragmentoSelecionado.setArguments(argumento);
                 break;
             case R.id.nav_configuracao:

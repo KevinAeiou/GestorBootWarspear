@@ -9,6 +9,7 @@ public interface NotaActivityConstantes {
     String CHAVE_LISTA_ESTOQUE = "Lista_estoque";
     String CHAVE_LISTA_PROFISSAO = "Lista_profissoes";
     String CHAVE_LISTA_TRABALHO = "Lista_trabalhos";
+    String CHAVE_LISTA_VENDAS = "Lista_vendas";
     String CHAVE_NOME_TRABALHO = "nome_trabalho";
     String CHAVE_PERSONAGEM = "classe_personagem";
     String CHAVE_TITULO_TRABALHO = "Trabalhos";

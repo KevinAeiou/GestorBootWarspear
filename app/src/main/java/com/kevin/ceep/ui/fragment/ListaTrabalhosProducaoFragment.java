@@ -47,6 +47,7 @@ import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.model.TrabalhoProducao;
+import com.kevin.ceep.ui.activity.ListaNovaProducaoActivity;
 import com.kevin.ceep.ui.activity.TrabalhoEspecificoActivity;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoProducaoAdapter;
@@ -251,8 +252,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
     }
     private void vaiParaListaNovaProducaoActivity() {
         Intent iniciaVaiParaListaNovaProducaoActivity =
-                new Intent(getContext(),
-                        ListaNovaProducaoActivity.class);
+                new Intent(getContext(), ListaNovaProducaoActivity.class);
         iniciaVaiParaListaNovaProducaoActivity.putExtra(CHAVE_PERSONAGEM, personagemId);
         startActivity(iniciaVaiParaListaNovaProducaoActivity);
     }

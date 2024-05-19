@@ -1,12 +1,15 @@
 package com.kevin.ceep.ui.fragment;
 
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_VENDAS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,17 +22,25 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.FragmentListaProdutosVendidosBinding;
 import com.kevin.ceep.model.ProdutoVendido;
+import com.kevin.ceep.ui.recyclerview.adapter.ListaProdutosVendidosAdapter;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 
 public class ListaProdutosVendidosFragment extends Fragment {
     private FragmentListaProdutosVendidosBinding binding;
+    private ListaProdutosVendidosAdapter produtosVendidosAdapter;
     private String usuarioId, personagemId;
     private ArrayList<ProdutoVendido> produtosVendidos;
     private RecyclerView meuRecycler;
@@ -63,7 +74,34 @@ public class ListaProdutosVendidosFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaComponentes();
-        configuraRecyclerView(produtosVendidos);
+        ArrayList<ProdutoVendido> listaProdutosVendidos = pegaTodosProdutosVendidos();
+        configuraRecyclerView(listaProdutosVendidos);
+    }
+
+    private ArrayList<ProdutoVendido> pegaTodosProdutosVendidos() {
+        produtosVendidos = new ArrayList<>();
+        minhaReferencia.child(usuarioId).child(CHAVE_LISTA_VENDAS)
+                .addValueEventListener(new ValueEventListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        produtosVendidos.clear();
+                        for (DataSnapshot dn : dataSnapshot.getChildren()){
+                            ProdutoVendido produtoVendido = dn.getValue(ProdutoVendido.class);
+                            produtosVendidos.add(produtoVendido);
+                        }
+                        // produtosVendidos.sort(Comparator.comparing(ProdutoVendido::getNome));
+                        indicadorProgresso.setVisibility(View.GONE);
+                        swipeRefreshLayout.setRefreshing(false);
+                        produtosVendidosAdapter.setListaFiltrada(produtosVendidos);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+        return produtosVendidos;
     }
 
     private void configuraRecyclerView(ArrayList<ProdutoVendido> produtosVendidos) {
@@ -73,7 +111,8 @@ public class ListaProdutosVendidosFragment extends Fragment {
     }
 
     private void configuraAdapter(ArrayList<ProdutoVendido> produtosVendidos, RecyclerView meuRecycler) {
-
+        produtosVendidosAdapter = new ListaProdutosVendidosAdapter(produtosVendidos, getContext());
+        meuRecycler.setAdapter(produtosVendidosAdapter);
     }
 
     private void inicializaComponentes() {

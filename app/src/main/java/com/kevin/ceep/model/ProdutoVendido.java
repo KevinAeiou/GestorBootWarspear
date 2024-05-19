@@ -4,42 +4,42 @@ import java.io.Serializable;
 
 public class ProdutoVendido implements Serializable {
     private String id;
-    private String nome;
-    private String data;
-    private String personagem;
-    private int quantidade;
-    private int valor;
+    private String nomeProduto;
+    private String dataVenda;
+    private String nomePersonagem;
+    private int quantidadeProduto;
+    private int valorProduto;
     public ProdutoVendido() {}
-    public ProdutoVendido(String id, String nome, String data, String personagem, int quantidade, int valor) {
+    public ProdutoVendido(String id, String nomeProduto, String dataVenda, String nomePersonagem, int quantidadeProduto, int valorProduto) {
         this.id = id;
-        this.nome = nome;
-        this.data = data;
-        this.personagem = personagem;
-        this.quantidade = quantidade;
-        this.valor = valor;
+        this.nomeProduto = nomeProduto;
+        this.dataVenda = dataVenda;
+        this.nomePersonagem = nomePersonagem;
+        this.quantidadeProduto = quantidadeProduto;
+        this.valorProduto = valorProduto;
     }
     public String getId() {
         return id;
     }
 
-    public String getNome() {
-        return nome;
+    public String getNomeProduto() {
+        return nomeProduto;
     }
 
-    public String getData() {
-        return data;
+    public String getDataVenda() {
+        return dataVenda;
     }
 
-    public String getPersonagem() {
-        return personagem;
+    public String getNomePersonagem() {
+        return nomePersonagem;
     }
 
-    public int getQuantidade() {
-        return quantidade;
+    public int getQuantidadeProduto() {
+        return quantidadeProduto;
     }
 
-    public int getValor() {
-        return valor;
+    public int getValorProduto() {
+        return valorProduto;
     }
 
 
