@@ -1,6 +1,7 @@
 package com.kevin.ceep.ui.recyclerview.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.ProdutoVendido;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class ListaProdutosVendidosAdapter extends RecyclerView.Adapter<ListaProdutosVendidosAdapter.ProdutosVendidosViewHolder>{
@@ -56,6 +59,17 @@ public class ListaProdutosVendidosAdapter extends RecyclerView.Adapter<ListaProd
         listaProdutosVendidos.clear();
         notifyDataSetChanged();
     }
+
+    public void adiciona(ProdutoVendido produtoVendidoRemovido, int itemPosicao) {
+        if (itemPosicao < 0 || itemPosicao >= listaProdutosVendidos.size()){
+            return;
+        }
+        listaProdutosVendidos.add(itemPosicao, produtoVendidoRemovido);
+        notifyItemInserted(itemPosicao);
+        notifyItemRangeChanged(itemPosicao, listaProdutosVendidos.size());
+        notifyDataSetChanged();
+    }
+
     public class ProdutosVendidosViewHolder extends RecyclerView.ViewHolder{
         private final TextView itemNomeProduto;
         private final TextView itemDataProduto;
@@ -65,7 +79,7 @@ public class ListaProdutosVendidosAdapter extends RecyclerView.Adapter<ListaProd
             super(itemView);
             itemNomeProduto = itemView.findViewById(R.id.itemNomeProdutoVendido);
             itemDataProduto = itemView.findViewById(R.id.itemDataProdutoVendido);
-            itemValorProduto = itemView.findViewById(R.id.itemDataProdutoVendido);
+            itemValorProduto = itemView.findViewById(R.id.itemValorProdutoVendido);
             itemQuantidadeProduto = itemView.findViewById(R.id.itemQuantidadeProdutoVendido);
         }
         public void vincula(ProdutoVendido produtoVendido) {
@@ -73,6 +87,8 @@ public class ListaProdutosVendidosAdapter extends RecyclerView.Adapter<ListaProd
         }
 
         private void preencheCampos(ProdutoVendido produtoVendido) {
+            Log.d("produtoVendido", "Produto: "+produtoVendido.getId());
+            Log.d("produtoVendido", "Produto: "+produtoVendido.getDataVenda());
             itemNomeProduto.setText(produtoVendido.getNomeProduto());
             itemDataProduto.setText(produtoVendido.getDataVenda());
             itemValorProduto.setText(produtoVendido.getValorProduto()+" ouros");

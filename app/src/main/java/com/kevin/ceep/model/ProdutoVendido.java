@@ -1,6 +1,7 @@
 package com.kevin.ceep.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class ProdutoVendido implements Serializable {
     private String id;
