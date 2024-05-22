@@ -160,6 +160,7 @@ public class ListaEstoqueFragment extends Fragment {
                             TrabalhoEstoque trabalhoAlterado = new TrabalhoEstoque(
                                     trabalhoEstoque.getId(),
                                     trabalhoEstoque.getNome(),
+                                    trabalhoEstoque.getNomeProducao(),
                                     trabalhoEstoque.getProfissao(),
                                     trabalhoEstoque.getRaridade(),
                                     trabalhoEstoque.getTrabalhoNecessario(),
