@@ -6,7 +6,6 @@ public class Trabalho implements Serializable {
 
     private String id;
     private String nome;
-    private String nomeProducao;
     private String profissao;
     private String raridade;
     private String trabalhoNecessario;
@@ -15,10 +14,9 @@ public class Trabalho implements Serializable {
 
     public Trabalho(){}
 
-    public Trabalho(String id, String nome, String nomeProducao, String profissao, String raridade, String trabalhoNecessario, Integer nivel, Integer experiencia) {
+    public Trabalho(String id, String nome, String profissao, String raridade, String trabalhoNecessario, Integer nivel, Integer experiencia) {
         this.id = id;
         this.nome = nome;
-        this.nomeProducao = nomeProducao;
         this.profissao = profissao;
         this.raridade = raridade;
         this.trabalhoNecessario = trabalhoNecessario;
@@ -28,9 +26,6 @@ public class Trabalho implements Serializable {
 
     public String getNome() {
         return nome;
-    }
-    public String getNomeProducao() {
-        return nomeProducao;
     }
 
     public String getProfissao() {
@@ -64,5 +59,4 @@ public class Trabalho implements Serializable {
     public void setTrabalhoNecessario(String trabalhoNecessario) {
         this.trabalhoNecessario = trabalhoNecessario;
     }
-
 }

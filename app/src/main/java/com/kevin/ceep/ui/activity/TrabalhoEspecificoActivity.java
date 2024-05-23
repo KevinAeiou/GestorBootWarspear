@@ -2,7 +2,6 @@ package com.kevin.ceep.ui.activity;
 
 import static com.kevin.ceep.ui.Utilitario.comparaString;
 import static com.kevin.ceep.ui.Utilitario.geraIdAleatorio;
-import static com.kevin.ceep.ui.Utilitario.stringContemString;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
@@ -32,6 +31,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
@@ -58,7 +58,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private TrabalhoProducao trabalhoProducaoRecebido;
     private Trabalho trabalhoRecebido;
     private LinearLayoutCompat linearLayoutTrabalhoNecessario2, linearLayoutTrabalhoNecessario3;
-    private TextInputEditText edtNomeTrabalho, edtNomeProducaoTrabalho, edtExperienciaTrabalho, edtNivelTrabalho;
+    private TextInputEditText edtNomeTrabalho, edtExperienciaTrabalho, edtNivelTrabalho;
     private TextInputLayout txtInputNome, txtInputProfissao, txtInputExperiencia, txtInputNivel, txtInputRaridade, txtInputLicenca, txtInputEstado;
     private CheckBox checkBoxRecorrenciaTrabalho;
     private AutoCompleteTextView autoCompleteProfissao, autoCompleteRaridade, autoCompleteTrabalhoNecessario1, autoCompleteTrabalhoNecessario2, autoCompleteLicenca, autoCompleteEstado;
@@ -68,7 +68,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private ArrayList<Trabalho> todosTrabalhoComunsMelhorados;
     private ArrayAdapter<String> adapterEstado;
     private final String[] mensagemErro={"Campo requerido!","Inválido!"};
-    private String usuarioId, personagemId, licencaModificada, nome, nomeProducao, profissao, experiencia, nivel, raridade, trabalhoNecessario1, trabalhoNecessario2;
+    private String usuarioId, personagemId, licencaModificada, nome, profissao, experiencia, nivel, raridade, trabalhoNecessario1, trabalhoNecessario2;
     private int codigoRequisicao = CODIGO_REQUISICAO_INVALIDA, posicaoEstadoModificado;
     private boolean acrescimo = false, recorrenciaModificada;
 
@@ -132,38 +132,30 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
             String raridadeClicada = adapterView.getAdapter().getItem(i).toString();
             if (comparaString(raridadeClicada, "Melhorado") || comparaString(raridadeClicada, "Raro")) {
                 linearLayoutTrabalhoNecessario2.setVisibility(View.VISIBLE);
-                configuraDropdownTrabalhoNecessario();
+                configuraDropdownTrabalhoNecessario(raridadeClicada);
             } else {
                 linearLayoutTrabalhoNecessario2.setVisibility(View.GONE);
             }
         });
     }
 
-    private void configuraDropdownTrabalhoNecessario() {
+    private void configuraDropdownTrabalhoNecessario(String raridade) {
         profissao = autoCompleteProfissao.getText().toString();
         nivel = Objects.requireNonNull(edtNivelTrabalho.getText()).toString();
-        raridade = Objects.requireNonNull(autoCompleteRaridade).getText().toString().trim();
-        Log.d("dropDownTrabalhoNeces","Profissão: "+profissao);
-        Log.d("dropDownTrabalhoNeces","Nivel: "+nivel);
-        Log.d("dropDownTrabalhoNeces","Raridade"+raridade);
         ArrayList<String> trabalhosNecessarios = new ArrayList<>();
         ArrayAdapter<String> trabalhoNecessarioAdapter;
         for (Trabalho trabalho : todosTrabalhoComunsMelhorados) {
             if (comparaString(raridade, "Melhorado")) {
-                if (comparaString(trabalho.getProfissao(), profissao)
-                    && comparaString(trabalho.getNivel().toString(), nivel)
-                    && comparaString(trabalho.getRaridade(), "Comum")){
+                if (comparaString(trabalho.getProfissao(), profissao) && comparaString(trabalho.getNivel().toString(), nivel) && comparaString(trabalho.getRaridade(), "Comum")){
                     trabalhosNecessarios.add(trabalho.getNome());
                 }
             } else if (comparaString(raridade, "Raro")) {
-                if (comparaString(trabalho.getProfissao(), profissao)
-                && comparaString(trabalho.getNivel().toString(), nivel)
-                    && comparaString(trabalho.getRaridade(), "Melhorado")){
+                if (comparaString(trabalho.getProfissao(), profissao) && comparaString(trabalho.getNivel().toString(), nivel) && comparaString(trabalho.getRaridade(), "Melhorado")){
                     trabalhosNecessarios.add(trabalho.getNome());
                 }
             }
         } if (trabalhosNecessarios.isEmpty()){
-            Snackbar.make(binding.getRoot(), "Trabalho necessário não encontrado!", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(Objects.requireNonNull(getCurrentFocus()), "Trabalho necessário não encontrado!", Snackbar.LENGTH_LONG).show();
             trabalhosNecessarios.clear();
             trabalhosNecessarios.add("Nada encontrado");
         }
@@ -210,7 +202,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         linearLayoutTrabalhoNecessario2 = binding.linearLayoutTrabalhoNecessario2;
         linearLayoutTrabalhoNecessario3 = binding.linearLayoutTrabalhoNecessario3;
         edtNomeTrabalho = binding.edtNomeTrabalho;
-        edtNomeProducaoTrabalho = binding.edtNomeProducaoTrabalho;
         edtNivelTrabalho = binding.edtNivelTrabalho;
         edtExperienciaTrabalho = binding.edtExperienciaTrabalho;
 
@@ -270,25 +261,18 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         setTitle(trabalhoRecebido.getNome());
 
         edtNomeTrabalho.setText(trabalhoRecebido.getNome());
-        edtNomeProducaoTrabalho.setText(trabalhoRecebido.getNomeProducao());
         autoCompleteProfissao.setText(trabalhoRecebido.getProfissao());
         edtExperienciaTrabalho.setText(String.valueOf(trabalhoRecebido.getExperiencia()));
         edtNivelTrabalho.setText(String.valueOf(trabalhoRecebido.getNivel()));
         autoCompleteRaridade.setText(trabalhoRecebido.getRaridade());
-        if (trabalhoRecebido.getRaridade().equals("Raro") || trabalhoRecebido.getRaridade().equals("Melhorado")) {
+        if (trabalhoRecebido.getTrabalhoNecessario() != null) {
             linearLayoutTrabalhoNecessario2.setVisibility(View.VISIBLE);
-            configuraDropdownTrabalhoNecessario();
-            String[] trabalhosNecessarios = null;
-            if (trabalhoRecebido.getTrabalhoNecessario() != null) {
-                trabalhosNecessarios = trabalhoRecebido.getTrabalhoNecessario().split(",");
-            }
-            if (trabalhosNecessarios != null) {
-                if (trabalhosNecessarios.length > 1) {
-                    autoCompleteTrabalhoNecessario1.setText(trabalhosNecessarios[0]);
-                    autoCompleteTrabalhoNecessario2.setText(trabalhosNecessarios[1]);
-                } else {
-                    autoCompleteTrabalhoNecessario1.setText(trabalhosNecessarios[0]);
-                }
+            String[] trabalhosNecessarios = trabalhoRecebido.getTrabalhoNecessario().split(",");
+            if (trabalhosNecessarios.length > 1) {
+                autoCompleteTrabalhoNecessario1.setText(trabalhosNecessarios[0]);
+                autoCompleteTrabalhoNecessario2.setText(trabalhosNecessarios[1]);
+            } else {
+                autoCompleteTrabalhoNecessario1.setText(trabalhosNecessarios[0]);
             }
         }
     }
@@ -353,7 +337,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.itemMenuSalvaTrabalho) {
             nome = Objects.requireNonNull(edtNomeTrabalho.getText()).toString().trim();
-            nomeProducao = Objects.requireNonNull(edtNomeProducaoTrabalho.getText()).toString().trim();
             profissao = Objects.requireNonNull(autoCompleteProfissao).getText().toString().trim();
             experiencia = Objects.requireNonNull(edtExperienciaTrabalho.getText()).toString().trim();
             nivel = Objects.requireNonNull(edtNivelTrabalho.getText()).toString().trim();
@@ -389,7 +372,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                     Trabalho trabalhoModificado = new Trabalho(
                             trabalhoRecebido.getId(),
                             nome,
-                            nomeProducao,
                             profissao,
                             raridade,
                             trabalhoNecessario,
@@ -421,11 +403,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private boolean verificaTrabalhoModificado() {
         return verificaCampoModificado(nome, trabalhoRecebido.getNome()) ||
-                verificaCampoModificado(nomeProducao, trabalhoRecebido.getNomeProducao()) ||
                 verificaCampoModificado(profissao, trabalhoRecebido.getProfissao()) ||
                 verificaCampoModificado(experiencia, trabalhoRecebido.getExperiencia().toString()) ||
-                stringContemString(trabalhoRecebido.getTrabalhoNecessario(), trabalhoNecessario1) ||
-                stringContemString(trabalhoRecebido.getTrabalhoNecessario(), trabalhoNecessario2) ||
                 verificaCampoModificado(nivel, trabalhoRecebido.getNivel().toString()) ||
                 verificaCampoModificado(raridade, trabalhoRecebido.getRaridade());
     }
@@ -483,7 +462,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         Trabalho novoTrabalho = new Trabalho(
                 novoId,
                 nome,
-                nomeProducao, profissao,
+                profissao,
                 raridade,
                 trabalhoNecessario,
                 Integer.parseInt(nivel),
@@ -505,7 +484,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         configuraDropdownRaridades();
         configuraDropdownLicencas();
         configuraDropdownEstados();
-        configuraDropdownTrabalhoNecessario();
     }
 
     @Override
