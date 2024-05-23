@@ -1,16 +1,15 @@
 package com.kevin.ceep.ui.activity;
 
+import static com.kevin.ceep.ui.Utilitario.comparaString;
 import static com.kevin.ceep.ui.Utilitario.geraIdAleatorio;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_CONFIRMA;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
 
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -22,6 +21,8 @@ import android.widget.CheckBox;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -29,27 +30,22 @@ import com.kevin.ceep.R;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoProducao;
 
-import java.util.Locale;
 import java.util.Objects;
 
 public class ConfirmaTrabalhoActivity extends AppCompatActivity {
 
     private AutoCompleteTextView autoCompleteLicenca,autoCompleteQuantidade;
-    private String personagemId, licencaSelecionada;
+    private String personagemId;
     private Trabalho trabalhoRecebido;
-    private CheckBox checkRecorrencia;
-    private int quantidadeSelecionada;
+    private int contador;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirma_trabalho);
         setTitle(CHAVE_TITULO_CONFIRMA);
-
         recebeDadosIntent();
         configuraBotaoCadastraTrabalho();
-
-        Log.i(TAG_ACTIVITY,"onCreateConfirma");
     }
 
     private void recebeDadosIntent() {
@@ -68,8 +64,6 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         configuraDropDrow();
-        configuraLicencaSelecionada();
-        configuraQuantidadeSelecionada();
         Log.i(TAG_ACTIVITY,"onResumeConfirma");
     }
     private void configuraDropDrow() {
@@ -96,30 +90,33 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
     private void configuraBotaoCadastraTrabalho() {
         AppCompatButton botaoCadastraTrabalho = findViewById(R.id.botaoCadastraConfirmaTrabalho);
         botaoCadastraTrabalho.setOnClickListener(view -> {
+            botaoCadastraTrabalho.setEnabled(false);
             cadastraNovoTrabalho();
-            finish();
         });
     }
 
     private void cadastraNovoTrabalho() {
-        for (int x=0;x<quantidadeSelecionada;x++){
-            adicionaNovoTrabalho();
-        }
-    }
-
-    private void adicionaNovoTrabalho() {
+        int quantidadeSelecionada = Integer.parseInt(autoCompleteQuantidade.getText().toString());
+        Log.d("confirmaTrabalho", "Quantidade selecionada: "+quantidadeSelecionada);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference minhareferencia = database.getReference(CHAVE_USUARIOS);
         String usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        contador = 0;
+        for (int x=0;x<quantidadeSelecionada;x++){
+            TrabalhoProducao novoTrabalho = defineNovoModeloTrabalhoProducao();
+            salvaDadosBanco(minhareferencia, usuarioId, novoTrabalho, quantidadeSelecionada);
+        }
+    }
 
+    private TrabalhoProducao defineNovoModeloTrabalhoProducao() {
         String novoId = geraIdAleatorio();
-        checkRecorrencia=findViewById(R.id.checkBoxProducaoRecorrenteConfirmaTrabalho);
-        boolean recorrencia = checkRecorrencia.isChecked();
+        String licencaSelecionada = autoCompleteLicenca.getText().toString();
+        CheckBox checkRecorrencia=findViewById(R.id.checkBoxProducaoRecorrenteConfirmaTrabalho);
         int experiencia = trabalhoRecebido.getExperiencia();
-        if (licencaSelecionada.toLowerCase(Locale.ROOT).equals("licença de produção do principiante")){
+        if (comparaString(licencaSelecionada,"licença de produção do principiante")){
             experiencia = (int) (experiencia * 1.5);
         }
-        TrabalhoProducao novoTrabalho=new TrabalhoProducao(
+        TrabalhoProducao novoTrabalho = new TrabalhoProducao(
                 novoId,
                 trabalhoRecebido.getNome(),
                 trabalhoRecebido.getProfissao(),
@@ -129,44 +126,19 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
                 experiencia,
                 licencaSelecionada,
                 0,
-                recorrencia);
+                checkRecorrencia.isChecked());
+        return novoTrabalho;
+    }
+    private void salvaDadosBanco(DatabaseReference minhareferencia, String usuarioId, TrabalhoProducao novoTrabalho, int quantidadeSelecionada) {
         minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
                 .child(personagemId).child(CHAVE_LISTA_DESEJO)
-                .child(novoId)
-                .setValue(novoTrabalho);
-    }
-    private void configuraQuantidadeSelecionada() {
-        String[] quantidade = getResources().getStringArray(R.array.quantidade);
-        quantidadeSelecionada = 1;
-        autoCompleteQuantidade.setOnItemClickListener((adapterView, view, i, l) -> {
-            quantidadeSelecionada = Integer.parseInt(quantidade[i]);
-            Log.d("QUANTIDADE1", String.valueOf(i+1));
-        });
-        Log.d("QUANTIDADE2", String.valueOf(quantidadeSelecionada));
-    }
-    private void configuraLicencaSelecionada() {
-        String[] licencas_completas = getResources().getStringArray(R.array.licencas_completas);
-        licencaSelecionada = licencas_completas[3];
-        autoCompleteLicenca.setOnItemClickListener((adapterView, view, i, l) -> {
-            String selecao = (String) adapterView.getItemAtPosition(i);
-            Log.d("LICENCA1", selecao.substring(11));
-            for (int x = 0; x < licencas_completas.length; x++) {
-                if (licencas_completas[x].contains(selecao.substring(11))) {
-                    Log.d("LICENCA2", String.valueOf(x));
-                    licencaSelecionada = licencas_completas[x];
-                    break;
-                }
-            }
-            Log.d("LICENCA3",licencaSelecionada);
-        });
-    }
-
-    private void vaiParaListaTrabalhosFragmento() {
-        Intent iniciaListaTrabalho =
-                new Intent(ConfirmaTrabalhoActivity.this,
-                        MenuNavegacaoLateral.class);
-        iniciaListaTrabalho.putExtra(CHAVE_PERSONAGEM,personagemId);
-        startActivity(iniciaListaTrabalho,
-                ActivityOptions.makeSceneTransitionAnimation(ConfirmaTrabalhoActivity.this).toBundle());
+                .child(novoTrabalho.getId())
+                .setValue(novoTrabalho).addOnSuccessListener(unused -> {
+                    Log.d("confirmaTrabalho", "Adicionado: "+novoTrabalho.getId());
+                    contador += 1;
+                    if (contador == quantidadeSelecionada) {
+                        finish();
+                    }
+                });
     }
 }

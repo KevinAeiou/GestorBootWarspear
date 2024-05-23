@@ -57,6 +57,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.zip.Inflater;
+
 public class ListaTrabalhosProducaoFragment extends Fragment {
     private FragmentListaTrabalhosProducaoBinding binding;
     private DatabaseReference databaseReference;
@@ -74,12 +76,14 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("fragmentoTrabalhosProd", "onCreate");
         setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d("fragmentoTrabalhosProd", "onCreateView");
         binding = FragmentListaTrabalhosProducaoBinding.inflate(inflater, container, false);
         requireActivity().setTitle(CHAVE_TITULO_TRABALHO);
         return binding.getRoot();
@@ -88,6 +92,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.d("fragmentoTrabalhosProd", "onViewCreated");
         inicializaComponentes(view);
         recebePersonagemId();
         configuraRecyclerView(trabalhos);
@@ -96,7 +101,6 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         configuraDeslizeItem();
         configuraChipSelecionado();
     }
-
     private void configuraChipSelecionado() {
         grupoChipFiltro.setOnCheckedChangeListener((group, checkedId) -> configuraChipFiltro(checkedId));
     }
@@ -119,7 +123,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         trabalhosFiltrados = filtroListaChip(estado, trabalhos);
         if (trabalhosFiltrados.isEmpty()) {
             trabalhoAdapter.limpaLista();
-            Snackbar.make(binding.getRoot(), "Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(binding.constraintLayoutFragmentoListaTrabalhos, "Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
         } else {
             trabalhoAdapter.setListaFiltrada(trabalhosFiltrados);
         }
@@ -195,7 +199,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         }
         if (listaFiltrada.isEmpty()) {
             trabalhoAdapter.limpaLista();
-            Snackbar.make(binding.getRoot(),"Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(binding.constraintLayoutFragmentoListaTrabalhos,"Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
         } else {
             trabalhosFiltrados = listaFiltrada;
             trabalhoAdapter.setListaFiltrada(listaFiltrada);
@@ -215,7 +219,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
                 if (trabalhoAdapter != null) {
                     TrabalhoProducao trabalhoremovido = trabalhosFiltrados.get(itemPosicao);
                     trabalhoAdapter.remove(itemPosicao);
-                    Snackbar snackbarDesfazer = Snackbar.make(binding.getRoot(), trabalhoremovido.getNome()+ " excluido", Snackbar.LENGTH_LONG);
+                    Snackbar snackbarDesfazer = Snackbar.make(binding.constraintLayoutFragmentoListaTrabalhos, trabalhoremovido.getNome()+ " excluido", Snackbar.LENGTH_LONG);
                     snackbarDesfazer.addCallback(new Snackbar.Callback(){
                         @Override
                         public void onDismissed(Snackbar transientBottomBar, int event) {
@@ -339,8 +343,8 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
         binding = null;
     }
 }
