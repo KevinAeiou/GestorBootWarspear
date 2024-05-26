@@ -42,16 +42,34 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/txtLayoutNomeProducaoTrabalho"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:lines="1"
+        android:hint="Nome produção"
+        app:layout_constraintTop_toBottomOf="@+id/txtLayoutNomeTrabalho"
+        app:layout_constraintEnd_toEndOf="@+id/txtLayoutNomeTrabalho"
+        app:layout_constraintStart_toStartOf="@+id/txtLayoutNomeTrabalho">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtNomeProducaoTrabalho"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:textSize="18sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/txtLayoutProfissaoTrabalho"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
         android:hint="@string/stringProfissao"
         android:labelFor="@id/txtAutoCompleteProfissaoTrabalho"
-        app:layout_constraintTop_toBottomOf="@+id/txtLayoutNomeTrabalho"
-        app:layout_constraintEnd_toEndOf="@+id/txtLayoutNomeTrabalho"
-        app:layout_constraintStart_toStartOf="@+id/txtLayoutNomeTrabalho">
+        app:layout_constraintTop_toBottomOf="@+id/txtLayoutNomeProducaoTrabalho"
+        app:layout_constraintEnd_toEndOf="@+id/txtLayoutNomeProducaoTrabalho"
+        app:layout_constraintStart_toStartOf="@+id/txtLayoutNomeProducaoTrabalho">
 
         <com.google.android.material.textfield.MaterialAutoCompleteTextView
             android:id="@+id/txtAutoCompleteProfissaoTrabalho"
