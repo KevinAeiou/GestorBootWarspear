@@ -78,7 +78,6 @@
         style="@style/btn"
         android:text="@string/stringAdicionar"
         android:layout_margin="16dp"
-        android:background="@drawable/botao_estados_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

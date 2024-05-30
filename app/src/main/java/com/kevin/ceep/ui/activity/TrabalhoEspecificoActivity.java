@@ -25,13 +25,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
@@ -64,6 +68,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private AutoCompleteTextView autoCompleteProfissao, autoCompleteRaridade, autoCompleteTrabalhoNecessario1, autoCompleteTrabalhoNecessario2, autoCompleteLicenca, autoCompleteEstado;
     private ShapeableImageView imagemTrabalhoNecessario1, imagemTrabalhoNecessario2;
     private LinearProgressIndicator indicadorProgresso;
+    private MaterialButton btnExcluir;
     private String[] estadosTrabalho;
     private ArrayList<Trabalho> todosTrabalhoComunsMelhorados;
     private ArrayAdapter<String> adapterEstado;
@@ -83,6 +88,23 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         pegaTodosTrabalhosComunsMelhorados();
         recebeDadosIntent();
         configuraAcaoImagem();
+    }
+
+    private void configuraBotaoExcluiTrabalhoEspecifico() {
+        btnExcluir.setOnClickListener(v -> {
+            indicadorProgresso.setVisibility(View.VISIBLE);
+            /*new MaterialAlertDialogBuilder(getApplicationContext())
+                    .setTitle("Deseja excluir "+trabalhoRecebido.getNome()+" permanentemente?")
+                    .setNegativeButton("Não", (dialogInterface, i) -> dialogInterface.dismiss())
+                    .setPositiveButton("Sim", (dialogInterface, i) -> excluiTrabalhoEspecificoServidor(trabalhoRecebido))
+                    .show();*/
+            excluiTrabalhoEspecificoServidor(trabalhoRecebido);
+        });
+    }
+
+    private void excluiTrabalhoEspecificoServidor(Trabalho trabalhoRecebido) {
+        minhaReferenciaTrabalhos.child(trabalhoRecebido.getId()).removeValue()
+                .addOnCompleteListener(task -> finish());
     }
 
     private void configuraAcaoImagem() {
@@ -237,6 +259,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
         checkBoxRecorrenciaTrabalho = binding.checkBoxRecorrenciaTrabalho;
         indicadorProgresso = binding.indicadorProgressoTrabalhoEspecifico;
+        btnExcluir = binding.btnExcluiTrabalhoEspecifico;
 
         estadosTrabalho = getResources().getStringArray(R.array.estados);
     }
@@ -253,6 +276,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                             .getSerializableExtra(CHAVE_NOME_TRABALHO);
                     if (trabalhoRecebido != null){
                         configuraComponentesAlteraTrabalho();
+                        configuraBotaoExcluiTrabalhoEspecifico();
                     }
                 }else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO){
                     configuraLayoutNovoTrabalho();
@@ -271,6 +295,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         checkBoxRecorrenciaTrabalho.setVisibility(View.GONE);
         txtInputLicenca.setVisibility(View.GONE);
         txtInputEstado.setVisibility(View.GONE);
+        btnExcluir.setVisibility(View.VISIBLE);
         setTitle(trabalhoRecebido.getNome());
 
         edtNomeTrabalho.setText(trabalhoRecebido.getNome());
@@ -521,8 +546,10 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private void salvaNovoTrabalhoNoServidor(Trabalho novoTrabalho) {
         DatabaseReference minhaReferencia = meuBanco.getReference(CHAVE_LISTA_TRABALHO);
-        minhaReferencia.child(novoTrabalho.getId()).setValue(novoTrabalho).addOnCompleteListener(v ->
-            Snackbar.make(Objects.requireNonNull(getCurrentFocus()), novoTrabalho.getNome()+" foi cadastrado com sucesso!", Snackbar.LENGTH_LONG).show());
+        minhaReferencia.child(novoTrabalho.getId()).setValue(novoTrabalho).addOnCompleteListener(v -> {
+            Snackbar.make(binding.getRoot(), novoTrabalho.getNome()+" foi cadastrado com sucesso!", Snackbar.LENGTH_LONG).show();
+            indicadorProgresso.setVisibility(View.GONE);
+        });
     }
 
     @Override
@@ -540,11 +567,5 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 configuraDropdownEstados();
             }
         }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        binding = null;
     }
 }
