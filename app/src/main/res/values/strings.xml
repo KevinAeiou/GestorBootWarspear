@@ -104,6 +104,7 @@
     <string name="stringPronto">Pronto</string>
     <string name="stringDesfazer">Desfazer</string>
     <string name="stringProdutosVendidos">Produtos vendidos</string>
+    <string name="stringExcluir">Excluir</string>
     <string name="stringExperienciaValor">Experiência %1$d</string>
     <string name="stringNivelValor">Nível %1$d</string>
     <string name="stringOuroValor">%1$d ouros</string>
