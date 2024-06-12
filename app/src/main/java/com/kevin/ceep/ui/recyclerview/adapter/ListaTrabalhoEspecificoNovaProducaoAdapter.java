@@ -52,10 +52,6 @@ public class ListaTrabalhoEspecificoNovaProducaoAdapter extends RecyclerView.Ada
         }
         return trabalhos.size();
     }
-    public void limpaLista() {
-        trabalhos.clear();
-        notifyDataSetChanged();
-    }
     public class TrabalhoEspecificoNovaProducaoViewHolder extends RecyclerView.ViewHolder {
         private final TextView nomeTrabalhoEspecifico;
         private final TextView profissaoTrabalhoEspecifico;
@@ -73,9 +69,7 @@ public class ListaTrabalhoEspecificoNovaProducaoAdapter extends RecyclerView.Ada
             raridadeTrabalhoEspecifico = itemView.findViewById(R.id.itemRaridadeTrabalhoEspecifico);
             trabalhoNecessarioTrabalhoEspecifico = itemView.findViewById(R.id.itemTrabalhoNecessarioTrabalhoEspecifico);
             experienciaTrabalhoEspecifico = itemView.findViewById(R.id.itemExperienciaTrabaloEspecifico);
-            itemView.setOnClickListener(v -> {
-                onItemClickListener.onItemClick(trabalhoEspecifico, getAdapterPosition());
-            });
+            itemView.setOnClickListener(v -> onItemClickListener.onItemClick(trabalhoEspecifico, getAdapterPosition()));
         }
         public void vincula(Trabalho trabalho){
             this.trabalhoEspecifico = trabalho;
@@ -88,7 +82,7 @@ public class ListaTrabalhoEspecificoNovaProducaoAdapter extends RecyclerView.Ada
             profissaoTrabalhoEspecifico.setTextColor(Color.WHITE);
             nivelTrabalhoEspecifico.setText(String.valueOf(trabalho.getNivel()));
             nivelTrabalhoEspecifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_nivel));
-            experienciaTrabalhoEspecifico.setText("Exp "+trabalho.getExperiencia());
+            experienciaTrabalhoEspecifico.setText(context.getString(R.string.stringExperienciaValor, trabalho.getExperiencia()));
             raridadeTrabalhoEspecifico.setText(trabalho.getRaridade());
             String trabalhoNecessario = trabalho.getTrabalhoNecessario();
             if (trabalhoNecessario == null || trabalhoNecessario.isEmpty()) {
@@ -99,14 +93,19 @@ public class ListaTrabalhoEspecificoNovaProducaoAdapter extends RecyclerView.Ada
         }
         private void confiuraCorNomeTrabalho(Trabalho trabalho) {
             String raridade = trabalho.getRaridade();
-            if (raridade.equals("Comum")){
-                nomeTrabalhoEspecifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_comum));
-            } else if (raridade.equals("Melhorado")) {
-                nomeTrabalhoEspecifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_melhorado));
-            } else if (raridade.equals("Raro")){
-                nomeTrabalhoEspecifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_raro));
-            }else if (raridade.equals("Especial")){
-                nomeTrabalhoEspecifico.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_especial));
+            switch (raridade) {
+                case "Comum":
+                    nomeTrabalhoEspecifico.setTextColor(ContextCompat.getColor(context, R.color.cor_texto_raridade_comum));
+                    break;
+                case "Melhorado":
+                    nomeTrabalhoEspecifico.setTextColor(ContextCompat.getColor(context, R.color.cor_texto_raridade_melhorado));
+                    break;
+                case "Raro":
+                    nomeTrabalhoEspecifico.setTextColor(ContextCompat.getColor(context, R.color.cor_texto_raridade_raro));
+                    break;
+                case "Especial":
+                    nomeTrabalhoEspecifico.setTextColor(ContextCompat.getColor(context, R.color.cor_texto_raridade_especial));
+                    break;
             }
         }
     }

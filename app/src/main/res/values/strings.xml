@@ -75,7 +75,6 @@
     <string name="string_senha_especial">Senha deve conter ao menos um caracter especial.</string>
     <string name="string_entre"><u>Entre</u></string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="stringAtivo">Ativo</string>
     <string name="stringInativo">Inativo</string>
     <string name="stringCarregandoDados">Carregando dados...</string>
@@ -105,4 +104,8 @@
     <string name="stringPronto">Pronto</string>
     <string name="stringDesfazer">Desfazer</string>
     <string name="stringProdutosVendidos">Produtos vendidos</string>
+    <string name="stringExperienciaValor">Experiência %1$d</string>
+    <string name="stringNivelValor">Nível %1$d</string>
+    <string name="stringOuroValor">%1$d ouros</string>
+    <string name="stringQuantidadeValor">x %1$d</string>
 </resources>

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -12,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textview.MaterialTextView;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Trabalho;
@@ -23,8 +21,8 @@ import java.util.List;
 
 public class ListaTrabalhoEstoqueAdapter extends RecyclerView.Adapter<ListaTrabalhoEstoqueAdapter.TrabalhoEstoqueViewHolder> {
 
-    private List<TrabalhoEstoque> trabalhosEstoque;
-    private Context context;
+    private final List<TrabalhoEstoque> trabalhosEstoque;
+    private final Context context;
     private OnItemClickListener onItemClickListener;
 
     public ListaTrabalhoEstoqueAdapter(List<TrabalhoEstoque> trabalhosEstoque, Context context) {
@@ -55,7 +53,7 @@ public class ListaTrabalhoEstoqueAdapter extends RecyclerView.Adapter<ListaTraba
 
     public void altera(int posicao, TrabalhoEstoque trabalhoEstoque){
         trabalhosEstoque.set(posicao,trabalhoEstoque);
-        notifyDataSetChanged();
+        notifyItemChanged(posicao);
     }
     public class TrabalhoEstoqueViewHolder extends RecyclerView.ViewHolder{
         private final TextView nomeTrabalho;
@@ -63,20 +61,17 @@ public class ListaTrabalhoEstoqueAdapter extends RecyclerView.Adapter<ListaTraba
         private final TextView nivelTrabalho;
         private final MaterialTextView quantidadeTrabalho;
         private TrabalhoEstoque trabalhoEstoque;
-        private ImageButton botaoMenosUm;
-        private ImageButton botaoMenosCinquenta;
-        private ImageButton botaoMaisUm;
-        private ImageButton botaoMaisCinquenta;
+
         public TrabalhoEstoqueViewHolder(@NonNull View itemView) {
             super(itemView);
             nomeTrabalho = itemView.findViewById(R.id.itemNomeTrabalhoEstoque);
             profissaoTrabalho = itemView.findViewById(R.id.itemProfissaoTrabalhoEstoque);
             nivelTrabalho = itemView.findViewById(R.id.itemNivelTrabalhoEstoque);
             quantidadeTrabalho = itemView.findViewById(R.id.itemTxtQuantidadeTrabalhoEstoque);
-            botaoMenosUm = itemView.findViewById(R.id.itemBotaoMenosUm);
-            botaoMenosCinquenta = itemView.findViewById(R.id.itemBotaoMenosCinquenta);
-            botaoMaisUm = itemView.findViewById(R.id.itemBotaoMaisUm);
-            botaoMaisCinquenta = itemView.findViewById(R.id.itemBotaoMaisCinquenta);
+            ImageButton botaoMenosUm = itemView.findViewById(R.id.itemBotaoMenosUm);
+            ImageButton botaoMenosCinquenta = itemView.findViewById(R.id.itemBotaoMenosCinquenta);
+            ImageButton botaoMaisUm = itemView.findViewById(R.id.itemBotaoMaisUm);
+            ImageButton botaoMaisCinquenta = itemView.findViewById(R.id.itemBotaoMaisCinquenta);
             botaoMenosUm.setOnClickListener(v -> onItemClickListener.onItemClick(trabalhoEstoque,getAdapterPosition(), R.id.itemBotaoMenosUm));
             botaoMenosCinquenta.setOnClickListener(v -> onItemClickListener.onItemClick(trabalhoEstoque,getAdapterPosition(), R.id.itemBotaoMenosCinquenta));
             botaoMaisUm.setOnClickListener(v -> onItemClickListener.onItemClick(trabalhoEstoque,getAdapterPosition(), R.id.itemBotaoMaisUm));
@@ -91,19 +86,24 @@ public class ListaTrabalhoEstoqueAdapter extends RecyclerView.Adapter<ListaTraba
                 confiuraCorNomeTrabalho(trabalhoEstoque);
                 nomeTrabalho.setText(trabalhoEstoque.getNome());
                 profissaoTrabalho.setText(trabalhoEstoque.getProfissao());
-                nivelTrabalho.setText("Nível "+trabalhoEstoque.getNivel());
+                nivelTrabalho.setText(context.getString(R.string.stringNivelValor, trabalhoEstoque.getNivel()));
                 quantidadeTrabalho.setText(String.valueOf(trabalhoEstoque.getQuantidade()));
         }
         private void confiuraCorNomeTrabalho(Trabalho trabalhoEstoque) {
             String raridade = trabalhoEstoque.getRaridade();
-            if (raridade.equals("Comum")){
-                nomeTrabalho.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_comum));
-            } else if (raridade.equals("Melhorado")) {
-                nomeTrabalho.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_melhorado));
-            } else if (raridade.equals("Raro")){
-                nomeTrabalho.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_raro));
-            }else if (raridade.equals("Especial")){
-                nomeTrabalho.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_raridade_especial));
+            switch (raridade) {
+                case "Comum":
+                    nomeTrabalho.setTextColor(ContextCompat.getColor(context, R.color.cor_texto_raridade_comum));
+                    break;
+                case "Melhorado":
+                    nomeTrabalho.setTextColor(ContextCompat.getColor(context, R.color.cor_texto_raridade_melhorado));
+                    break;
+                case "Raro":
+                    nomeTrabalho.setTextColor(ContextCompat.getColor(context, R.color.cor_texto_raridade_raro));
+                    break;
+                case "Especial":
+                    nomeTrabalho.setTextColor(ContextCompat.getColor(context, R.color.cor_texto_raridade_especial));
+                    break;
             }
         }
     }

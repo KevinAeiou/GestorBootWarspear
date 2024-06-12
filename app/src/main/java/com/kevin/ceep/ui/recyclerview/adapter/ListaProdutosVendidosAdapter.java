@@ -1,7 +1,6 @@
 package com.kevin.ceep.ui.recyclerview.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.ProdutoVendido;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class ListaProdutosVendidosAdapter extends RecyclerView.Adapter<ListaProdutosVendidosAdapter.ProdutosVendidosViewHolder>{
@@ -53,7 +50,6 @@ public class ListaProdutosVendidosAdapter extends RecyclerView.Adapter<ListaProd
         listaProdutosVendidos.remove(posicao);
         notifyItemRemoved(posicao);
         notifyItemRangeChanged(posicao, listaProdutosVendidos.size());
-        notifyDataSetChanged();
     }
     public void limpaLista() {
         listaProdutosVendidos.clear();
@@ -67,7 +63,6 @@ public class ListaProdutosVendidosAdapter extends RecyclerView.Adapter<ListaProd
         listaProdutosVendidos.add(itemPosicao, produtoVendidoRemovido);
         notifyItemInserted(itemPosicao);
         notifyItemRangeChanged(itemPosicao, listaProdutosVendidos.size());
-        notifyDataSetChanged();
     }
 
     public class ProdutosVendidosViewHolder extends RecyclerView.ViewHolder{
@@ -87,12 +82,10 @@ public class ListaProdutosVendidosAdapter extends RecyclerView.Adapter<ListaProd
         }
 
         private void preencheCampos(ProdutoVendido produtoVendido) {
-            Log.d("produtoVendido", "Produto: "+produtoVendido.getId());
-            Log.d("produtoVendido", "Produto: "+produtoVendido.getDataVenda());
             itemNomeProduto.setText(produtoVendido.getNomeProduto());
             itemDataProduto.setText(produtoVendido.getDataVenda());
-            itemValorProduto.setText(produtoVendido.getValorProduto()+" ouros");
-            itemQuantidadeProduto.setText("x "+produtoVendido.getQuantidadeProduto());
+            itemValorProduto.setText(context.getString(R.string.stringOuroValor, produtoVendido.getValorProduto()));
+            itemQuantidadeProduto.setText(context.getString(R.string.stringQuantidadeValor, produtoVendido.getQuantidadeProduto()));
         }
     }
 }

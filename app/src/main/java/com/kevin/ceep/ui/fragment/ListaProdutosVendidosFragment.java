@@ -4,6 +4,7 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESE
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_VENDAS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_ESTOQUE;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 
 import android.os.Build;
@@ -69,6 +70,7 @@ public class ListaProdutosVendidosFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentListaProdutosVendidosBinding.inflate(inflater, container, false);
+        requireActivity().setTitle("Produtos vendidos");
         return binding.getRoot();
     }
 

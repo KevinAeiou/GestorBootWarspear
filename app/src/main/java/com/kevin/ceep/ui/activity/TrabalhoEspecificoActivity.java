@@ -402,6 +402,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                     Trabalho novoTrabalho = defineNovoTrabalho(trabalhoNecessario);
                     salvaNovoTrabalhoNoServidor(novoTrabalho);
                     edtNomeTrabalho.setText("");
+                    edtNomeProducaoTrabalho.setText("");
                     edtNomeTrabalho.requestFocus();
                 }
             }

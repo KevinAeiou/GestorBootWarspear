@@ -3,7 +3,6 @@ package com.kevin.ceep.ui.recyclerview.adapter;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.imageview.ShapeableImageView;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Profissao;
@@ -109,21 +107,7 @@ public class ListaTodosTrabalhosAdapter extends RecyclerView.Adapter<ListaTodosT
     public int getItemCount() {
         return profissoes.size();
     }
-    public void remove(int posicao) {
-        if (posicao < 0 || posicao >= profissoes.size()) {
-            return;
-        }
-        profissoes.remove(posicao);
-        notifyItemRemoved(posicao);
-        notifyItemRangeChanged(posicao, profissoes.size());
-        notifyDataSetChanged();
-    }
-    public void limpaLista() {
-        profissoes.clear();
-        notifyDataSetChanged();
-    }
-
-    public class ProfissaoTrabalhoViewHolder extends RecyclerView.ViewHolder {
+    public static class ProfissaoTrabalhoViewHolder extends RecyclerView.ViewHolder {
         private final LinearLayoutCompat linearLayoutItemProfissaoTrabalho;
         private final ConstraintLayout constraintLayoutItemProfissaoTrabalho;
         private final RecyclerView recyclerViewExpansivelItemProfissaoTrabalho;
