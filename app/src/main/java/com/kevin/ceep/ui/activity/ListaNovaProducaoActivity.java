@@ -35,6 +35,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.ActivityListaNovaProducaoBinding;
+import com.kevin.ceep.model.ProdutoVendido;
 import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
@@ -206,6 +207,11 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
 
             @Override
             public void onItemClick(TrabalhoEstoque trabalhoEstoque, int adapterPosition, int botaoId) {
+
+            }
+
+            @Override
+            public void onItemClick(ProdutoVendido produtoVendido) {
 
             }
         });

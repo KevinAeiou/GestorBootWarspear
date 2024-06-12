@@ -11,15 +11,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.ProdutoVendido;
+import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.List;
 
 public class ListaProdutosVendidosAdapter extends RecyclerView.Adapter<ListaProdutosVendidosAdapter.ProdutosVendidosViewHolder>{
     private List<ProdutoVendido> listaProdutosVendidos;
     private final Context context;
+    private OnItemClickListener onItemClickListener;
     public ListaProdutosVendidosAdapter(List<ProdutoVendido> listaProdutosVendidos, Context context) {
         this.listaProdutosVendidos = listaProdutosVendidos;
         this.context = context;
+    }
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener){
+        this.onItemClickListener = onItemClickListener;
     }
     public  void setListaFiltrada(List<ProdutoVendido> listaFiltrada) {
         this.listaProdutosVendidos = listaFiltrada;
@@ -70,14 +75,17 @@ public class ListaProdutosVendidosAdapter extends RecyclerView.Adapter<ListaProd
         private final TextView itemDataProduto;
         private final TextView itemValorProduto;
         private final TextView itemQuantidadeProduto;
+        private ProdutoVendido produtoVendido;
         public ProdutosVendidosViewHolder(@NonNull View itemView) {
             super(itemView);
             itemNomeProduto = itemView.findViewById(R.id.itemNomeProdutoVendido);
             itemDataProduto = itemView.findViewById(R.id.itemDataProdutoVendido);
             itemValorProduto = itemView.findViewById(R.id.itemValorProdutoVendido);
             itemQuantidadeProduto = itemView.findViewById(R.id.itemQuantidadeProdutoVendido);
+            itemView.setOnClickListener(v -> onItemClickListener.onItemClick(produtoVendido));
         }
         public void vincula(ProdutoVendido produtoVendido) {
+            this.produtoVendido = produtoVendido;
             preencheCampos(produtoVendido);
         }
 

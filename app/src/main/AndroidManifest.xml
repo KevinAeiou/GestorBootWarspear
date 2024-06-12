@@ -11,6 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Ceep">
         <activity
+            android:name=".ui.activity.AtributosProdutoVendidoActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.activity.ListaNovaProducaoActivity"
             android:exported="false" />
         <activity

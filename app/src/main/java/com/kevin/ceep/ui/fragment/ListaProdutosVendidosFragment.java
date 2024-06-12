@@ -1,14 +1,17 @@
 package com.kevin.ceep.ui.fragment;
 
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_VENDAS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_ESTOQUE;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,11 +21,6 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,8 +32,13 @@ import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.FragmentListaProdutosVendidosBinding;
 import com.kevin.ceep.model.ProdutoVendido;
+import com.kevin.ceep.model.Profissao;
+import com.kevin.ceep.model.Trabalho;
+import com.kevin.ceep.model.TrabalhoEstoque;
+import com.kevin.ceep.ui.activity.AtributosProdutoVendidoActivity;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaProdutosVendidosAdapter;
-import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoProducaoAdapter;
+import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoAdapter;
+import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -133,7 +136,7 @@ public class ListaProdutosVendidosFragment extends Fragment {
 
     private ArrayList<ProdutoVendido> pegaTodosProdutosVendidos() {
         produtosVendidos = new ArrayList<>();
-        minhaReferencia.child(usuarioId).child(CHAVE_LISTA_VENDAS)
+        minhaReferencia.child(usuarioId).child(CHAVE_LISTA_VENDAS).orderByChild("nomePersonagem").equalTo(personagemId)
                 .addValueEventListener(new ValueEventListener() {
                     @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
@@ -141,9 +144,8 @@ public class ListaProdutosVendidosFragment extends Fragment {
                         produtosVendidos.clear();
                         for (DataSnapshot dn : dataSnapshot.getChildren()){
                             ProdutoVendido produtoVendido = dn.getValue(ProdutoVendido.class);
-                            if (produtoVendido.getNomePersonagem().equals(personagemId)) {
-                                produtosVendidos.add(produtoVendido);
-                            }
+                            assert produtoVendido != null;
+                            produtosVendidos.add(produtoVendido);
                         }
                         produtosVendidos.sort(Comparator.comparing(ProdutoVendido::getDataVenda).thenComparing(ProdutoVendido::getNomeProduto).reversed());
                         indicadorProgresso.setVisibility(View.GONE);
@@ -168,6 +170,39 @@ public class ListaProdutosVendidosFragment extends Fragment {
     private void configuraAdapter(ArrayList<ProdutoVendido> produtosVendidos, RecyclerView meuRecycler) {
         produtosVendidosAdapter = new ListaProdutosVendidosAdapter(produtosVendidos, getContext());
         meuRecycler.setAdapter(produtosVendidosAdapter);
+        produtosVendidosAdapter.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(Profissao profissao, int adapterPosition) {
+
+            }
+
+            @Override
+            public void onItemClick(Trabalho trabalho, int adapterPosition) {
+
+            }
+
+            @Override
+            public void onItemClick(ListaTrabalhoEspecificoAdapter trabalhoEspecificoAdapter) {
+
+            }
+
+            @Override
+            public void onItemClick(TrabalhoEstoque trabalhoEstoque, int adapterPosition, int botaoId) {
+
+            }
+
+            @Override
+            public void onItemClick(ProdutoVendido produtoVendido) {
+                vaiParaAtributoProdutoVendido(produtoVendido);
+            }
+        });
+    }
+
+    private void vaiParaAtributoProdutoVendido(ProdutoVendido produtoVendido) {
+        Intent iniciaVaiParaAtributosProdutoVendido = new Intent(getContext(), AtributosProdutoVendidoActivity.class);
+        iniciaVaiParaAtributosProdutoVendido.putExtra(CHAVE_TRABALHO, produtoVendido);
+        iniciaVaiParaAtributosProdutoVendido.putExtra(CHAVE_PERSONAGEM, personagemId);
+        startActivity(iniciaVaiParaAtributosProdutoVendido);
     }
 
     private void inicializaComponentes() {

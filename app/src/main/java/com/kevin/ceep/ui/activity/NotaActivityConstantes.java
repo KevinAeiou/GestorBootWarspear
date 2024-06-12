@@ -18,6 +18,7 @@ public interface NotaActivityConstantes {
     String CHAVE_TITULO_RECUPERA_SENHA = "Recupera senha";
     String CHAVE_TITULO_NOVO_TRABALHO="Novo trabalho";
     String CHAVE_TITULO_ESTOQUE = "Estoque";
+    String CHAVE_TITULO_PRODUTO_VENDIDO = "Produto vendido";
     String TAG_ACTIVITY = "Estado da Activity";
     String CHAVE_REQUISICAO = "requisicao";
     int CODIGO_REQUISICAO_INVALIDA = -1;

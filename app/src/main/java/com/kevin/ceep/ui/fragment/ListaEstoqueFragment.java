@@ -30,6 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
+import com.kevin.ceep.model.ProdutoVendido;
 import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.ProfissaoTrabalho;
 import com.kevin.ceep.model.Trabalho;
@@ -131,6 +132,11 @@ public class ListaEstoqueFragment extends Fragment {
             @Override
             public void onItemClick(TrabalhoEstoque trabalhoEstoque, int adapterPosition, int botaoId) {
                 alteraQuantidade(trabalhoEstoque, adapterPosition, botaoId);
+            }
+
+            @Override
+            public void onItemClick(ProdutoVendido produtoVendido) {
+
             }
         });
     }
