@@ -1,117 +1,153 @@
 package com.kevin.ceep.ui.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
-
 import android.app.ActivityOptions;
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.kevin.ceep.R;
+import com.kevin.ceep.databinding.ActivityEntrarUsuarioBinding;
 
 public class EntrarUsuarioActivity extends AppCompatActivity implements View.OnClickListener {
-
+    private ActivityEntrarUsuarioBinding binding;
     private TextInputEditText edtEmail, edtSenha;
-    private ProgressDialog progressDialog;
-    String [] menssagens = {"Preencha todos os campos!", "Login efetuado com sucesso!"};
+    private TextInputLayout txtEmail, txtSenha;
+    private TextView txtCadastrar, txtRecuperarSenha;
+    private AppCompatButton botao_entrar;
+    String [] menssagens = {"Campo requerido!", "Login efetuado com sucesso!"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_entrar_usuario);
+        binding = ActivityEntrarUsuarioBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
 
-        AppCompatButton botao_entrar = findViewById(R.id.botaoEntrar);
-        TextView txtCadastrar = findViewById(R.id.txtLinkCadastro);
-        TextView txtRecuperarSenha = findViewById(R.id.txtEsqueceuSenha);
+        inicializaComponentes();
 
         botao_entrar.setOnClickListener(this);
         txtCadastrar.setOnClickListener(this);
         txtRecuperarSenha.setOnClickListener(this);
     }
 
+    private void inicializaComponentes() {
+        botao_entrar = binding.botaoEntrar;
+        txtCadastrar = binding.txtLinkCadastro;
+        txtRecuperarSenha = binding.txtEsqueceuSenha;
+        txtEmail = binding.txtEmail;
+        txtSenha = binding.txtSenha;
+        edtEmail = binding.edtEmail;
+        edtSenha = binding.edtSenha;
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.botaoEntrar:
-                entrarUsuario(view);
+                botao_entrar.setEnabled(false);
+                entrarUsuario();
                 break;
             case R.id.txtLinkCadastro:
-                startActivity(new Intent(this, CadastrarUsuarioActivity.class),
-                        ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+                vaiParaCadastroUsuarioActivity();
                 break;
             case R.id.txtEsqueceuSenha:
-                startActivity(new Intent(this, RecuperarSenhaActivity.class),
-                        ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+                vaiParaRecuperarSenhaActivity();
                 break;
         }
     }
 
-    private void entrarUsuario(View view) {
-        edtEmail = findViewById(R.id.edtEmail);
-        edtSenha = findViewById(R.id.edtSenha);
+    private void vaiParaRecuperarSenhaActivity() {
+        Intent iniciaVaiParaRecuperarSenhaActivity = new Intent(this, RecuperarSenhaActivity.class);
+        startActivity(iniciaVaiParaRecuperarSenhaActivity,
+                ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+    }
 
+    private void vaiParaCadastroUsuarioActivity() {
+        Intent iniciaVaiParaCadastroUsuarioActivity = new Intent(this, CadastrarUsuarioActivity.class);
+        startActivity(iniciaVaiParaCadastroUsuarioActivity,
+                ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+    }
+
+    private void entrarUsuario() {
         String email = edtEmail.getText().toString();
         String senha = edtSenha.getText().toString();
 
-        if (email.isEmpty() || senha.isEmpty()){
-            Snackbar snackbar = Snackbar.make(view, menssagens[0], Snackbar.LENGTH_SHORT);
-            snackbar.setBackgroundTint(Color.WHITE);
-            snackbar.setTextColor(Color.BLACK);
-            snackbar.show();
+        if (camposVazios(email, senha)){
+            configuraErrosCampos(email, senha);
         }else {
-            autenticarUsuario(view);
+            txtEmail.setHelperTextEnabled(false);
+            txtSenha.setHelperTextEnabled(false);
+            autenticarUsuario(email, senha);
         }
 
     }
 
-    private void mostraDialogoProgresso() {
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setCancelable(false);
-        progressDialog.setMessage("Carregando dados...");
-        progressDialog.show();
+    private void configuraErrosCampos(String email, String senha) {
+        if (email.isEmpty()) {
+            txtEmail.setHelperText(menssagens[0]);
+        } else {
+            txtEmail.setHelperTextEnabled(false);
+        }
+        if (senha.isEmpty()) {
+            txtSenha.setHelperText(menssagens[0]);
+        } else {
+            txtSenha.setHelperTextEnabled(false);
+        }
+        botao_entrar.setEnabled(true);
     }
 
-    private void autenticarUsuario(View view) {
-        String email = edtEmail.getText().toString();
-        String senha = edtSenha.getText().toString();
-
-        mostraDialogoProgresso();
-        entrarContaUsuario(view,email,senha);
+    private static boolean camposVazios(String email, String senha) {
+        return email.isEmpty() || senha.isEmpty();
     }
 
-    private void entrarContaUsuario(View view, String email, String senha) {
+    private void autenticarUsuario(String email, String senha) {
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email,senha)
                 .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()){
-                        new Handler().postDelayed(() -> vaiParaMenuNavegacao(), 3000);
-                    }else {
-                        String erro;
-                        try{
-                            throw task.getException();
-                        }catch (Exception e){
-                            erro = "Erro ao entrar!";
-                        }
-                        progressDialog.dismiss();
-                        Snackbar snackbar = Snackbar.make(view
-                        ,erro,Snackbar.LENGTH_SHORT);
-                        snackbar.setBackgroundTint(Color.WHITE);
-                        snackbar.setTextColor(Color.BLACK);
-                        snackbar.show();
+                    if (task.isSuccessful()) {
+                        vaiParaMenuNavegacao();
+                    } else {
+                        configuraErroExecoesCampos(task);
                     }
                 });
+    }
+
+    private void configuraErroExecoesCampos(Task<AuthResult> task) {
+        botao_entrar.setEnabled(true);
+        Exception exception = task.getException();
+        switch (exception.getMessage()){
+            case "The email address is badly formatted.":
+                txtEmail.setHelperText("Email inválido!");
+                txtSenha.setHelperTextEnabled(false);
+                break;
+            case "There is no user record corresponding to this identifier. The user may have been deleted.":
+                txtEmail.setHelperText("Email inválido!");
+                txtSenha.setHelperTextEnabled(false);
+                break;
+            case "The password is invalid or the user does not have a password.":
+                txtSenha.setHelperText("Senha inválida!");
+                txtEmail.setHelperTextEnabled(false);
+                break;
+            case "A network error (such as timeout, interrupted connection or unreachable host) has occurred.":
+                txtEmail.setHelperTextEnabled(false);
+                txtSenha.setHelperTextEnabled(false);
+                Snackbar.make(binding.getRoot(), "Sem conexão com a internet!", Snackbar.LENGTH_LONG).show();
+                break;
+        }
     }
 
     private void vaiParaMenuNavegacao() {

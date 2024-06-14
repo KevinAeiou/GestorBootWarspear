@@ -1,6 +1,6 @@
 package com.kevin.ceep.ui.activity;
 
-import static com.kevin.ceep.ui.Utilitario.comparaString;
+import static com.kevin.ceep.utilitario.Utilitario.comparaString;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
@@ -29,13 +29,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.ActivityListaTodosTrabalhosBinding;
-import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.ProfissaoTrabalho;
 import com.kevin.ceep.model.Trabalho;
-import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTodosTrabalhosAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoAdapter;
-import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.ArrayList;
 import java.util.Comparator;

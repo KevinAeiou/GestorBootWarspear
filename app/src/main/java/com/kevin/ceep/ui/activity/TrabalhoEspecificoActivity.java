@@ -1,8 +1,8 @@
 package com.kevin.ceep.ui.activity;
 
-import static com.kevin.ceep.ui.Utilitario.comparaString;
-import static com.kevin.ceep.ui.Utilitario.geraIdAleatorio;
-import static com.kevin.ceep.ui.Utilitario.stringContemString;
+import static com.kevin.ceep.utilitario.Utilitario.comparaString;
+import static com.kevin.ceep.utilitario.Utilitario.geraIdAleatorio;
+import static com.kevin.ceep.utilitario.Utilitario.stringContemString;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;

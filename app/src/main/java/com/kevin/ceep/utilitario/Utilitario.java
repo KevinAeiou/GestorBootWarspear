@@ -1,4 +1,4 @@
-package com.kevin.ceep.ui;
+package com.kevin.ceep.utilitario;
 import java.text.Normalizer;
 
 public class Utilitario {

@@ -1,7 +1,7 @@
 package com.kevin.ceep.ui.activity;
 
-import static com.kevin.ceep.ui.Utilitario.comparaString;
-import static com.kevin.ceep.ui.Utilitario.geraIdAleatorio;
+import static com.kevin.ceep.utilitario.Utilitario.comparaString;
+import static com.kevin.ceep.utilitario.Utilitario.geraIdAleatorio;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
@@ -21,8 +21,6 @@ import android.widget.CheckBox;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
