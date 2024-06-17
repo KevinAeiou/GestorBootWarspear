@@ -1,8 +1,8 @@
 package com.kevin.ceep.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -10,15 +10,15 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.ActivityEntrarUsuarioBinding;
+
+import java.util.Objects;
 
 public class EntrarUsuarioActivity extends AppCompatActivity implements View.OnClickListener {
     private ActivityEntrarUsuarioBinding binding;
@@ -55,6 +55,7 @@ public class EntrarUsuarioActivity extends AppCompatActivity implements View.OnC
         edtSenha = binding.edtSenha;
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View view) {
         switch (view.getId()){
@@ -84,8 +85,8 @@ public class EntrarUsuarioActivity extends AppCompatActivity implements View.OnC
     }
 
     private void entrarUsuario() {
-        String email = edtEmail.getText().toString();
-        String senha = edtSenha.getText().toString();
+        String email = Objects.requireNonNull(edtEmail.getText()).toString();
+        String senha = Objects.requireNonNull(edtSenha.getText()).toString();
 
         if (camposVazios(email, senha)){
             configuraErrosCampos(email, senha);
@@ -121,19 +122,15 @@ public class EntrarUsuarioActivity extends AppCompatActivity implements View.OnC
                     if (task.isSuccessful()) {
                         vaiParaMenuNavegacao();
                     } else {
-                        configuraErroExecoesCampos(task);
+                        configuraErroExecoesCampos(Objects.requireNonNull(task.getException()));
                     }
                 });
     }
 
-    private void configuraErroExecoesCampos(Task<AuthResult> task) {
+    private void configuraErroExecoesCampos(Exception exception) {
         botao_entrar.setEnabled(true);
-        Exception exception = task.getException();
-        switch (exception.getMessage()){
+        switch (Objects.requireNonNull(exception.getMessage())){
             case "The email address is badly formatted.":
-                txtEmail.setHelperText("Email inválido!");
-                txtSenha.setHelperTextEnabled(false);
-                break;
             case "There is no user record corresponding to this identifier. The user may have been deleted.":
                 txtEmail.setHelperText("Email inválido!");
                 txtSenha.setHelperTextEnabled(false);
@@ -143,8 +140,6 @@ public class EntrarUsuarioActivity extends AppCompatActivity implements View.OnC
                 txtEmail.setHelperTextEnabled(false);
                 break;
             case "A network error (such as timeout, interrupted connection or unreachable host) has occurred.":
-                txtEmail.setHelperTextEnabled(false);
-                txtSenha.setHelperTextEnabled(false);
                 Snackbar.make(binding.getRoot(), "Sem conexão com a internet!", Snackbar.LENGTH_LONG).show();
                 break;
         }

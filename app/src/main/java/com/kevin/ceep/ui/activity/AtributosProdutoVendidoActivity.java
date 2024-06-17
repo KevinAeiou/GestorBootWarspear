@@ -1,22 +1,25 @@
 package com.kevin.ceep.ui.activity;
 
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_VENDAS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_PRODUTO_VENDIDO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
+import static com.kevin.ceep.utilitario.Utilitario.comparaString;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.ListAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -39,6 +42,9 @@ public class AtributosProdutoVendidoActivity extends AppCompatActivity {
     private ArrayList<Personagem> todosPersonagens;
     private ArrayList<String> todosNomesPersonagens;
     private ProdutoVendido produtoRecebido;
+    private Personagem personagemSelecionado;
+    private DatabaseReference minhaReferencia;
+    private String usuarioId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,18 +66,34 @@ public class AtributosProdutoVendidoActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.itemMenuSalvaTrabalho) {
-            ListAdapter meuAdapter = autoCompleteIdPersonagemProdutoVendido.getAdapter();
+            if (!campoPersonagemModificado()) {
+                modificaProdutoVendidoServidor();
+            }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void modificaProdutoVendidoServidor() {
+        minhaReferencia.child(usuarioId).child(CHAVE_LISTA_VENDAS)
+                .child(produtoRecebido.getId()).child("nomePersonagem").setValue(personagemSelecionado.getId())
+                .addOnCompleteListener(tarefa -> {
+                    if (tarefa.isSuccessful()) {
+                        finish();
+                    } else {
+                        Snackbar.make(binding.getRoot(), "Erro ao modificar produto: "+ Objects.requireNonNull(tarefa.getException()).getMessage()
+                                ,Snackbar.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    private boolean campoPersonagemModificado() {
+        return comparaString(produtoRecebido.getNomePersonagem(), (personagemSelecionado.getId()));
     }
 
     private void pegaTodosPersoangens() {
         todosNomesPersonagens = new ArrayList<>();
         todosPersonagens = new ArrayList<>();
-        String usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = database.getReference(CHAVE_USUARIOS);
-        databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
+        minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -79,12 +101,9 @@ public class AtributosProdutoVendidoActivity extends AppCompatActivity {
                         todosNomesPersonagens.clear();
                         for (DataSnapshot dn:dataSnapshot.getChildren()){
                             Personagem personagem = dn.getValue(Personagem.class);
-                            todosPersonagens.add(personagem);
                             assert personagem != null;
+                            todosPersonagens.add(personagem);
                             todosNomesPersonagens.add(personagem.getNome());
-                            if (personagem.getId().equals(produtoRecebido.getNomePersonagem())){
-                                autoCompleteIdPersonagemProdutoVendido.setText(personagem.getNome());
-                            }
                             configuraAutoCompleteIdPersonagem();
                         }
                     }
@@ -112,6 +131,9 @@ public class AtributosProdutoVendidoActivity extends AppCompatActivity {
     }
 
     private void inicializaComponentes() {
+        usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        minhaReferencia = database.getReference(CHAVE_USUARIOS);
         txtNomeProdutoVendido = binding.txtNomeProdutoVendido;
         txtDataProdutoVendido = binding.txtDataProdutoVendido;
         txtValorProdutoVendido = binding.txtValorProdutoVendido;
@@ -120,9 +142,21 @@ public class AtributosProdutoVendidoActivity extends AppCompatActivity {
     }
 
     private void configuraAutoCompleteIdPersonagem() {
+        for (int posicao = 0; posicao < todosPersonagens.size(); posicao += 1) {
+            if (todosPersonagens.get(posicao).getId().equals(produtoRecebido.getNomePersonagem())){
+                autoCompleteIdPersonagemProdutoVendido.setText(todosPersonagens.get(posicao).getNome());
+                personagemSelecionado = todosPersonagens.get(posicao);
+                Log.d("produtoVendido", "Personagem selecionado: "+personagemSelecionado.getNome());
+                break;
+            }
+        }
         ArrayAdapter<String> adapterEstado = new ArrayAdapter<>(this, R.layout.item_dropdrown, todosNomesPersonagens);
         adapterEstado.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         autoCompleteIdPersonagemProdutoVendido.setAdapter(adapterEstado);
+        autoCompleteIdPersonagemProdutoVendido.setOnItemClickListener((parent, view, position, id) -> {
+            personagemSelecionado = todosPersonagens.get(position);
+            Log.d("produtoVendido", "Personagem selecionado: "+personagemSelecionado.getNome());
+        });
     }
 
     @Override
