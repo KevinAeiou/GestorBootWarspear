@@ -213,17 +213,13 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     }
 
     private void configuraDropdownTrabalhoNecessario() {
-        Log.d("dropDownTrabalhoNeces","Configura dropdownTrabalhoNecessario.");
         profissao = autoCompleteProfissao.getText().toString();
         nivel = Objects.requireNonNull(edtNivelTrabalho.getText()).toString();
         raridade = Objects.requireNonNull(autoCompleteRaridade).getText().toString().trim();
-        Log.d("dropDownTrabalhoNeces","Profissão: "+profissao);
-        Log.d("dropDownTrabalhoNeces","Nivel: "+nivel);
-        Log.d("dropDownTrabalhoNeces","Raridade: "+raridade);
+
         ArrayList<String> trabalhosNecessarios = new ArrayList<>();
         ArrayAdapter<String> trabalhoNecessarioAdapter;
         for (Trabalho trabalho : todosTrabalhoComunsMelhorados) {
-            Log.d("dropDownTrabalhoNeces","Loop todosTrabalhoComunsMelhorados");
             if (comparaString(raridade, "Melhorado")) {
                 if (comparaString(trabalho.getProfissao(), profissao)
                     && comparaString(trabalho.getNivel().toString(), nivel)

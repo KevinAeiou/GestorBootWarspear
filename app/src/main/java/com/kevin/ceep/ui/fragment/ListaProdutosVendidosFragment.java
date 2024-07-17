@@ -1,5 +1,6 @@
 package com.kevin.ceep.ui.fragment;
 
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_VENDAS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
@@ -118,7 +119,7 @@ public class ListaProdutosVendidosFragment extends Fragment {
         itemTouchHelper.attachToRecyclerView(meuRecycler);
     }
     private void removeTrabalhoLista(ProdutoVendido trabalhoRemovido) {
-        minhaReferencia.child(usuarioId).child(CHAVE_LISTA_VENDAS).
+        minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).child(personagemId).child(CHAVE_LISTA_VENDAS).
                 child(trabalhoRemovido.getId()).removeValue();
     }
     private void configuraSwipeRefreshLayout() {
@@ -136,7 +137,8 @@ public class ListaProdutosVendidosFragment extends Fragment {
 
     private ArrayList<ProdutoVendido> pegaTodosProdutosVendidos() {
         produtosVendidos = new ArrayList<>();
-        minhaReferencia.child(usuarioId).child(CHAVE_LISTA_VENDAS).orderByChild("nomePersonagem").equalTo(personagemId)
+        minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).child(personagemId)
+                .child(CHAVE_LISTA_VENDAS)
                 .addValueEventListener(new ValueEventListener() {
                     @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
