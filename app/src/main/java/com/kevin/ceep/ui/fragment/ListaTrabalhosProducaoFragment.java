@@ -58,7 +58,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.zip.Inflater;
 
 public class ListaTrabalhosProducaoFragment extends Fragment {
     private FragmentListaTrabalhosProducaoBinding binding;
@@ -226,7 +225,8 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
                         public void onDismissed(Snackbar transientBottomBar, int event) {
                             super.onDismissed(transientBottomBar, event);
                             if (event != DISMISS_EVENT_ACTION){
-                                removeTrabalhoLista(trabalhoremovido);
+                                removeTrabalhoDoBanco(trabalhoremovido);
+                                removeTrabalhoDaLista(trabalhoremovido);
                             }
                         }
                     });
@@ -239,7 +239,11 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    private void removeTrabalhoLista(TrabalhoProducao trabalhoRemovido) {
+    private void removeTrabalhoDaLista(TrabalhoProducao trabalhoremovido) {
+        trabalhos.remove(trabalhoremovido);
+    }
+
+    private void removeTrabalhoDoBanco(TrabalhoProducao trabalhoRemovido) {
         databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 child(personagemId).child(CHAVE_LISTA_DESEJO).
                 child(trabalhoRemovido.getId()).removeValue();
@@ -325,7 +329,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         trabalhos = new ArrayList<>();
         databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 child(personagemId).child(CHAVE_LISTA_DESEJO).
-                addValueEventListener(new ValueEventListener() {
+                addListenerForSingleValueEvent(new ValueEventListener() {
                     @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
