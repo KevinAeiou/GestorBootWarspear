@@ -105,7 +105,8 @@ public class ListaProdutosVendidosFragment extends Fragment {
                         public void onDismissed(Snackbar transientBottomBar, int event) {
                             super.onDismissed(transientBottomBar, event);
                             if (event != DISMISS_EVENT_ACTION){
-                                removeTrabalhoLista(produtoVendidoRemovido);
+                                removeTrabalhoDoBanco(produtoVendidoRemovido);
+                                removeTrabalhoDaLista(produtoVendidoRemovido);
                             }
                         }
                     });
@@ -117,7 +118,12 @@ public class ListaProdutosVendidosFragment extends Fragment {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(meuRecycler);
     }
-    private void removeTrabalhoLista(ProdutoVendido trabalhoRemovido) {
+
+    private void removeTrabalhoDaLista(ProdutoVendido produtoVendidoRemovido) {
+        produtosVendidos.remove(produtoVendidoRemovido);
+    }
+
+    private void removeTrabalhoDoBanco(ProdutoVendido trabalhoRemovido) {
         minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).child(personagemId).child(CHAVE_LISTA_VENDAS).
                 child(trabalhoRemovido.getId()).removeValue();
     }
