@@ -25,6 +25,9 @@
         <item
             android:id="@+id/nav_produtos_vendidos"
             android:title="@string/stringProdutosVendidos"/>
+        <item
+            android:id="@+id/nav_profissoes"
+            android:title="@string/stringProfissoes"/>
     </group>
 
     <group

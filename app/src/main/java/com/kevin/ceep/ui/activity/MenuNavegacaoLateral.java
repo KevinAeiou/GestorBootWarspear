@@ -41,6 +41,7 @@ import com.kevin.ceep.R;
 import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.ui.fragment.ListaEstoqueFragment;
 import com.kevin.ceep.ui.fragment.ListaProdutosVendidosFragment;
+import com.kevin.ceep.ui.fragment.ListaProfissoesFragment;
 import com.kevin.ceep.ui.fragment.ListaTrabalhosProducaoFragment;
 
 import java.util.ArrayList;
@@ -147,6 +148,10 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
                 break;
             case R.id.nav_produtos_vendidos:
                 fragmentoSelecionado = new ListaProdutosVendidosFragment();
+                fragmentoSelecionado.setArguments(argumento);
+                break;
+            case R.id.nav_profissoes:
+                fragmentoSelecionado = new ListaProfissoesFragment();
                 fragmentoSelecionado.setArguments(argumento);
                 break;
             case R.id.nav_configuracao:

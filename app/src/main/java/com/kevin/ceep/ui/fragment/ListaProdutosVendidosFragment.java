@@ -72,7 +72,6 @@ public class ListaProdutosVendidosFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         binding = FragmentListaProdutosVendidosBinding.inflate(inflater, container, false);
         requireActivity().setTitle("Produtos vendidos");
         return binding.getRoot();

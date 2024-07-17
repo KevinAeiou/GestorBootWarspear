@@ -29,7 +29,7 @@
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/grupoProfissoesChipListaNovaProducao"
-            android:tooltipText="@string/stringProfissao"
+            android:tooltipText="@string/stringProfissoes"
             app:singleLine="true"
             android:padding="8dp"
             android:layout_width="match_parent"

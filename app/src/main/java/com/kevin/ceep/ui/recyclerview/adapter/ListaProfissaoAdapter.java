@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kevin.ceep.R;
@@ -18,7 +20,7 @@ import java.util.List;
 
 public class ListaProfissaoAdapter extends RecyclerView.Adapter<ListaProfissaoAdapter.ProfissaoViewHolder> {
 
-    private final List<Profissao> profissoes;
+    private List<Profissao> profissoes;
     private final Context context;
     private OnItemClickListener onItemClickListener;
 
@@ -50,16 +52,30 @@ public class ListaProfissaoAdapter extends RecyclerView.Adapter<ListaProfissaoAd
         return profissoes.size();
     }
 
+    public void setLista(ArrayList<Profissao> profissoes) {
+        this.profissoes = profissoes;
+        notifyDataSetChanged();
+    }
+
+    public void limpaLista() {
+        profissoes.clear();
+        notifyDataSetChanged();
+    }
+
     public class ProfissaoViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView nome_profissao;
         private final TextView experiencia_profissao;
+        private final TextView nivelProfissao;
+        private final CardView cardProfissao;
         private Profissao profissao;
 
         public ProfissaoViewHolder(@NonNull View itemView) {
             super(itemView);
             nome_profissao = itemView.findViewById(R.id.itemNomeProfissao);
             experiencia_profissao = itemView.findViewById(R.id.itemExperienciaProfissao);
+            nivelProfissao = itemView.findViewById(R.id.itemNivelProfissao);
+            cardProfissao = itemView.findViewById(R.id.cardViewProfissao);
 
             itemView.setOnClickListener(v -> onItemClickListener.onItemClick(profissao, getAdapterPosition()));
         }
@@ -72,6 +88,10 @@ public class ListaProfissaoAdapter extends RecyclerView.Adapter<ListaProfissaoAd
         private void preencheCampo(Profissao profissao) {
             defineBarraExperiencia(profissao);
             nome_profissao.setText(profissao.getNome());
+            if (profissao.isPrioridade()) {
+                cardProfissao.setCardBackgroundColor(ContextCompat.getColor(context,R.color.cor_background_feito));
+            }
+            nivelProfissao.setText(context.getString(R.string.stringNivelValor, profissao.getNivel()));
         }
 
         private void defineBarraExperiencia(Profissao profissao) {
@@ -104,8 +124,8 @@ public class ListaProfissaoAdapter extends RecyclerView.Adapter<ListaProfissaoAd
             xpNiveis.add(375000);
             xpNiveis.add(470000);
             xpNiveis.add(585000);
-            xpNiveis.add(720000);
-            xpNiveis.add(875000);
+            xpNiveis.add(705000);
+            xpNiveis.add(830000);
             xpNiveis.add(1050000);
 
             for (int i=0; i<xpNiveis.size();i++){

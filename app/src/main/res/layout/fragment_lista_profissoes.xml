@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.fragment.ListaProdutosVendidosFragment">
+    tools:context=".ui.fragment.ListaProfissoesFragment">
 
     <ProgressBar
-        android:id="@+id/indicadorProgressoListaProdutosVendidosFragment"
+        android:id="@+id/indicadorProgressoListaProfissoesFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="?android:attr/progressBarStyle"
@@ -18,7 +18,7 @@
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayoutProdutosVendidos"
+        android:id="@+id/swipeRefreshLayoutListaProfissoesFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
@@ -28,10 +28,10 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewListaProdutosVendidos"
+            android:id="@+id/recyclerViewListaProfissoesFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listitem="@layout/item_produto_vendido" />
+            tools:listitem="@layout/item_profissao" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

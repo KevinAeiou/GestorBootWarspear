@@ -72,7 +72,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="@string/stringProfissao"
+            android:hint="@string/stringProfissoes"
             android:labelFor="@id/txtAutoCompleteProfissaoTrabalho"
             app:layout_constraintTop_toBottomOf="@+id/txtLayoutNomeProducaoTrabalho"
             app:layout_constraintEnd_toEndOf="@+id/txtLayoutNomeProducaoTrabalho"
@@ -86,7 +86,7 @@
                 android:gravity="start"
                 android:inputType="none"
                 android:padding="8dp"
-                android:text="@string/stringProfissao"/>
+                android:text="@string/stringProfissoes"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.appcompat.widget.LinearLayoutCompat

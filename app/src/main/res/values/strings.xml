@@ -6,6 +6,34 @@
     <string name="estoque">Estoque</string>
     <string name="trabalhos">Trabalhos</string>
     <string name="cadastrar_novo_trabalho">Cadastrar novo trabalho</string>
+    <integer-array name="experiencias">
+        <item>20</item>
+        <item>200</item>
+        <item>540</item>
+        <item>1250</item>
+        <item>2550</item>
+        <item>4700</item>
+        <item>7990</item>
+        <item>12770</item>
+        <item>19440</item>
+        <item>28440</item>
+        <item>40270</item>
+        <item>55450</item>
+        <item>74570</item>
+        <item>98250</item>
+        <item>127180</item>
+        <item>156110</item>
+        <item>185040</item>
+        <item>215000</item>
+        <item>245000</item>
+        <item>300000</item>
+        <item>375000</item>
+        <item>470000</item>
+        <item>585000</item>
+        <item>720000</item>
+        <item>875000</item>
+        <item>1050000</item>
+</integer-array>
     <string-array name="raridades">
         <item>Comum</item>
         <item>Melhorado</item>
@@ -88,7 +116,7 @@
     <string name="stringNovoPersonagem">Novo personagem</string>
     <string name="stringRecorrente">Recorrente</string>
     <string name="stringExperiencia">Experiência</string>
-    <string name="stringProfissao">Profissão</string>
+    <string name="stringProfissoes">Profissões</string>
     <string name="stringNivel">Nível</string>
     <string name="stringQuantidade">Quantidade</string>
     <string name="stringRaridade">Raridade</string>

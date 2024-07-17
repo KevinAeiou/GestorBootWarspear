@@ -1,5 +1,6 @@
 package com.kevin.ceep.model;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Profissao implements Serializable {
     private String nome;
@@ -24,5 +25,41 @@ public class Profissao implements Serializable {
 
     public boolean isPrioridade() {
         return prioridade;
+    }
+
+    public Integer getNivel() {
+        ArrayList<Integer> xpNiveis = new ArrayList<>();
+        xpNiveis.add(20);
+        xpNiveis.add(200);
+        xpNiveis.add(540);
+        xpNiveis.add(1250);
+        xpNiveis.add(2550);
+        xpNiveis.add(4700);
+        xpNiveis.add(7990);
+        xpNiveis.add(12770);
+        xpNiveis.add(19440);
+        xpNiveis.add(28440);
+        xpNiveis.add(40270);
+        xpNiveis.add(55450);
+        xpNiveis.add(74570);
+        xpNiveis.add(98250);
+        xpNiveis.add(127180);
+        xpNiveis.add(156110);
+        xpNiveis.add(185040);
+        xpNiveis.add(215000);
+        xpNiveis.add(245000);
+        xpNiveis.add(300000);
+        xpNiveis.add(375000);
+        xpNiveis.add(470000);
+        xpNiveis.add(585000);
+        xpNiveis.add(705000);
+        xpNiveis.add(830000);
+        int i;
+        for (i = 0; i < xpNiveis.size()-1; i ++){
+            if (experiencia >= xpNiveis.get(i) && experiencia < xpNiveis.get(i + 1)) {
+                return i + 2;
+            }
+        }
+        return i + 2;
     }
 }
