@@ -6,6 +6,7 @@ public class Profissao implements Serializable {
     private String nome;
     private Integer experiencia;
     private boolean prioridade;
+    private ArrayList<Integer> xpNiveis;
 
     public Profissao(){}
 
@@ -13,6 +14,7 @@ public class Profissao implements Serializable {
         this.nome = nome;
         this.experiencia = experiencia;
         this.prioridade = prioridade;
+        this.xpNiveis = new ArrayList<>();
     }
 
     public String getNome() {
@@ -28,7 +30,6 @@ public class Profissao implements Serializable {
     }
 
     public Integer getNivel() {
-        ArrayList<Integer> xpNiveis = new ArrayList<>();
         xpNiveis.add(20);
         xpNiveis.add(200);
         xpNiveis.add(540);
@@ -61,5 +62,21 @@ public class Profissao implements Serializable {
             }
         }
         return i + 2;
+    }
+
+    public int getXpRestante(int xpNecessario) {
+        for (int i=0; i<xpNiveis.size();i++){
+            if (i==0 && experiencia<xpNiveis.get(i)){
+                return experiencia;
+            }else if (i>=1 && experiencia>=xpNiveis.get(i-1) && experiencia<xpNiveis.get(i)){
+                return xpNecessario-(experiencia-xpNiveis.get(i-1));
+            }
+        }
+        return 0;
+    }
+
+    public int getXpNecessario() {
+
+        return 0;
     }
 }
