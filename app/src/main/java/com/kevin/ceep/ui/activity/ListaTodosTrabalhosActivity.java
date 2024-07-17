@@ -1,11 +1,11 @@
 package com.kevin.ceep.ui.activity;
 
-import static com.kevin.ceep.utilitario.Utilitario.comparaString;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
+import static com.kevin.ceep.utilitario.Utilitario.comparaString;
 
 import android.content.Intent;
 import android.os.Build;
@@ -32,7 +32,6 @@ import com.kevin.ceep.databinding.ActivityListaTodosTrabalhosBinding;
 import com.kevin.ceep.model.ProfissaoTrabalho;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTodosTrabalhosAdapter;
-import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoAdapter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -41,7 +40,6 @@ import java.util.List;
 public class ListaTodosTrabalhosActivity extends AppCompatActivity {
     private ActivityListaTodosTrabalhosBinding binding;
     private ListaTodosTrabalhosAdapter listaTodosTrabalhosAdapter;
-    private ListaTrabalhoEspecificoAdapter listaTrabalhoEspecificoAdapter;
     private FloatingActionButton botaoNovoTrabalho;
     private RecyclerView meuRecycler;
     private List<ProfissaoTrabalho> profissoesTrabalhos;
@@ -58,7 +56,6 @@ public class ListaTodosTrabalhosActivity extends AppCompatActivity {
 
         configuraBotaoCadastraNovoTrabalho();
         configuraSwipeRefreshLayout();
-        Log.i(TAG_ACTIVITY,"onCreateListaTrabalhosEspecificos");
         }
     private void inicializaComponentes() {
         setTitle(CHAVE_TITULO_TRABALHO);
@@ -127,7 +124,7 @@ public class ListaTodosTrabalhosActivity extends AppCompatActivity {
 
     private void pegaTodosTrabalhos() {
         todosTrabalhos = new ArrayList<>();
-        minhaReferencia.addValueEventListener(new ValueEventListener() {
+        minhaReferencia.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 todosTrabalhos.clear();

@@ -77,7 +77,6 @@ public class ListaTodosTrabalhosAdapter extends RecyclerView.Adapter<ListaTodosT
 
             @Override
             public void onItemClick(Trabalho trabalho, int adapterPosition) {
-                // Snackbar.make(holder.itemView, "Trabalho: "+ trabalho.getNome(), Snackbar.LENGTH_LONG).show();
                 Intent iniciaVaiParaCadastraNovoTrabalho = new Intent(context,
                         TrabalhoEspecificoActivity.class);
                 iniciaVaiParaCadastraNovoTrabalho.putExtra(CHAVE_TRABALHO, CODIGO_REQUISICAO_ALTERA_TRABALHO);
