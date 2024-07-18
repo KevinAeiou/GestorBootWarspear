@@ -139,8 +139,7 @@ public class ListaProfissaoAdapter extends RecyclerView.Adapter<ListaProfissaoAd
                     xpRestante = xpNecessario-(xpAtual-xpNiveis.get(i-1));
                 }
             }
-            xpNecessario = profissao.getXpNecessario();
-            xpRestante = profissao.getXpRestante(xpNecessario);
+
             int porcentagem = 100 - ((100 * xpRestante) / xpNecessario);
             String exp = xpAtual+"/"+xpMaximo+"/"+porcentagem+"%";
             experiencia_profissao.setText(exp);

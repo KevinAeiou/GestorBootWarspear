@@ -15,21 +15,6 @@ public class Profissao implements Serializable {
         this.experiencia = experiencia;
         this.prioridade = prioridade;
         this.xpNiveis = new ArrayList<>();
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public Integer getExperiencia() {
-        return experiencia;
-    }
-
-    public boolean isPrioridade() {
-        return prioridade;
-    }
-
-    public Integer getNivel() {
         xpNiveis.add(20);
         xpNiveis.add(200);
         xpNiveis.add(540);
@@ -55,28 +40,46 @@ public class Profissao implements Serializable {
         xpNiveis.add(585000);
         xpNiveis.add(705000);
         xpNiveis.add(830000);
+        xpNiveis.add(830000);
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public Integer getExperiencia() {
+        return experiencia;
+    }
+
+    public boolean isPrioridade() {
+        return prioridade;
+    }
+
+    public int getNivel() {
         int i;
         for (i = 0; i < xpNiveis.size()-1; i ++){
+            if (i == 0 && experiencia <= xpNiveis.get(i)) {
+                return i + 1;
+            }
             if (experiencia >= xpNiveis.get(i) && experiencia < xpNiveis.get(i + 1)) {
                 return i + 2;
             }
         }
-        return i + 2;
+        return i + 1;
     }
 
-    public int getXpRestante(int xpNecessario) {
-        for (int i=0; i<xpNiveis.size();i++){
-            if (i==0 && experiencia<xpNiveis.get(i)){
-                return experiencia;
-            }else if (i>=1 && experiencia>=xpNiveis.get(i-1) && experiencia<xpNiveis.get(i)){
-                return xpNecessario-(experiencia-xpNiveis.get(i-1));
-            }
+    public int getXpRestante(int nivel, int xpNecessario) {
+        if (nivel == 1) {
+            return experiencia;
         }
-        return 0;
+        return experiencia - xpNiveis.get(nivel-2) - xpNecessario;
     }
 
-    public int getXpNecessario() {
+    public int getXpNecessario(int xpMaximo) {
+        return xpMaximo - experiencia;
+    }
 
-        return 0;
+    public int getXpMaximo(int nivel) {
+        return xpNiveis.get(nivel-1);
     }
 }
