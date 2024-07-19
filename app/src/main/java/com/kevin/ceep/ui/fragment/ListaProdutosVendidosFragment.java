@@ -33,7 +33,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.FragmentListaProdutosVendidosBinding;
 import com.kevin.ceep.model.ProdutoVendido;
-import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.ui.activity.AtributosProdutoVendidoActivity;
@@ -70,7 +69,7 @@ public class ListaProdutosVendidosFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentListaProdutosVendidosBinding.inflate(inflater, container, false);
         requireActivity().setTitle("Produtos vendidos");
@@ -178,11 +177,6 @@ public class ListaProdutosVendidosFragment extends Fragment {
         produtosVendidosAdapter = new ListaProdutosVendidosAdapter(produtosVendidos, getContext());
         meuRecycler.setAdapter(produtosVendidosAdapter);
         produtosVendidosAdapter.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(Profissao profissao, int adapterPosition) {
-
-            }
-
             @Override
             public void onItemClick(Trabalho trabalho, int adapterPosition) {
 

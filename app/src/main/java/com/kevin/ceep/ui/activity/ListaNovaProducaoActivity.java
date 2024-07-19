@@ -1,17 +1,10 @@
 package com.kevin.ceep.ui.activity;
 
-import static com.kevin.ceep.utilitario.Utilitario.comparaString;
-import static com.kevin.ceep.utilitario.Utilitario.stringContemString;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import static com.kevin.ceep.utilitario.Utilitario.comparaString;
+import static com.kevin.ceep.utilitario.Utilitario.stringContemString;
 
 import android.content.Intent;
 import android.os.Build;
@@ -25,6 +18,13 @@ import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.ProgressBar;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
@@ -36,7 +36,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.ActivityListaNovaProducaoBinding;
 import com.kevin.ceep.model.ProdutoVendido;
-import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoAdapter;
@@ -149,7 +148,9 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String texto) {
-                filtroLista(texto);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    filtroLista(texto);
+                }
                 return false;
             }
         });
@@ -189,12 +190,6 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
         listaTrabalhoEspecificoAdapter = new ListaTrabalhoEspecificoNovaProducaoAdapter(getApplicationContext(), todosTrabalhos);
         meuRecycler.setAdapter(listaTrabalhoEspecificoAdapter);
         listaTrabalhoEspecificoAdapter.setOnItemClickListener(new OnItemClickListener() {
-
-            @Override
-            public void onItemClick(Profissao profissao, int adapterPosition) {
-
-            }
-
             @Override
             public void onItemClick(Trabalho trabalho, int adapterPosition) {
                 vaiParaConfirmaTrabalhoActivity(trabalho);

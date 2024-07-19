@@ -20,7 +20,6 @@ import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textview.MaterialTextView;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.ProdutoVendido;
-import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.ProfissaoTrabalho;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
@@ -70,11 +69,6 @@ public class ListaTodosTrabalhosAdapter extends RecyclerView.Adapter<ListaTodosT
             notifyItemChanged(holder.getAdapterPosition());
         });
         trabalhoEspecificoAdapter.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(Profissao profissao, int posicao) {
-
-            }
-
             @Override
             public void onItemClick(Trabalho trabalho, int adapterPosition) {
                 Intent iniciaVaiParaCadastraNovoTrabalho = new Intent(context,

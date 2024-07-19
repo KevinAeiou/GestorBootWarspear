@@ -27,15 +27,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
-import com.kevin.ceep.model.ProdutoVendido;
 import com.kevin.ceep.model.Profissao;
-import com.kevin.ceep.model.ProfissaoTrabalho;
-import com.kevin.ceep.model.Trabalho;
-import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaProfissaoAdapter;
-import com.kevin.ceep.ui.recyclerview.adapter.ListaTodosTrabalhosAdapter;
-import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoAdapter;
-import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -193,7 +186,7 @@ public class ListaProfissoesActivity extends AppCompatActivity {
 
         for (int i = 0; i< profissoes.length; i++){
             String novoIdProfissao = geraIdAleatorio();
-            Profissao profissao = new Profissao(profissoes[i], 0, false);
+            Profissao profissao = new Profissao(i+novoIdProfissao, profissoes[i], 0, false);
             minhaReferencia.child(usuarioId)
                     .child(CHAVE_LISTA_PERSONAGEM)
                     .child(personagemId)
@@ -213,31 +206,5 @@ public class ListaProfissoesActivity extends AppCompatActivity {
     private void configuraAdapter(List<Profissao> todasProfissoes, RecyclerView listaProfissoes) {
         profissaoAdapter = new ListaProfissaoAdapter(this,todasProfissoes);
         listaProfissoes.setAdapter(profissaoAdapter);
-        profissaoAdapter.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(Profissao profissao, int adapterPosition) {
-
-            }
-
-            @Override
-            public void onItemClick(Trabalho trabalho, int adapterPosition) {
-
-            }
-
-            @Override
-            public void onItemClick(ListaTrabalhoEspecificoAdapter trabalhoEspecificoAdapter) {
-
-            }
-
-            @Override
-            public void onItemClick(TrabalhoEstoque trabalhoEstoque, int adapterPosition, int botaoId) {
-
-            }
-
-            @Override
-            public void onItemClick(ProdutoVendido produtoVendido) {
-
-            }
-        });
     }
 }

@@ -29,7 +29,7 @@
             app:layout_constraintEnd_toEndOf="@id/itemNomeProfissao"
             app:layout_constraintTop_toBottomOf="@id/itemNomeProfissao">
 
-            <TextView
+            <EditText
                 android:id="@+id/itemExperienciaProfissao"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -38,14 +38,16 @@
                 android:layout_marginBottom="8dp"
                 android:gravity="start"
                 android:maxLines="1"
+                android:hint="@string/stringExperiencia"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 android:textStyle="normal"
+                android:inputType="numberSigned"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@id/itemNomeProfissao"
                 app:layout_constraintStart_toStartOf="@id/itemNomeProfissao"
                 app:layout_constraintTop_toBottomOf="@id/itemNomeProfissao"
-                tools:text="Barra experiência" />
+                tools:text="Experiência" />
 
             <TextView
                 android:id="@+id/itemNivelProfissao"

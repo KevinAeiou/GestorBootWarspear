@@ -3,6 +3,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Profissao implements Serializable {
+    private String id;
     private String nome;
     private Integer experiencia;
     private boolean prioridade;
@@ -10,11 +11,28 @@ public class Profissao implements Serializable {
 
     public Profissao(){}
 
-    public Profissao(String nome, Integer experiencia, boolean prioridade) {
+    public Profissao(String id, String nome, Integer experiencia, boolean prioridade) {
+        this.id = id;
         this.nome = nome;
         this.experiencia = experiencia;
         this.prioridade = prioridade;
-        this.xpNiveis = new ArrayList<>();
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public Integer getExperiencia() {
+        return experiencia;
+    }
+
+    public boolean isPrioridade() {
+        return prioridade;
+    }
+
+    public int getNivel() {
+        int i;
+        xpNiveis = new ArrayList<>();
         xpNiveis.add(20);
         xpNiveis.add(200);
         xpNiveis.add(540);
@@ -41,22 +59,6 @@ public class Profissao implements Serializable {
         xpNiveis.add(705000);
         xpNiveis.add(830000);
         xpNiveis.add(830000);
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public Integer getExperiencia() {
-        return experiencia;
-    }
-
-    public boolean isPrioridade() {
-        return prioridade;
-    }
-
-    public int getNivel() {
-        int i;
         for (i = 0; i < xpNiveis.size()-1; i ++){
             if (i == 0 && experiencia <= xpNiveis.get(i)) {
                 return i + 1;
@@ -81,5 +83,12 @@ public class Profissao implements Serializable {
 
     public int getXpMaximo(int nivel) {
         return xpNiveis.get(nivel-1);
+    }
+
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
     }
 }

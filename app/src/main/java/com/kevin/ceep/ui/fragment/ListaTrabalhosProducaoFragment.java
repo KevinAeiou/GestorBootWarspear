@@ -44,7 +44,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.FragmentListaTrabalhosProducaoBinding;
 import com.kevin.ceep.model.ProdutoVendido;
-import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.model.TrabalhoProducao;
@@ -69,7 +68,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar indicadorProgresso;
     private ChipGroup grupoChipFiltro;
-    private ConstraintLayout layoutFragmentoTrabalhos;
+
     public ListaTrabalhosProducaoFragment() {
         // Required empty public constructor
     }
@@ -151,6 +150,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
 
     private void configuraCampoDeBusca(MenuItem itemBusca) {
         SearchView busca = (SearchView) itemBusca.getActionView();
+        assert busca != null;
         busca.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -276,7 +276,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutTrabalhos);
         indicadorProgresso = view.findViewById(R.id.indicadorProgressoListaTrabalhosFragment);
         grupoChipFiltro = view.findViewById(R.id.chipGrupId);
-        layoutFragmentoTrabalhos = view.findViewById(R.id.constraintLayoutFragmentoListaTrabalhos);
+        ConstraintLayout layoutFragmentoTrabalhos = view.findViewById(R.id.constraintLayoutFragmentoListaTrabalhos);
     }
     private void atualizaListaTrabalho() {
         int chipId = grupoChipFiltro.getCheckedChipId();
@@ -291,11 +291,6 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         trabalhoAdapter = new ListaTrabalhoProducaoAdapter(getContext(),listaFiltrada);
         listaTrabalhos.setAdapter(trabalhoAdapter);
         trabalhoAdapter.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(Profissao profissao, int adapterPosition) {
-
-            }
-
             @Override
             public void onItemClick(Trabalho trabalho, int adapterPosition) {
                 vaiParaTrabalhoEspecificoActivity(trabalho);

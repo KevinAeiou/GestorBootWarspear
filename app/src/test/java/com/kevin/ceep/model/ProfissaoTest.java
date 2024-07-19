@@ -5,10 +5,10 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 public class ProfissaoTest {
-    private final Profissao BRACELETES = new Profissao("Braceletes", 19, false);
-    private final Profissao CAPOTES = new Profissao("Capotes", 199, false);
-    private final Profissao ANEIS = new Profissao("Anéis", 830000, false);
-    private final Profissao AMULETOS = new Profissao("Amuletos", 830001, false);
+    private final Profissao BRACELETES = new Profissao("1", "Braceletes", 19, false);
+    private final Profissao CAPOTES = new Profissao("2", "Capotes", 199, false);
+    private final Profissao ANEIS = new Profissao("3", "Anéis", 830000, false);
+    private final Profissao AMULETOS = new Profissao("4", "Amuletos", 830001, false);
 
     @Test
     public void deve_RetornarNivelUm_QuandoXpAtualIgualADezenove() {
