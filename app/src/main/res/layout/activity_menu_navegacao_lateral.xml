@@ -24,8 +24,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:elevation="0dp"
-                style="@style/Widget.MaterialComponents.Toolbar"
+                app:titleTextColor="@color/design_default_color_on_primary"
                 app:navigationIcon="@drawable/ic_menu"
+                app:navigationContentDescription="Ícone botão menu lateral"
                 />
         </com.google.android.material.appbar.AppBarLayout>
 

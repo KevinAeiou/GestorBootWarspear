@@ -133,9 +133,6 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         if (dadosRecebidos != null) {
             if (dadosRecebidos.containsKey(CHAVE_PERSONAGEM)){
                 personagemId = dadosRecebidos.getString(CHAVE_PERSONAGEM);
-                if (personagemId != null){
-                    pegaTodosTrabalhos();
-                }
             }
         }
     }
@@ -345,6 +342,14 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
 
                     }
                 });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (personagemId != null){
+            pegaTodosTrabalhos();
+        }
     }
 
     @Override

@@ -4,13 +4,11 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRAB
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
 import static com.kevin.ceep.utilitario.Utilitario.comparaString;
 
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -28,6 +26,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
+import com.kevin.ceep.dao.TrabalhoDAO;
 import com.kevin.ceep.databinding.ActivityListaTodosTrabalhosBinding;
 import com.kevin.ceep.model.ProfissaoTrabalho;
 import com.kevin.ceep.model.Trabalho;
@@ -46,24 +45,26 @@ public class ListaTodosTrabalhosActivity extends AppCompatActivity {
     private List<Trabalho> todosTrabalhos;
     private ProgressBar indicadorProgresso;
     private DatabaseReference minhaReferencia;
+    private TrabalhoDAO trabalhoDAO;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityListaTodosTrabalhosBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         inicializaComponentes();
-        atualizaListaProfissoesTrabalhos();
-
+        configuraRecyclerView(profissoesTrabalhos);
         configuraBotaoCadastraNovoTrabalho();
         configuraSwipeRefreshLayout();
         }
     private void inicializaComponentes() {
         setTitle(CHAVE_TITULO_TRABALHO);
+        profissoesTrabalhos = new ArrayList<>();
         botaoNovoTrabalho = binding.floatingButtonProfissoesTrabalhos;
         indicadorProgresso = binding.indicadorProgressoProfissoesTrabalhos;
         meuRecycler = binding.recyclerViewProfissoesTrabalhos;
         FirebaseDatabase meuBanco = FirebaseDatabase.getInstance();
         minhaReferencia = meuBanco.getReference(CHAVE_LISTA_TRABALHO);
+        trabalhoDAO = new TrabalhoDAO();
 
     }
     private void configuraBotaoCadastraNovoTrabalho() {
@@ -81,16 +82,9 @@ public class ListaTodosTrabalhosActivity extends AppCompatActivity {
         SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshProfissoesTrabalhos);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(false);
-            atualizaListaProfissoesTrabalhos();
+            pegaTodosTrabalhos();
         });
     }
-
-    private void atualizaListaProfissoesTrabalhos() {
-        pegaTodosTrabalhos();
-        List<ProfissaoTrabalho> profissoesTrabalhos = new ArrayList<>();
-        configuraRecyclerView(profissoesTrabalhos);
-    }
-
     private void filtraTrabalhosProfissao() {
         profissoesTrabalhos = new ArrayList<>();
         for (Trabalho trabalho : todosTrabalhos) {
@@ -157,6 +151,13 @@ public class ListaTodosTrabalhosActivity extends AppCompatActivity {
         listaTodosTrabalhosAdapter = new ListaTodosTrabalhosAdapter(profissoesTrabalhos, getApplicationContext());
         listaTrabalhos.setAdapter(listaTodosTrabalhosAdapter);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        pegaTodosTrabalhos();
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
