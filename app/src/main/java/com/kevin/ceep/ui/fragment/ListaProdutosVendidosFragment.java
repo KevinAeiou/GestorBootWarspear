@@ -80,7 +80,7 @@ public class ListaProdutosVendidosFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaComponentes();
-        atualizaListaProdutosVendidos();
+        configuraRecyclerView();
         configuraSwipeRefreshLayout();
         configuraDeslizeItem();
     }
@@ -134,10 +134,6 @@ public class ListaProdutosVendidosFragment extends Fragment {
             }
         });
     }
-    private void atualizaListaProdutosVendidos() {
-        ArrayList<ProdutoVendido> listaProdutosVendidos = pegaTodosProdutosVendidos();
-        configuraRecyclerView(listaProdutosVendidos);
-    }
 
     private ArrayList<ProdutoVendido> pegaTodosProdutosVendidos() {
         produtosVendidos = new ArrayList<>();
@@ -167,7 +163,7 @@ public class ListaProdutosVendidosFragment extends Fragment {
         return produtosVendidos;
     }
 
-    private void configuraRecyclerView(ArrayList<ProdutoVendido> produtosVendidos) {
+    private void configuraRecyclerView() {
         meuRecycler.setHasFixedSize(true);
         meuRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         configuraAdapter(produtosVendidos, meuRecycler);
@@ -214,6 +210,12 @@ public class ListaProdutosVendidosFragment extends Fragment {
         minhaReferencia = database.getReference(CHAVE_USUARIOS);
         swipeRefreshLayout = binding.swipeRefreshLayoutProdutosVendidos;
         indicadorProgresso = binding.indicadorProgressoListaProdutosVendidosFragment;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        pegaTodosProdutosVendidos();
     }
 
     @Override

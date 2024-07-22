@@ -44,7 +44,7 @@ public class AtributosProdutoVendidoActivity extends AppCompatActivity {
     private ProdutoVendido produtoRecebido;
     private Personagem personagemSelecionado;
     private DatabaseReference minhaReferencia;
-    private String usuarioId;
+    private String usuarioId, personagemId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,14 +68,16 @@ public class AtributosProdutoVendidoActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.itemMenuSalvaTrabalho) {
             if (!campoPersonagemModificado()) {
                 modificaProdutoVendidoServidor();
+                removeTrabalhoDoBanco(produtoRecebido);
             }
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void modificaProdutoVendidoServidor() {
-        minhaReferencia.child(usuarioId).child(CHAVE_LISTA_VENDAS)
-                .child(produtoRecebido.getId()).child("nomePersonagem").setValue(personagemSelecionado.getId())
+        produtoRecebido.setNomePersonagem(personagemSelecionado.getId());
+        minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).child(personagemSelecionado.getId()).child(CHAVE_LISTA_VENDAS)
+                .child(produtoRecebido.getId()).setValue(produtoRecebido)
                 .addOnCompleteListener(tarefa -> {
                     if (tarefa.isSuccessful()) {
                         finish();
@@ -84,6 +86,11 @@ public class AtributosProdutoVendidoActivity extends AppCompatActivity {
                                 ,Snackbar.LENGTH_LONG).show();
                     }
                 });
+    }
+
+    private void removeTrabalhoDoBanco(ProdutoVendido trabalhoRemovido) {
+        minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).child(personagemId).child(CHAVE_LISTA_VENDAS).
+                child(trabalhoRemovido.getId()).removeValue();
     }
 
     private boolean campoPersonagemModificado() {
@@ -122,6 +129,7 @@ public class AtributosProdutoVendidoActivity extends AppCompatActivity {
     }
 
     private void defineValoresCampos(Intent dadosRecebidos) {
+        personagemId = (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
         produtoRecebido = (ProdutoVendido) dadosRecebidos.getSerializableExtra(CHAVE_TRABALHO);
         assert produtoRecebido != null;
         txtNomeProdutoVendido.setText(produtoRecebido.getNomeProduto());

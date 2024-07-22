@@ -7,6 +7,7 @@ public class ProdutoVendido implements Serializable {
     private String id;
     private String nomeProduto;
     private String dataVenda;
+
     private String nomePersonagem;
     private int quantidadeProduto;
     private int valorProduto;
@@ -33,6 +34,10 @@ public class ProdutoVendido implements Serializable {
 
     public String getNomePersonagem() {
         return nomePersonagem;
+    }
+
+    public void setNomePersonagem(String nomePersonagem) {
+        this.nomePersonagem = nomePersonagem;
     }
 
     public int getQuantidadeProduto() {

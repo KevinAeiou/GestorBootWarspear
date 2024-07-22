@@ -110,6 +110,15 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 if (verificaTrabalhoProducaoModificado()) {
                     TrabalhoProducao trabalhoModificado = defineTrabalhoProducaoModificado();
                     modificaTrabalhoProducaoServidor(trabalhoModificado);
+                    if (verificaEstadoModificado()) {
+                        Log.d("estadoTrabalho", "Estado trabalho modificado.");
+                        Integer estado = trabalhoModificado.getEstado();
+                        if (estado ==1 || estado==2) {
+                            if (!trabalhoModificado.ehProducaoDeRecursos()) {
+
+                            }
+                        }
+                    }
                 } else {
                     finish();
                 }
@@ -133,7 +142,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
     private void recuperaValoresCampos() {
         nome = Objects.requireNonNull(edtNomeTrabalho.getText()).toString().trim();
         nomeProducao = Objects.requireNonNull(edtNomeProducaoTrabalho.getText()).toString().trim();
@@ -550,7 +558,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private void salvaNovoTrabalhoNoServidor(Trabalho novoTrabalho) {
         DatabaseReference minhaReferencia = meuBanco.getReference(CHAVE_LISTA_TRABALHO);
-        minhaReferencia.child(novoTrabalho.getId()).setValue(novoTrabalho).addOnCompleteListener(v -> {
+        minhaReferencia.child(novoTrabalho.getId()).setValue(novoTrabalho)
+                .addOnCompleteListener(v -> {
             Snackbar.make(binding.getRoot(), novoTrabalho.getNome()+" foi cadastrado com sucesso!", Snackbar.LENGTH_LONG).show();
             indicadorProgresso.setVisibility(View.GONE);
         });
