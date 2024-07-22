@@ -5,8 +5,11 @@ public class Utilitario {
     public static String removeAcentos(String string) {
         return Normalizer.normalize(string, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
     }
+    public static String limpaString(String string) {
+        return removeAcentos(string).toLowerCase().replace(" ","");
+    }
     public static boolean comparaString(String string1, String string2) {
-        return removeAcentos(string1).toLowerCase().replace(" ","").equals(removeAcentos(string2).toLowerCase().replace(" ",""));
+        return limpaString(string1).equals(limpaString(string2));
     }
     public static boolean stringContemString(String string1, String string2) {
         return removeAcentos(string1).toLowerCase().replace(" ","").contains(removeAcentos(string2).toLowerCase().replace(" ",""));

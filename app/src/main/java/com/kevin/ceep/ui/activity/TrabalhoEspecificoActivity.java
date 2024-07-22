@@ -1,5 +1,6 @@
 package com.kevin.ceep.ui.activity;
 
+import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_ESTOQUE;
 import static com.kevin.ceep.utilitario.Utilitario.comparaString;
 import static com.kevin.ceep.utilitario.Utilitario.geraIdAleatorio;
 import static com.kevin.ceep.utilitario.Utilitario.stringContemString;
@@ -18,6 +19,7 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICA
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -28,6 +30,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -47,6 +50,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.ActivityTrabalhoEspecificoBinding;
 import com.kevin.ceep.model.Trabalho;
+import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.model.TrabalhoProducao;
 
 import java.util.ArrayList;
@@ -73,6 +77,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private String usuarioId, personagemId, licencaModificada, nome, nomeProducao, profissao, experiencia, nivel, raridade, trabalhoNecessario1, trabalhoNecessario2;
     private int codigoRequisicao = CODIGO_REQUISICAO_INVALIDA, posicaoEstadoModificado;
     private boolean acrescimo = false, recorrenciaModificada;
+    private TrabalhoEstoque trabalhoEncontrado;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -111,11 +116,15 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                     TrabalhoProducao trabalhoModificado = defineTrabalhoProducaoModificado();
                     modificaTrabalhoProducaoServidor(trabalhoModificado);
                     if (verificaEstadoModificado()) {
-                        Log.d("estadoTrabalho", "Estado trabalho modificado.");
                         Integer estado = trabalhoModificado.getEstado();
                         if (estado ==1 || estado==2) {
-                            if (!trabalhoModificado.ehProducaoDeRecursos()) {
+                            if (trabalhoModificado.ehProducaoDeRecursos()) {
+                                Log.d("estadoTrabalho", trabalhoModificado.getNome()+ " é produção de recursos!");
 
+                            }else {
+                                if (estado == 2) {
+                                    modificaTrabalhoNoEstoque(trabalhoModificado);
+                                }
                             }
                         }
                     }
@@ -142,6 +151,55 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private void modificaTrabalhoNoEstoque(TrabalhoProducao trabalhoModificado) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference minhaReferencia = database.getReference(CHAVE_USUARIOS);
+        minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
+                child(personagemId).child(CHAVE_LISTA_ESTOQUE).
+                addListenerForSingleValueEvent(new ValueEventListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot dn:dataSnapshot.getChildren()){
+                            TrabalhoEstoque trabalho = dn.getValue(TrabalhoEstoque.class);
+                            if (trabalho != null && comparaString(trabalho.getNome(), trabalhoModificado.getNomeProducao())) {
+                                trabalhoEncontrado = trabalho;
+                                break;
+                            }
+                        }
+                        if (trabalhoEncontrado != null) {
+                            Log.d("estadoTrabalho", trabalhoEncontrado.getQuantidade()+" unidades de "+trabalhoModificado.getNome()+ " encontrado no estoque!");
+                            int novaQuantidade = trabalhoEncontrado.getQuantidade()+1;
+                            minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
+                                    child(personagemId).child(CHAVE_LISTA_ESTOQUE).child(trabalhoEncontrado.getId()).child("quantidade").setValue(novaQuantidade);
+                        } else {
+                            String novoId = geraIdAleatorio();
+                            TrabalhoEstoque novoTrabalho = new TrabalhoEstoque(
+                                    novoId,
+                                    trabalhoModificado.getNomeProducao(),
+                                    trabalhoModificado.getNome(),
+                                    trabalhoModificado.getProfissao(),
+                                    trabalhoModificado.getRaridade(),
+                                    trabalhoModificado.getTrabalhoNecessario(),
+                                    trabalhoModificado.getNivel(),
+                                    trabalhoModificado.getExperiencia(),
+                                    1
+                            );
+                            Log.d("estadoTrabalho", trabalhoModificado.getNome()+ " não encontrado no estoque!");
+                            minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
+                                    child(personagemId).child(CHAVE_LISTA_ESTOQUE).child(novoTrabalho.getId()).setValue(novoTrabalho);
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
     private void recuperaValoresCampos() {
         nome = Objects.requireNonNull(edtNomeTrabalho.getText()).toString().trim();
         nomeProducao = Objects.requireNonNull(edtNomeProducaoTrabalho.getText()).toString().trim();
@@ -316,6 +374,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         btnExcluir = binding.btnExcluiTrabalhoEspecifico;
 
         estadosTrabalho = getResources().getStringArray(R.array.estados);
+        trabalhoEncontrado = null;
     }
 
     private void recebeDadosIntent() {

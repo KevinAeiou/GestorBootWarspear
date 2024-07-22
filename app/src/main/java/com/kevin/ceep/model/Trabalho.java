@@ -1,6 +1,17 @@
 package com.kevin.ceep.model;
 
+import static com.kevin.ceep.utilitario.Utilitario.comparaString;
+import static com.kevin.ceep.utilitario.Utilitario.limpaString;
+
+import android.content.res.Resources;
+import android.util.Log;
+
+import com.kevin.ceep.R;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Trabalho implements Serializable {
 
@@ -12,7 +23,6 @@ public class Trabalho implements Serializable {
     private String trabalhoNecessario;
     private Integer nivel;
     private Integer experiencia;
-
     public Trabalho(){}
 
     public Trabalho(String id, String nome, String nomeProducao, String profissao, String raridade, String trabalhoNecessario, Integer nivel, Integer experiencia) {
@@ -65,4 +75,16 @@ public class Trabalho implements Serializable {
         this.trabalhoNecessario = trabalhoNecessario;
     }
 
+    public boolean ehProducaoDeRecursos() {
+        ArrayList<String> listaProducaoRecursos = new ArrayList<>();
+        List<String> listaRecursos = recuperaListaRecursos();
+        for (String nomeRecurso : listaRecursos) {
+            listaProducaoRecursos.add(nomeRecurso);
+        }
+        return listaProducaoRecursos.contains(limpaString(nomeProducao));
+    }
+
+    private List<String> recuperaListaRecursos() {
+        return Arrays.asList(Resources.getSystem().getStringArray(R.array.producaoRecursos));
+    }
 }

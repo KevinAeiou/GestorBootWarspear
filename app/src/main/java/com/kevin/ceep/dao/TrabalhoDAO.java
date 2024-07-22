@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.kevin.ceep.model.Trabalho;
-import com.kevin.ceep.repository.FirebaseDatabaseRepository;
+import com.kevin.ceep.repository.TrabalhoRepository;
 
 public class TrabalhoDAO {
 
     private final static ArrayList<Trabalho> trabalhos = new ArrayList<>();
-    private static FirebaseDatabaseRepository minhaReferencia;
+    private static TrabalhoRepository minhaReferencia;
 
     public TrabalhoDAO() {
-        TrabalhoDAO.minhaReferencia = new FirebaseDatabaseRepository();
+        TrabalhoDAO.minhaReferencia = new TrabalhoRepository();
     }
 
     public ArrayList<Trabalho> todos() {
