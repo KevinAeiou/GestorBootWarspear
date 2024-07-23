@@ -58,4 +58,8 @@ public class TrabalhoRepository {
     public void salvaNovoTrabalho(Trabalho novoTrabalho) {
         minhaReferencia.child(novoTrabalho.getId()).setValue(novoTrabalho);
     }
+
+    public void excluiTrabalho(Trabalho trabalhoRecebido) {
+        minhaReferencia.child(trabalhoRecebido.getId()).removeValue();
+    }
 }

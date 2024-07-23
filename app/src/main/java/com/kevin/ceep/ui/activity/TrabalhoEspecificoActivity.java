@@ -5,7 +5,6 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABA
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_NOVO_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO_PRODUCAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
@@ -43,7 +42,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
-import com.kevin.ceep.dao.PersonagemDAO;
+import com.kevin.ceep.dao.TrabalhoEstoqueDAO;
 import com.kevin.ceep.dao.TrabalhoDAO;
 import com.kevin.ceep.dao.TrabalhoProducaoDAO;
 import com.kevin.ceep.databinding.ActivityTrabalhoEspecificoBinding;
@@ -55,8 +54,7 @@ import java.util.Objects;
 
 public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private ActivityTrabalhoEspecificoBinding binding;
-    private FirebaseDatabase meuBanco;
-    private DatabaseReference minhareferenciaUsuario, minhaReferenciaTrabalhos;
+    private DatabaseReference minhaReferenciaTrabalhos;
     private TrabalhoProducao trabalhoProducaoRecebido;
     private Trabalho trabalhoRecebido;
     private LinearLayoutCompat linearLayoutTrabalhoNecessario2, linearLayoutTrabalhoNecessario3;
@@ -74,7 +72,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private String usuarioId, personagemId, licencaModificada, nome, nomeProducao, profissao, experiencia, nivel, raridade, trabalhoNecessario1, trabalhoNecessario2;
     private int codigoRequisicao = CODIGO_REQUISICAO_INVALIDA, posicaoEstadoModificado;
     private boolean acrescimo = false, recorrenciaModificada;
-    private PersonagemDAO personagemDAO;
+    private TrabalhoEstoqueDAO trabalhoEstoqueDAO;
     private TrabalhoDAO trabalhoDAO;
     private TrabalhoProducaoDAO trabalhoProducaoDAO;
 
@@ -122,11 +120,11 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                                 switch (estado) {
                                     case 1:
                                         if (trabalhoModificado.possueTrabalhoNecessarioValido()) {
-                                            personagemDAO.modificaQuantidadeTrabalhoNecessarioNoEstoque(trabalhoModificado);
+                                            trabalhoEstoqueDAO.modificaQuantidadeTrabalhoNecessarioNoEstoque(trabalhoModificado);
                                         }
                                         break;
                                     case 2:
-                                        personagemDAO.modificaQuantidadeTrabalhoNoEstoque(trabalhoModificado);
+                                        trabalhoEstoqueDAO.modificaQuantidadeTrabalhoNoEstoque(trabalhoModificado);
                                         break;
                                 }
                             }
@@ -169,11 +167,11 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                                             switch (estado) {
                                                 case 1:
                                                     if (trabalhoModificado.possueTrabalhoNecessarioValido()) {
-                                                        personagemDAO.modificaQuantidadeTrabalhoNecessarioNoEstoque(trabalhoModificado);
+                                                        trabalhoEstoqueDAO.modificaQuantidadeTrabalhoNecessarioNoEstoque(trabalhoModificado);
                                                     }
                                                     break;
                                                 case 2:
-                                                    personagemDAO.modificaQuantidadeTrabalhoNoEstoque(trabalhoModificado);
+                                                    trabalhoEstoqueDAO.modificaQuantidadeTrabalhoNoEstoque(trabalhoModificado);
                                                     break;
                                             }
                                         }else {
@@ -210,15 +208,9 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private void configuraBotaoExcluiTrabalhoEspecifico() {
         btnExcluir.setOnClickListener(v -> {
             indicadorProgresso.setVisibility(View.VISIBLE);
-            excluiTrabalhoEspecificoServidor(trabalhoRecebido);
+            trabalhoDAO.excluiTrabalhoEspecificoServidor(trabalhoRecebido);
         });
     }
-
-    private void excluiTrabalhoEspecificoServidor(Trabalho trabalhoRecebido) {
-        minhaReferenciaTrabalhos.child(trabalhoRecebido.getId()).removeValue()
-                .addOnCompleteListener(task -> finish());
-    }
-
     private void configuraAcaoImagem() {
         imagemTrabalhoNecessario1.setOnClickListener(view -> linearLayoutTrabalhoNecessario3.setVisibility(View.VISIBLE));
         imagemTrabalhoNecessario2.setOnClickListener(view -> {
@@ -336,8 +328,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     }
 
     private void inicializaComponentes() {
-        meuBanco = FirebaseDatabase.getInstance();
-        minhareferenciaUsuario = meuBanco.getReference(CHAVE_USUARIOS);
+        FirebaseDatabase meuBanco = FirebaseDatabase.getInstance();
         minhaReferenciaTrabalhos = meuBanco.getReference(CHAVE_LISTA_TRABALHO);
         usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
 
@@ -378,7 +369,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         if (dadosRecebidos != null && dadosRecebidos.hasExtra(CHAVE_TRABALHO)){
             codigoRequisicao = (int) dadosRecebidos.getSerializableExtra(CHAVE_TRABALHO);
             personagemId = (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
-            personagemDAO = new PersonagemDAO(usuarioId, personagemId);
+            trabalhoEstoqueDAO = new TrabalhoEstoqueDAO(personagemId);
             trabalhoProducaoDAO = new TrabalhoProducaoDAO(personagemId);
             if (codigoRequisicao != CODIGO_REQUISICAO_INVALIDA){
                 if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO){

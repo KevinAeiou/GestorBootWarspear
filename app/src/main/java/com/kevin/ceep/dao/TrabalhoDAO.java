@@ -41,4 +41,8 @@ public class TrabalhoDAO {
     public void salvaNovoTrabalho(Trabalho novoTrabalho) {
         trabalhoRepository.salvaNovoTrabalho(novoTrabalho);
     }
+
+    public void excluiTrabalhoEspecificoServidor(Trabalho trabalhoRecebido) {
+        trabalhoRepository.excluiTrabalho(trabalhoRecebido);
+    }
 }

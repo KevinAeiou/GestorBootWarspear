@@ -11,6 +11,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -19,20 +20,20 @@ import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.model.TrabalhoProducao;
 
-public class PersonagemRepository {
-    private DatabaseReference minhaReferencia;
-    private final String usuarioID, personagemID;
+import java.util.Objects;
 
-    public PersonagemRepository(String usuarioID, String personagemID) {
-        this.usuarioID = usuarioID;
-        this.personagemID = personagemID;
-        minhaReferencia = FirebaseDatabase.getInstance().getReference(CHAVE_USUARIOS);
+public class TrabalhoEstoqueRepository {
+    private final DatabaseReference minhaReferencia;
+
+    public TrabalhoEstoqueRepository(String personagemID) {
+        String usuarioID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        this.minhaReferencia = FirebaseDatabase.getInstance().getReference(CHAVE_USUARIOS).child(usuarioID).child(CHAVE_LISTA_PERSONAGEM)
+                .child(personagemID).child(CHAVE_LISTA_ESTOQUE);
     }
 
     public void modificaQuantidadeTrabalhoNecessarioNoEstoque(TrabalhoProducao trabalhoProducao) {
         String[] listaTrabalhosNecessarios = trabalhoProducao.getTrabalhoNecessario().split(",");
-        minhaReferencia.child(usuarioID).child(CHAVE_LISTA_PERSONAGEM)
-                .child(personagemID).child(CHAVE_LISTA_ESTOQUE).addListenerForSingleValueEvent(new ValueEventListener() {
+        minhaReferencia.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         for (DataSnapshot dn:dataSnapshot.getChildren()){
@@ -61,23 +62,19 @@ public class PersonagemRepository {
 
     private void alteraQuantidadeTrabalhoNoEstoque(TrabalhoEstoque trabalho, int novaQuantidade) {
         if (trabalho.getId() != null) {
-            minhaReferencia.child(usuarioID).child(CHAVE_LISTA_PERSONAGEM)
-                    .child(personagemID).child(CHAVE_LISTA_ESTOQUE)
-                    .child(trabalho.getId()).child("quantidade").setValue(novaQuantidade);
+            minhaReferencia.child(trabalho.getId()).child("quantidade").setValue(novaQuantidade);
         }
     }
 
     public void modificaTrabalhoNoEstoque(TrabalhoProducao trabalhoConcluido) {
-        minhaReferencia.child(usuarioID).child(CHAVE_LISTA_PERSONAGEM).
-                child(personagemID).child(CHAVE_LISTA_ESTOQUE).
-                addListenerForSingleValueEvent(new ValueEventListener() {
+        minhaReferencia.addListenerForSingleValueEvent(new ValueEventListener() {
                     @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         TrabalhoEstoque trabalhoEncontrado = null;
                         for (DataSnapshot dn:dataSnapshot.getChildren()){
                             TrabalhoEstoque trabalho = dn.getValue(TrabalhoEstoque.class);
-                            if (trabalho != null && comparaString(trabalho.getNome(), trabalhoConcluido.getNomeProducao())) {
+                            if (trabalho != null && comparaString(trabalho.getNome(), trabalhoConcluido.getNome())) {
                                 trabalhoEncontrado = trabalho;
                                 break;
                             }
@@ -116,7 +113,6 @@ public class PersonagemRepository {
     }
 
     private void adicionaNovoTrabalhoAoEstoque(TrabalhoEstoque novoTrabalho) {
-        minhaReferencia.child(usuarioID).child(CHAVE_LISTA_PERSONAGEM).
-                child(personagemID).child(CHAVE_LISTA_ESTOQUE).child(novoTrabalho.getId()).setValue(novoTrabalho);
+        minhaReferencia.child(novoTrabalho.getId()).setValue(novoTrabalho);
     }
 }

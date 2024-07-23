@@ -24,8 +24,8 @@ public class TrabalhoProducaoRepository {
 
     public TrabalhoProducaoRepository(String personagemID) {
         this.personagemID = personagemID;
-        usuarioID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        minhaReferenciaUsuario = FirebaseDatabase.getInstance().getReference(CHAVE_USUARIOS);
+        this.usuarioID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        this.minhaReferenciaUsuario = FirebaseDatabase.getInstance().getReference(CHAVE_USUARIOS);
     }
 
     public boolean modificaTrabalhoProducaoServidor(TrabalhoProducao trabalhoModificado) {
