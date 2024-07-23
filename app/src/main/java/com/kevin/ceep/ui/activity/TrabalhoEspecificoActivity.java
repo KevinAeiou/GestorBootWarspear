@@ -1,11 +1,5 @@
 package com.kevin.ceep.ui.activity;
 
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_ESTOQUE;
-import static com.kevin.ceep.utilitario.Utilitario.comparaString;
-import static com.kevin.ceep.utilitario.Utilitario.geraIdAleatorio;
-import static com.kevin.ceep.utilitario.Utilitario.stringContemString;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOME_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
@@ -16,10 +10,12 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICA
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO_PRODUCAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INVALIDA;
+import static com.kevin.ceep.utilitario.Utilitario.comparaString;
+import static com.kevin.ceep.utilitario.Utilitario.geraIdAleatorio;
+import static com.kevin.ceep.utilitario.Utilitario.stringContemString;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -30,7 +26,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -48,9 +43,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
+import com.kevin.ceep.dao.PersonagemDAO;
+import com.kevin.ceep.dao.TrabalhoDAO;
+import com.kevin.ceep.dao.TrabalhoProducaoDAO;
 import com.kevin.ceep.databinding.ActivityTrabalhoEspecificoBinding;
 import com.kevin.ceep.model.Trabalho;
-import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.model.TrabalhoProducao;
 
 import java.util.ArrayList;
@@ -77,7 +74,9 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private String usuarioId, personagemId, licencaModificada, nome, nomeProducao, profissao, experiencia, nivel, raridade, trabalhoNecessario1, trabalhoNecessario2;
     private int codigoRequisicao = CODIGO_REQUISICAO_INVALIDA, posicaoEstadoModificado;
     private boolean acrescimo = false, recorrenciaModificada;
-    private TrabalhoEstoque trabalhoEncontrado;
+    private PersonagemDAO personagemDAO;
+    private TrabalhoDAO trabalhoDAO;
+    private TrabalhoProducaoDAO trabalhoProducaoDAO;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -114,35 +113,37 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
             if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO_PRODUCAO) {
                 if (verificaTrabalhoProducaoModificado()) {
                     TrabalhoProducao trabalhoModificado = defineTrabalhoProducaoModificado();
-                    modificaTrabalhoProducaoServidor(trabalhoModificado);
+                    // runThread(trabalhoModificado);
+                    trabalhoProducaoDAO.modificaTrabalhoProducaoServidor(trabalhoModificado);
                     if (verificaEstadoModificado()) {
                         Integer estado = trabalhoModificado.getEstado();
-                        if (estado ==1 || estado==2) {
-                            if (trabalhoModificado.ehProducaoDeRecursos()) {
-                                Log.d("estadoTrabalho", trabalhoModificado.getNome()+ " é produção de recursos!");
-
-                            }else {
-                                if (estado == 2) {
-                                    modificaTrabalhoNoEstoque(trabalhoModificado);
+                        if (estado == 1 || estado == 2) {
+                            if (!trabalhoModificado.ehProducaoDeRecursos()) {
+                                switch (estado) {
+                                    case 1:
+                                        if (trabalhoModificado.possueTrabalhoNecessarioValido()) {
+                                            personagemDAO.modificaQuantidadeTrabalhoNecessarioNoEstoque(trabalhoModificado);
+                                        }
+                                        break;
+                                    case 2:
+                                        personagemDAO.modificaQuantidadeTrabalhoNoEstoque(trabalhoModificado);
+                                        break;
                                 }
                             }
                         }
                     }
-                } else {
-                    finish();
                 }
+                finish();
             } else if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO) {
                 if (verificaTrabalhoModificado()) {
-                    Log.d("trabalhoModificado", "Trabalho modificado!");
                     Trabalho trabalhoModificado = defineTrabalhoModificado(trabalhoNecessario);
-                    modificaTrabalhoServidor(trabalhoModificado);
-                } else {
-                    finish();
+                    trabalhoDAO.modificaTrabalho(trabalhoModificado);
                 }
+                finish();
             } else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO) {
                 if (verificaCamposNovoTrabalho()) {
                     Trabalho novoTrabalho = defineNovoTrabalho(trabalhoNecessario);
-                    salvaNovoTrabalhoNoServidor(novoTrabalho);
+                    trabalhoDAO.salvaNovoTrabalho(novoTrabalho);
                     edtNomeTrabalho.setText("");
                     edtNomeProducaoTrabalho.setText("");
                     edtNomeTrabalho.requestFocus();
@@ -151,55 +152,50 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    private void modificaTrabalhoNoEstoque(TrabalhoProducao trabalhoModificado) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference minhaReferencia = database.getReference(CHAVE_USUARIOS);
-        minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
-                child(personagemId).child(CHAVE_LISTA_ESTOQUE).
-                addListenerForSingleValueEvent(new ValueEventListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.N)
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot dn:dataSnapshot.getChildren()){
-                            TrabalhoEstoque trabalho = dn.getValue(TrabalhoEstoque.class);
-                            if (trabalho != null && comparaString(trabalho.getNome(), trabalhoModificado.getNomeProducao())) {
-                                trabalhoEncontrado = trabalho;
-                                break;
+    private void runThread(TrabalhoProducao trabalhoModificado) {
+        Log.d("segundoPlano", "runThread: inicializou segundo plano");
+        new Thread() {
+            public void run() {
+                int i =0;
+                while (i++ < 1000) {
+                    try {
+                        runOnUiThread(() -> {
+                            if (trabalhoProducaoDAO.modificaTrabalhoProducaoServidor(trabalhoModificado)) {
+                                Log.d("segundoPlano", "runThread: recebeu resposta verdadeira do DAO segundo plano");
+                                if (verificaEstadoModificado()) {
+                                    Integer estado = trabalhoModificado.getEstado();
+                                    if (estado ==1 || estado==2) {
+                                        if (!trabalhoModificado.ehProducaoDeRecursos()) {
+                                            switch (estado) {
+                                                case 1:
+                                                    if (trabalhoModificado.possueTrabalhoNecessarioValido()) {
+                                                        personagemDAO.modificaQuantidadeTrabalhoNecessarioNoEstoque(trabalhoModificado);
+                                                    }
+                                                    break;
+                                                case 2:
+                                                    personagemDAO.modificaQuantidadeTrabalhoNoEstoque(trabalhoModificado);
+                                                    break;
+                                            }
+                                        }else {
+                                            Log.d("estadoTrabalho", trabalhoModificado.getNome()+ " é produção de recursos!");
+                                        }
+                                    }
+                                }
+                                Log.d("segundoPlano", "runThread: finalizou activityTrabalhoEspefico");
+                                finish();
+                            } else {
+                                Log.d("segundoPlano", "runThread: recebeu resposta falsa do DAO segundo plano");
                             }
-                        }
-                        if (trabalhoEncontrado != null) {
-                            Log.d("estadoTrabalho", trabalhoEncontrado.getQuantidade()+" unidades de "+trabalhoModificado.getNome()+ " encontrado no estoque!");
-                            int novaQuantidade = trabalhoEncontrado.getQuantidade()+1;
-                            minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
-                                    child(personagemId).child(CHAVE_LISTA_ESTOQUE).child(trabalhoEncontrado.getId()).child("quantidade").setValue(novaQuantidade);
-                        } else {
-                            String novoId = geraIdAleatorio();
-                            TrabalhoEstoque novoTrabalho = new TrabalhoEstoque(
-                                    novoId,
-                                    trabalhoModificado.getNomeProducao(),
-                                    trabalhoModificado.getNome(),
-                                    trabalhoModificado.getProfissao(),
-                                    trabalhoModificado.getRaridade(),
-                                    trabalhoModificado.getTrabalhoNecessario(),
-                                    trabalhoModificado.getNivel(),
-                                    trabalhoModificado.getExperiencia(),
-                                    1
-                            );
-                            Log.d("estadoTrabalho", trabalhoModificado.getNome()+ " não encontrado no estoque!");
-                            minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
-                                    child(personagemId).child(CHAVE_LISTA_ESTOQUE).child(novoTrabalho.getId()).setValue(novoTrabalho);
-
-                        }
+                        });
+                        Thread.sleep(300);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+                }
+            }
+        }.start();
+        Log.d("segundoPlano", "runThread: finalizou segundo plano");
     }
-
     private void recuperaValoresCampos() {
         nome = Objects.requireNonNull(edtNomeTrabalho.getText()).toString().trim();
         nomeProducao = Objects.requireNonNull(edtNomeProducaoTrabalho.getText()).toString().trim();
@@ -374,7 +370,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         btnExcluir = binding.btnExcluiTrabalhoEspecifico;
 
         estadosTrabalho = getResources().getStringArray(R.array.estados);
-        trabalhoEncontrado = null;
+        trabalhoDAO = new TrabalhoDAO();
     }
 
     private void recebeDadosIntent() {
@@ -382,6 +378,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         if (dadosRecebidos != null && dadosRecebidos.hasExtra(CHAVE_TRABALHO)){
             codigoRequisicao = (int) dadosRecebidos.getSerializableExtra(CHAVE_TRABALHO);
             personagemId = (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
+            personagemDAO = new PersonagemDAO(usuarioId, personagemId);
+            trabalhoProducaoDAO = new TrabalhoProducaoDAO(personagemId);
             if (codigoRequisicao != CODIGO_REQUISICAO_INVALIDA){
                 if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO){
                     trabalhoRecebido = (Trabalho) dadosRecebidos
@@ -528,12 +526,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 Integer.parseInt(nivel),
                 Integer.parseInt(experiencia));
     }
-
-    private void modificaTrabalhoServidor(Trabalho trabalhoModificado) {
-        minhaReferenciaTrabalhos.child(trabalhoModificado.getId()).setValue(trabalhoModificado)
-                .addOnCompleteListener(task -> finish());
-    }
-
     private boolean verificaTrabalhoModificado() {
         return verificaCampoModificado(nome, trabalhoRecebido.getNome()) ||
                 verificaCampoModificado(nomeProducao, trabalhoRecebido.getNomeProducao()) ||
@@ -584,13 +576,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private boolean verificaCheckModificado() {
         return checkBoxRecorrenciaTrabalho.isChecked() != recorrenciaModificada;
     }
-
-    private void modificaTrabalhoProducaoServidor(Trabalho trabalhoModificado) {
-        minhareferenciaUsuario.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
-                .child(personagemId).child(CHAVE_LISTA_DESEJO)
-                .child(trabalhoProducaoRecebido.getId()).setValue(trabalhoModificado).addOnCompleteListener(task -> finish());
-    }
-
     private Boolean verificaValorCampo(String stringCampo, TextInputLayout inputLayout, int posicaoErro) {
         if (stringCampo.isEmpty()){
             inputLayout.setHelperText(mensagemErro[posicaoErro]);
@@ -614,16 +599,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 Integer.parseInt(nivel),
                 Integer.parseInt(experiencia));
     }
-
-    private void salvaNovoTrabalhoNoServidor(Trabalho novoTrabalho) {
-        DatabaseReference minhaReferencia = meuBanco.getReference(CHAVE_LISTA_TRABALHO);
-        minhaReferencia.child(novoTrabalho.getId()).setValue(novoTrabalho)
-                .addOnCompleteListener(v -> {
-            Snackbar.make(binding.getRoot(), novoTrabalho.getNome()+" foi cadastrado com sucesso!", Snackbar.LENGTH_LONG).show();
-            indicadorProgresso.setVisibility(View.GONE);
-        });
-    }
-
     @Override
     protected void onResume() {
         super.onResume();

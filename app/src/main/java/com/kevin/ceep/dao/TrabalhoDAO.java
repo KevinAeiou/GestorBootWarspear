@@ -9,14 +9,14 @@ import com.kevin.ceep.repository.TrabalhoRepository;
 public class TrabalhoDAO {
 
     private final static ArrayList<Trabalho> trabalhos = new ArrayList<>();
-    private static TrabalhoRepository minhaReferencia;
+    private TrabalhoRepository trabalhoRepository;
 
     public TrabalhoDAO() {
-        TrabalhoDAO.minhaReferencia = new TrabalhoRepository();
+        trabalhoRepository = new TrabalhoRepository();
     }
 
     public ArrayList<Trabalho> todos() {
-        return minhaReferencia.pegaTodosTrabalho();
+        return trabalhoRepository.pegaTodosTrabalho();
     }
 
     public void insere(Trabalho... notas) {
@@ -32,5 +32,13 @@ public class TrabalhoDAO {
     }
     public void removeTodos() {
         trabalhos.clear();
+    }
+
+    public void modificaTrabalho(Trabalho trabalhoModificado) {
+        trabalhoRepository.modificaTrabalho(trabalhoModificado);
+    }
+
+    public void salvaNovoTrabalho(Trabalho novoTrabalho) {
+        trabalhoRepository.salvaNovoTrabalho(novoTrabalho);
     }
 }

@@ -39,4 +39,7 @@ public class TrabalhoProducao extends Trabalho implements Serializable {
         this.recorrencia = recorrencia;
     }
 
+    public boolean possueTrabalhoNecessarioValido() {
+        return getTrabalhoNecessario() != null && !getTrabalhoNecessario().isEmpty();
+    }
 }
