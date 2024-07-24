@@ -25,7 +25,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.SearchView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -57,13 +56,14 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ListaTrabalhosProducaoFragment extends Fragment {
     private FragmentListaTrabalhosProducaoBinding binding;
     private DatabaseReference databaseReference;
     private ListaTrabalhoProducaoAdapter trabalhoAdapter;
     private RecyclerView recyclerView;
-    private List<TrabalhoProducao> trabalhos, trabalhosFiltrados;
+    private ArrayList<TrabalhoProducao> trabalhos, trabalhosFiltrados;
     private String usuarioId, personagemId;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar indicadorProgresso;
@@ -75,14 +75,12 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("fragmentoTrabalhosProd", "onCreate");
         setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d("fragmentoTrabalhosProd", "onCreateView");
         binding = FragmentListaTrabalhosProducaoBinding.inflate(inflater, container, false);
         requireActivity().setTitle(CHAVE_TITULO_TRABALHO);
         return binding.getRoot();
@@ -91,12 +89,11 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d("fragmentoTrabalhosProd", "onViewCreated");
-        inicializaComponentes(view);
+        inicializaComponentes();
         recebePersonagemId();
-        configuraRecyclerView(trabalhos);
+        configuraRecyclerView();
         configuraSwipeRefreshLayout();
-        configuraBotaoInsereTrabalho(view);
+        configuraBotaoInsereTrabalho();
         configuraDeslizeItem();
         configuraChipSelecionado();
     }
@@ -119,7 +116,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
                 estado = 2;
                 break;
         }
-        trabalhosFiltrados = filtroListaChip(estado, trabalhos);
+        trabalhosFiltrados = filtroListaChip(estado);
         if (trabalhosFiltrados.isEmpty()) {
             trabalhoAdapter.limpaLista();
             Snackbar.make(binding.constraintLayoutFragmentoListaTrabalhos, "Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
@@ -162,18 +159,14 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         });
     }
 
-    private List<TrabalhoProducao> filtroListaChip(int estado, List<TrabalhoProducao> todosTrabalhos) {
-        // creating a new array list to filter our data.
-        List<TrabalhoProducao> listaFiltrada = new ArrayList<>();
+    private ArrayList<TrabalhoProducao> filtroListaChip(int estado) {
+        ArrayList<TrabalhoProducao> listaFiltrada = new ArrayList<>();
         if (estado == -1){
-            listaFiltrada = todosTrabalhos;
+//            ArrayList<Dog> clonedDogs = dogs.stream().map(Dog::new).collect(toCollection(ArrayList::new));
+            listaFiltrada = trabalhos;
         }else {
-            // running a for loop to compare elements.
-            for (TrabalhoProducao item : todosTrabalhos) {
-                // checking if the entered string matched with any item of our recycler view.
+            for (TrabalhoProducao item : trabalhos) {
                 if (item.getEstado() == estado) {
-                    // if the item is matched we are
-                    // adding it to our filtered list.
                     listaFiltrada.add(item);
                 }
             }
@@ -183,7 +176,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
 
     private void filtroLista(String newText) {
         // creating a new array list to filter our data.
-        List<TrabalhoProducao> listaFiltrada = new ArrayList<>();
+        ArrayList<TrabalhoProducao> listaFiltrada = new ArrayList<>();
 
         // running a for loop to compare elements.
         for (TrabalhoProducao item : trabalhosFiltrados) {
@@ -252,9 +245,8 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
             }
         });
     }
-    private void configuraBotaoInsereTrabalho(View view) {
-        FloatingActionButton botaoInsereTrabaho = view.findViewById(R.id.floatingActionButton);
-        botaoInsereTrabaho.setOnClickListener(v -> vaiParaListaNovaProducaoActivity());
+    private void configuraBotaoInsereTrabalho() {
+        binding.floatingActionButton.setOnClickListener(v -> vaiParaListaNovaProducaoActivity());
     }
     private void vaiParaListaNovaProducaoActivity() {
         Intent iniciaVaiParaListaNovaProducaoActivity =
@@ -263,29 +255,27 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         startActivity(iniciaVaiParaListaNovaProducaoActivity);
     }
 
-    private void inicializaComponentes(View view) {
-        Log.d("fragmentoTrabalhos", "Inicializa componentes!");
+    private void inicializaComponentes() {
         trabalhos = new ArrayList<>();
         usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        recyclerView = view.findViewById(R.id.listaTrabalhoRecyclerView);
+        recyclerView = binding.listaTrabalhoRecyclerView;
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference(CHAVE_USUARIOS);
-        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutTrabalhos);
-        indicadorProgresso = view.findViewById(R.id.indicadorProgressoListaTrabalhosFragment);
-        grupoChipFiltro = view.findViewById(R.id.chipGrupId);
-        ConstraintLayout layoutFragmentoTrabalhos = view.findViewById(R.id.constraintLayoutFragmentoListaTrabalhos);
+        swipeRefreshLayout = binding.swipeRefreshLayoutTrabalhos;
+        indicadorProgresso = binding.indicadorProgressoListaTrabalhosFragment;
+        grupoChipFiltro = binding.chipGrupId;
     }
     private void atualizaListaTrabalho() {
         int chipId = grupoChipFiltro.getCheckedChipId();
         configuraChipFiltro(chipId);
     }
-    private void configuraRecyclerView(List<TrabalhoProducao> listaFiltrada) {
+    private void configuraRecyclerView() {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        configuraAdapter(listaFiltrada, recyclerView);
+        configuraAdapter(recyclerView);
     }
-    private void configuraAdapter(List<TrabalhoProducao> listaFiltrada, RecyclerView listaTrabalhos) {
-        trabalhoAdapter = new ListaTrabalhoProducaoAdapter(getContext(),listaFiltrada);
+    private void configuraAdapter(RecyclerView listaTrabalhos) {
+        trabalhoAdapter = new ListaTrabalhoProducaoAdapter(getContext(), trabalhos);
         listaTrabalhos.setAdapter(trabalhoAdapter);
         trabalhoAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override

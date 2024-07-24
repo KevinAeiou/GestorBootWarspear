@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -48,6 +49,7 @@ import com.kevin.ceep.dao.TrabalhoProducaoDAO;
 import com.kevin.ceep.databinding.ActivityTrabalhoEspecificoBinding;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoProducao;
+import com.kevin.ceep.repository.TrabalhoProducaoRepository;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -88,6 +90,101 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         recebeDadosIntent();
         configuraAcaoImagem();
     }
+    private void inicializaComponentes() {
+        FirebaseDatabase meuBanco = FirebaseDatabase.getInstance();
+        minhaReferenciaTrabalhos = meuBanco.getReference(CHAVE_LISTA_TRABALHO);
+        usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+
+        linearLayoutTrabalhoNecessario2 = binding.linearLayoutTrabalhoNecessario2;
+        linearLayoutTrabalhoNecessario3 = binding.linearLayoutTrabalhoNecessario3;
+        edtNomeTrabalho = binding.edtNomeTrabalho;
+        edtNomeProducaoTrabalho = binding.edtNomeProducaoTrabalho;
+        edtNivelTrabalho = binding.edtNivelTrabalho;
+        edtExperienciaTrabalho = binding.edtExperienciaTrabalho;
+
+        txtInputEstado = binding.txtLayoutEstadoTrabalho;
+        txtInputLicenca = binding.txtLayoutLicencaTrabalho;
+        txtInputNome = binding.txtLayoutNomeTrabalho;
+        txtInputProfissao = binding.txtLayoutProfissaoTrabalho;
+        txtInputExperiencia = binding.txtLayoutExperienciaTrabalho;
+        txtInputNivel = binding.txtLayoutNivelTrabalho;
+        txtInputRaridade = binding.txtLayoutRaridadeTrabalho;
+
+        autoCompleteProfissao = binding.txtAutoCompleteProfissaoTrabalho;
+        autoCompleteRaridade = binding.txtAutoCompleteRaridadeTrabalho;
+        autoCompleteTrabalhoNecessario1 = binding.txtAutoCompleteTrabalhoNecessario;
+        autoCompleteTrabalhoNecessario2 = binding.txtAutoCompleteTrabalhoNecessario2;
+        autoCompleteLicenca = binding.txtAutoCompleteLicencaTrabalho;
+        autoCompleteEstado = binding.txtAutoCompleteEstadoTrabalho;
+        imagemTrabalhoNecessario1 = binding.imagemTrabalhoNecessario1;
+        imagemTrabalhoNecessario2 = binding.imagemTrabalhoNecessario2;
+
+        checkBoxRecorrenciaTrabalho = binding.checkBoxRecorrenciaTrabalho;
+        indicadorProgresso = binding.indicadorProgressoTrabalhoEspecifico;
+        btnExcluir = binding.btnExcluiTrabalhoEspecifico;
+
+        estadosTrabalho = getResources().getStringArray(R.array.estados);
+        trabalhoDAO = new TrabalhoDAO();
+    }
+    private void pegaTodosTrabalhosComunsMelhorados() {
+        todosTrabalhoComunsMelhorados = new ArrayList<>();
+        minhaReferenciaTrabalhos.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                todosTrabalhoComunsMelhorados.clear();
+                for (DataSnapshot dn : dataSnapshot.getChildren()) {
+                    Trabalho trabalho = dn.getValue(Trabalho.class);
+                    String raridade;
+                    if (trabalho != null) {
+                        raridade = trabalho.getRaridade();
+                        if (comparaString(raridade, "Comum") || comparaString(raridade, "Melhorado")) {
+                            todosTrabalhoComunsMelhorados.add(trabalho);
+                        }
+                    }
+                }
+                configuraDropdownTrabalhoNecessario();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Snackbar.make(Objects.requireNonNull(getCurrentFocus()), "Erro ao carregar dados: "+databaseError, Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void recebeDadosIntent() {
+        Intent dadosRecebidos = getIntent();
+        if (dadosRecebidos != null && dadosRecebidos.hasExtra(CHAVE_TRABALHO)){
+            codigoRequisicao = (int) dadosRecebidos.getSerializableExtra(CHAVE_TRABALHO);
+            personagemId = (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
+            if (codigoRequisicao != CODIGO_REQUISICAO_INVALIDA){
+                if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO){
+                    trabalhoRecebido = (Trabalho) dadosRecebidos
+                            .getSerializableExtra(CHAVE_NOME_TRABALHO);
+                    if (trabalhoRecebido != null){
+                        configuraComponentesAlteraTrabalho();
+                        configuraBotaoExcluiTrabalhoEspecifico();
+                    }
+                } else if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO_PRODUCAO){
+                    trabalhoEstoqueDAO = new TrabalhoEstoqueDAO(personagemId);
+                    trabalhoProducaoRecebido = (TrabalhoProducao) dadosRecebidos
+                            .getSerializableExtra(CHAVE_NOME_TRABALHO);
+                    if (trabalhoProducaoRecebido != null){
+                        configuraComponentesAlteraTrabalhoProducao();
+                    }
+                } else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO){
+                    configuraLayoutNovoTrabalho();
+                }
+            }
+        }
+    }
+    private void configuraAcaoImagem() {
+        imagemTrabalhoNecessario1.setOnClickListener(view -> linearLayoutTrabalhoNecessario3.setVisibility(View.VISIBLE));
+        imagemTrabalhoNecessario2.setOnClickListener(view -> {
+            autoCompleteTrabalhoNecessario2.setText("");
+            linearLayoutTrabalhoNecessario3.setVisibility(View.GONE);
+        });
+    }
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.itemMenuSalvaTrabalho) {
@@ -111,8 +208,10 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
             if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO_PRODUCAO) {
                 if (verificaTrabalhoProducaoModificado()) {
                     TrabalhoProducao trabalhoModificado = defineTrabalhoProducaoModificado();
-                    // runThread(trabalhoModificado);
-                    trabalhoProducaoDAO.modificaTrabalhoProducaoServidor(trabalhoModificado);
+                    trabalhoProducaoDAO = new TrabalhoProducaoDAO(personagemId);
+
+                    MutableLiveData<Boolean> retorno = trabalhoProducaoDAO.modificaTrabalhoProducaoServidor(trabalhoModificado);
+                    Log.d("segundoPlano", "Retorno: "+retorno.getValue());
                     if (verificaEstadoModificado()) {
                         Integer estado = trabalhoModificado.getEstado();
                         if (estado == 1 || estado == 2) {
@@ -158,32 +257,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 while (i++ < 1000) {
                     try {
                         runOnUiThread(() -> {
-                            if (trabalhoProducaoDAO.modificaTrabalhoProducaoServidor(trabalhoModificado)) {
-                                Log.d("segundoPlano", "runThread: recebeu resposta verdadeira do DAO segundo plano");
-                                if (verificaEstadoModificado()) {
-                                    Integer estado = trabalhoModificado.getEstado();
-                                    if (estado ==1 || estado==2) {
-                                        if (!trabalhoModificado.ehProducaoDeRecursos()) {
-                                            switch (estado) {
-                                                case 1:
-                                                    if (trabalhoModificado.possueTrabalhoNecessarioValido()) {
-                                                        trabalhoEstoqueDAO.modificaQuantidadeTrabalhoNecessarioNoEstoque(trabalhoModificado);
-                                                    }
-                                                    break;
-                                                case 2:
-                                                    trabalhoEstoqueDAO.modificaQuantidadeTrabalhoNoEstoque(trabalhoModificado);
-                                                    break;
-                                            }
-                                        }else {
-                                            Log.d("estadoTrabalho", trabalhoModificado.getNome()+ " é produção de recursos!");
-                                        }
-                                    }
-                                }
-                                Log.d("segundoPlano", "runThread: finalizou activityTrabalhoEspefico");
-                                finish();
-                            } else {
-                                Log.d("segundoPlano", "runThread: recebeu resposta falsa do DAO segundo plano");
-                            }
                         });
                         Thread.sleep(300);
                     } catch (InterruptedException e) {
@@ -209,39 +282,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         btnExcluir.setOnClickListener(v -> {
             indicadorProgresso.setVisibility(View.VISIBLE);
             trabalhoDAO.excluiTrabalhoEspecificoServidor(trabalhoRecebido);
-        });
-    }
-    private void configuraAcaoImagem() {
-        imagemTrabalhoNecessario1.setOnClickListener(view -> linearLayoutTrabalhoNecessario3.setVisibility(View.VISIBLE));
-        imagemTrabalhoNecessario2.setOnClickListener(view -> {
-            autoCompleteTrabalhoNecessario2.setText("");
-            linearLayoutTrabalhoNecessario3.setVisibility(View.GONE);
-        });
-    }
-
-    private void pegaTodosTrabalhosComunsMelhorados() {
-        todosTrabalhoComunsMelhorados = new ArrayList<>();
-        minhaReferenciaTrabalhos.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                todosTrabalhoComunsMelhorados.clear();
-                for (DataSnapshot dn : dataSnapshot.getChildren()) {
-                    Trabalho trabalho = dn.getValue(Trabalho.class);
-                    String raridade;
-                    if (trabalho != null) {
-                        raridade = trabalho.getRaridade();
-                        if (comparaString(raridade, "Comum") || comparaString(raridade, "Melhorado")) {
-                            todosTrabalhoComunsMelhorados.add(trabalho);
-                        }
-                    }
-                }
-                configuraDropdownTrabalhoNecessario();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Snackbar.make(Objects.requireNonNull(getCurrentFocus()), "Erro ao carregar dados: "+databaseError, Snackbar.LENGTH_LONG).show();
-            }
         });
     }
     private void configuraDropdownProfissoes() {
@@ -326,72 +366,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         adapterEstado.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         autoCompleteEstado.setAdapter(adapterEstado);
     }
-
-    private void inicializaComponentes() {
-        FirebaseDatabase meuBanco = FirebaseDatabase.getInstance();
-        minhaReferenciaTrabalhos = meuBanco.getReference(CHAVE_LISTA_TRABALHO);
-        usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-
-        linearLayoutTrabalhoNecessario2 = binding.linearLayoutTrabalhoNecessario2;
-        linearLayoutTrabalhoNecessario3 = binding.linearLayoutTrabalhoNecessario3;
-        edtNomeTrabalho = binding.edtNomeTrabalho;
-        edtNomeProducaoTrabalho = binding.edtNomeProducaoTrabalho;
-        edtNivelTrabalho = binding.edtNivelTrabalho;
-        edtExperienciaTrabalho = binding.edtExperienciaTrabalho;
-
-        txtInputEstado = binding.txtLayoutEstadoTrabalho;
-        txtInputLicenca = binding.txtLayoutLicencaTrabalho;
-        txtInputNome = binding.txtLayoutNomeTrabalho;
-        txtInputProfissao = binding.txtLayoutProfissaoTrabalho;
-        txtInputExperiencia = binding.txtLayoutExperienciaTrabalho;
-        txtInputNivel = binding.txtLayoutNivelTrabalho;
-        txtInputRaridade = binding.txtLayoutRaridadeTrabalho;
-
-        autoCompleteProfissao = binding.txtAutoCompleteProfissaoTrabalho;
-        autoCompleteRaridade = binding.txtAutoCompleteRaridadeTrabalho;
-        autoCompleteTrabalhoNecessario1 = binding.txtAutoCompleteTrabalhoNecessario;
-        autoCompleteTrabalhoNecessario2 = binding.txtAutoCompleteTrabalhoNecessario2;
-        autoCompleteLicenca = binding.txtAutoCompleteLicencaTrabalho;
-        autoCompleteEstado = binding.txtAutoCompleteEstadoTrabalho;
-        imagemTrabalhoNecessario1 = binding.imagemTrabalhoNecessario1;
-        imagemTrabalhoNecessario2 = binding.imagemTrabalhoNecessario2;
-
-        checkBoxRecorrenciaTrabalho = binding.checkBoxRecorrenciaTrabalho;
-        indicadorProgresso = binding.indicadorProgressoTrabalhoEspecifico;
-        btnExcluir = binding.btnExcluiTrabalhoEspecifico;
-
-        estadosTrabalho = getResources().getStringArray(R.array.estados);
-        trabalhoDAO = new TrabalhoDAO();
-    }
-
-    private void recebeDadosIntent() {
-        Intent dadosRecebidos = getIntent();
-        if (dadosRecebidos != null && dadosRecebidos.hasExtra(CHAVE_TRABALHO)){
-            codigoRequisicao = (int) dadosRecebidos.getSerializableExtra(CHAVE_TRABALHO);
-            personagemId = (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
-            trabalhoEstoqueDAO = new TrabalhoEstoqueDAO(personagemId);
-            trabalhoProducaoDAO = new TrabalhoProducaoDAO(personagemId);
-            if (codigoRequisicao != CODIGO_REQUISICAO_INVALIDA){
-                if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO){
-                    trabalhoRecebido = (Trabalho) dadosRecebidos
-                            .getSerializableExtra(CHAVE_NOME_TRABALHO);
-                    if (trabalhoRecebido != null){
-                        configuraComponentesAlteraTrabalho();
-                        configuraBotaoExcluiTrabalhoEspecifico();
-                    }
-                } else if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO_PRODUCAO){
-                    trabalhoProducaoRecebido = (TrabalhoProducao) dadosRecebidos
-                            .getSerializableExtra(CHAVE_NOME_TRABALHO);
-                    if (trabalhoProducaoRecebido != null){
-                        configuraComponentesAlteraTrabalhoProducao();
-                    }
-                } else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO){
-                    configuraLayoutNovoTrabalho();
-                }
-            }
-        }
-    }
-
     private void configuraComponentesAlteraTrabalho() {
         checkBoxRecorrenciaTrabalho.setVisibility(View.GONE);
         txtInputLicenca.setVisibility(View.GONE);

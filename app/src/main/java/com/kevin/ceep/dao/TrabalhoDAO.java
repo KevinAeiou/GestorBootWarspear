@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.repository.TrabalhoRepository;
+import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoNovaProducaoAdapter;
 
 public class TrabalhoDAO {
 
@@ -12,11 +13,11 @@ public class TrabalhoDAO {
     private TrabalhoRepository trabalhoRepository;
 
     public TrabalhoDAO() {
-        trabalhoRepository = new TrabalhoRepository();
+        this.trabalhoRepository = new TrabalhoRepository();
     }
 
-    public ArrayList<Trabalho> todos() {
-        return trabalhoRepository.pegaTodosTrabalho();
+    public void todos(ListaTrabalhoEspecificoNovaProducaoAdapter listaTrabalhoEspecificoAdapter) {
+        trabalhoRepository.pegaTodosTrabalhos(listaTrabalhoEspecificoAdapter);
     }
 
     public void insere(Trabalho... notas) {

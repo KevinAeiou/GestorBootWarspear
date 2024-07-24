@@ -52,6 +52,12 @@ public class ListaTrabalhoEspecificoNovaProducaoAdapter extends RecyclerView.Ada
         }
         return trabalhos.size();
     }
+
+    public void limpaLista() {
+        trabalhos.clear();
+        notifyDataSetChanged();
+    }
+
     public class TrabalhoEspecificoNovaProducaoViewHolder extends RecyclerView.ViewHolder {
         private final TextView nomeTrabalhoEspecifico;
         private final TextView profissaoTrabalhoEspecifico;
