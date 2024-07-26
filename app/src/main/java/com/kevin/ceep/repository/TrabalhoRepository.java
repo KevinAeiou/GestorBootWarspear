@@ -5,6 +5,8 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRAB
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -12,40 +14,48 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.model.Trabalho;
-import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoNovaProducaoAdapter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 
 public class TrabalhoRepository {
-    private DatabaseReference minhaReferencia;
+    private final DatabaseReference minhaReferencia;
+    private final MutableLiveData<Resource<ArrayList<Trabalho>>> trabalhosEncontrados;
 
     public TrabalhoRepository() {
         this.minhaReferencia = FirebaseDatabase.getInstance().getReference(CHAVE_LISTA_TRABALHO);
+        this.trabalhosEncontrados = new MutableLiveData<>();
     }
 
-    public void pegaTodosTrabalhos(ListaTrabalhoEspecificoNovaProducaoAdapter listaTrabalhoEspecificoAdapter) {
-        ArrayList<Trabalho> todosTrabalhos = new ArrayList<>();
+    public LiveData<Resource<ArrayList<Trabalho>>> pegaTodosTrabalhos() {
         minhaReferencia.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                todosTrabalhos.clear();
+                ArrayList<Trabalho> trabalhos = new ArrayList<>();
                 for (DataSnapshot dn:dataSnapshot.getChildren()){
                     Trabalho trabalho = dn.getValue(Trabalho.class);
                     if (trabalho != null){
-                        todosTrabalhos.add(trabalho);
+                        trabalhos.add(trabalho);
                     }
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    todosTrabalhos.sort(Comparator.comparing(Trabalho::getProfissao).thenComparing(Trabalho::getRaridade).thenComparing(Trabalho::getNivel).thenComparing(Trabalho::getNome));
+                    trabalhos.sort(Comparator.comparing(Trabalho::getProfissao).thenComparing(Trabalho::getRaridade).thenComparing(Trabalho::getNivel).thenComparing(Trabalho::getNome));
                 }
-                listaTrabalhoEspecificoAdapter.setListaFiltrada(todosTrabalhos);
+                trabalhosEncontrados.setValue(new Resource<>(trabalhos, null));
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                Resource<ArrayList<Trabalho>> resourceAtual = trabalhosEncontrados.getValue();
+                Resource<ArrayList<Trabalho>> resourceCriado;
+                if (resourceAtual != null) {
+                    resourceCriado = new Resource<>(resourceAtual.dado, databaseError.getMessage());
+                } else {
+                    resourceCriado = new Resource<>(null, databaseError.getMessage());
+                }
+                trabalhosEncontrados.setValue(resourceCriado);
             }
         });
+        return trabalhosEncontrados;
     }
 
     public void modificaTrabalho(Trabalho trabalhoModificado) {

@@ -1,15 +1,12 @@
 package com.kevin.ceep.ui.activity;
 
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
-import static com.kevin.ceep.utilitario.Utilitario.comparaString;
 import static com.kevin.ceep.utilitario.Utilitario.stringContemString;
 
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,30 +19,26 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
-import com.kevin.ceep.dao.TrabalhoDAO;
 import com.kevin.ceep.databinding.ActivityListaNovaProducaoBinding;
 import com.kevin.ceep.model.ProdutoVendido;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
-import com.kevin.ceep.model.TrabalhoProducao;
+import com.kevin.ceep.repository.TrabalhoRepository;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoNovaProducaoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
+import com.kevin.ceep.ui.viewModel.ListaNovaProducaoViewModel;
+import com.kevin.ceep.ui.viewModel.factory.ListaNovaProducaoViewModelFactory;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,14 +46,13 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
     private ActivityListaNovaProducaoBinding binding;
     private ProgressBar indicadorProgresso;
     private RecyclerView meuRecycler;
-    private DatabaseReference minhaReferencia;
     private ListaTrabalhoEspecificoNovaProducaoAdapter listaTrabalhoEspecificoAdapter;
     private String personagemId;
     private HorizontalScrollView linearLayoutGruposChips;
     private ChipGroup grupoChipsProfissoes;
     private ArrayList<String> listaProfissoes;
     private ArrayList<Trabalho> todosTrabalhos, listaTrabalhosFiltrada;
-    private TrabalhoDAO trabalhoDAO;
+    private ListaNovaProducaoViewModel novaProducaoViewModel;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -74,38 +66,39 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void configuraChipSelecionado() {
-        grupoChipsProfissoes.setOnCheckedStateChangeListener((grupo, listaIds) -> {
-            filtraTrabalhoPorChipSelecionado(listaIds);
-        });
+        grupoChipsProfissoes.setOnCheckedStateChangeListener((grupo, listaIds) -> filtraTrabalhoPorChipSelecionado(listaIds));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void filtraTrabalhoPorChipSelecionado(List<Integer> listaIds) {
-        List<String> profissoesSelecionadas = new ArrayList<>();
         listaTrabalhosFiltrada.clear();
-        Log.d("configuraGrupo", "Tamnho da lista filtro"+listaTrabalhosFiltrada.size());
-        for (int id : listaIds) {
-            profissoesSelecionadas.add(listaProfissoes.get(id));
-        }
+        List<String> profissoesSelecionadas = defineListaDeProfissoesSelecionadas(listaIds);
         if (!profissoesSelecionadas.isEmpty()) {
             ArrayList<Trabalho> listaProfissaoEspecifica;
             for (String profissao : profissoesSelecionadas) {
-                Log.d("configuraGrupo", "Selecionada: "+profissao);
                 listaProfissaoEspecifica = (ArrayList<Trabalho>) todosTrabalhos.stream().filter(
                         trabalho -> stringContemString(trabalho.getProfissao(), profissao))
                         .collect(Collectors.toList());
                 listaTrabalhosFiltrada.addAll(listaProfissaoEspecifica);
             }
         } else {
-            listaTrabalhosFiltrada = todosTrabalhos;
+            listaTrabalhosFiltrada = (ArrayList<Trabalho>) todosTrabalhos.clone();
         }
         if (listaTrabalhosFiltrada.isEmpty()) {
-            Log.d("configuraGrupo", "Lista filtro vazia");
             listaTrabalhoEspecificoAdapter.limpaLista();
             Snackbar.make(binding.getRoot(), "Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
         } else {
-            listaTrabalhoEspecificoAdapter.setListaFiltrada(listaTrabalhosFiltrada);
+            listaTrabalhoEspecificoAdapter.atualizaLista(listaTrabalhosFiltrada);
         }
+    }
+
+    @NonNull
+    private List<String> defineListaDeProfissoesSelecionadas(List<Integer> listaIds) {
+        List<String> profissoesSelecionadas = new ArrayList<>();
+        for (int id : listaIds) {
+            profissoesSelecionadas.add(listaProfissoes.get(id));
+        }
+        return profissoesSelecionadas;
     }
 
     private void configuraGrupoChipsProfissoes() {
@@ -135,12 +128,7 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
     }
 
     private boolean profissaoNaoExiste(Trabalho trabalho) {
-        for (String profissao : listaProfissoes) {
-            if (comparaString(profissao, trabalho.getProfissao())) {
-                return false;
-            }
-        }
-        return true;
+        return !listaProfissoes.contains(trabalho.getProfissao());
     }
 
     @Override
@@ -159,6 +147,7 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
 
     private void configuraCampoDeVBusca(MenuItem itemBusca) {
         androidx.appcompat.widget.SearchView busca = (androidx.appcompat.widget.SearchView) itemBusca.getActionView();
+        assert busca != null;
         busca.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -178,14 +167,14 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void filtroLista(String texto) {
         if (!texto.isEmpty()) {
-            List<Trabalho> listaFiltrada =
-                    listaTrabalhosFiltrada.stream().filter(
+            ArrayList<Trabalho> listaFiltrada =
+                    (ArrayList<Trabalho>) listaTrabalhosFiltrada.stream().filter(
                             trabalho -> stringContemString(trabalho.getNome(), texto))
                             .collect(Collectors.toList());
             if (listaFiltrada.isEmpty()) {
                 Snackbar.make(binding.constrintLayoutListaNovaProducao, "Nem um trabalho encontrado!", Snackbar.LENGTH_LONG).show();
             }
-            listaTrabalhoEspecificoAdapter.setListaFiltrada(listaFiltrada);
+            listaTrabalhoEspecificoAdapter.atualizaLista(listaFiltrada);
         }
     }
 
@@ -235,53 +224,34 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
         finish();
     }
 
-    private void pegaTodosTrabalhos() {
-        todosTrabalhos = new ArrayList<>();
-        minhaReferencia.addListenerForSingleValueEvent(new ValueEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                todosTrabalhos.clear();
-                for (DataSnapshot dn : dataSnapshot.getChildren()) {
-                    Trabalho trabalho = dn.getValue(Trabalho.class);
-                    if (trabalho != null) {
-                        todosTrabalhos.add(trabalho);
-                    }
-                }
-                todosTrabalhos.sort(Comparator.comparing(Trabalho::getProfissao).thenComparing(Trabalho::getRaridade).thenComparing(Trabalho::getNivel).thenComparing(Trabalho::getNome));
-                configuraListaDeProfissoes();
-                configuraGrupoChipsProfissoes();
-                indicadorProgresso.setVisibility(View.GONE);
-                listaTrabalhoEspecificoAdapter.setListaFiltrada(todosTrabalhos);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Snackbar.make(binding.constrintLayoutListaNovaProducao, "Erro ao carregar dados: "+ databaseError, Snackbar.LENGTH_LONG).show();
-            }
-        });
-    }
-
     private void inicializaComponentes() {
         binding = ActivityListaNovaProducaoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         indicadorProgresso = binding.indicadorProgressoListaNovaProducao;
         meuRecycler = binding.recyclerViewListaNovaProducao;
-        FirebaseDatabase meuBanco = FirebaseDatabase.getInstance();
-        minhaReferencia = meuBanco.getReference(CHAVE_LISTA_TRABALHO);
         linearLayoutGruposChips = binding.linearLayoutGrupoChipsListaNovaProducao;
         grupoChipsProfissoes = binding.grupoProfissoesChipListaNovaProducao;
         listaProfissoes = new ArrayList<>();
         todosTrabalhos = new ArrayList<>();
         listaTrabalhosFiltrada = new ArrayList<>();
-        trabalhoDAO = new TrabalhoDAO();
+        ListaNovaProducaoViewModelFactory listaNovaProducaoViewModelFactory = new ListaNovaProducaoViewModelFactory(new TrabalhoRepository());
+        novaProducaoViewModel = new ViewModelProvider(this, listaNovaProducaoViewModelFactory).get(ListaNovaProducaoViewModel.class);
     }
-
     @Override
     protected void onResume() {
         super.onResume();
-//        trabalhoDAO.todos(listaTrabalhoEspecificoAdapter);
-        pegaTodosTrabalhos();
+        novaProducaoViewModel.pegaTodosTrabalhos().observe(this, arrayListResource -> {
+            if (arrayListResource.getDado() != null) {
+                todosTrabalhos = arrayListResource.getDado();
+                indicadorProgresso.setVisibility(View.GONE);
+                configuraListaDeProfissoes();
+                configuraGrupoChipsProfissoes();
+                listaTrabalhoEspecificoAdapter.atualizaLista(todosTrabalhos);
+            } else {
+                Snackbar.make(binding.getRoot(), "Erro: "+arrayListResource.getErro(), Snackbar.LENGTH_LONG).show();
+            }
+        });
+
     }
 
     @Override

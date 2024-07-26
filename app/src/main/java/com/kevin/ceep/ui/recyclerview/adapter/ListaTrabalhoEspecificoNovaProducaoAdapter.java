@@ -6,21 +6,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class ListaTrabalhoEspecificoNovaProducaoAdapter extends RecyclerView.Adapter<ListaTrabalhoEspecificoNovaProducaoAdapter.TrabalhoEspecificoNovaProducaoViewHolder> {
-    private List<Trabalho> trabalhos;
+    private ArrayList<Trabalho> trabalhos;
     private final Context context;
     private OnItemClickListener onItemClickListener;
 
-    public ListaTrabalhoEspecificoNovaProducaoAdapter(Context context, List<Trabalho> trabalhos) {
+    public ListaTrabalhoEspecificoNovaProducaoAdapter(Context context, ArrayList<Trabalho> trabalhos) {
         this.trabalhos = trabalhos;
         this.context = context;
     }
@@ -28,7 +30,7 @@ public class ListaTrabalhoEspecificoNovaProducaoAdapter extends RecyclerView.Ada
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
-    public void setListaFiltrada(List<Trabalho> listaFiltrada) {
+    public void atualizaLista(ArrayList<Trabalho> listaFiltrada) {
         this.trabalhos = listaFiltrada;
         notifyDataSetChanged();
     }
