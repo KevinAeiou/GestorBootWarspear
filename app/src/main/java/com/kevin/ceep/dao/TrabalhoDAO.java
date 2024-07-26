@@ -17,7 +17,7 @@ public class TrabalhoDAO {
     }
 
     public void todos(ListaTrabalhoEspecificoNovaProducaoAdapter listaTrabalhoEspecificoAdapter) {
-        trabalhoRepository.pegaTodosTrabalhos(listaTrabalhoEspecificoAdapter);
+        trabalhoRepository.pegaTodosTrabalhos();
     }
 
     public void insere(Trabalho... notas) {

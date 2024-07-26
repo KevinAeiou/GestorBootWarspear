@@ -26,7 +26,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
-import com.kevin.ceep.dao.TrabalhoDAO;
 import com.kevin.ceep.databinding.ActivityListaTodosTrabalhosBinding;
 import com.kevin.ceep.model.ProfissaoTrabalho;
 import com.kevin.ceep.model.Trabalho;
@@ -45,7 +44,6 @@ public class ListaTodosTrabalhosActivity extends AppCompatActivity {
     private List<Trabalho> todosTrabalhos;
     private ProgressBar indicadorProgresso;
     private DatabaseReference minhaReferencia;
-    private TrabalhoDAO trabalhoDAO;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +62,6 @@ public class ListaTodosTrabalhosActivity extends AppCompatActivity {
         meuRecycler = binding.recyclerViewProfissoesTrabalhos;
         FirebaseDatabase meuBanco = FirebaseDatabase.getInstance();
         minhaReferencia = meuBanco.getReference(CHAVE_LISTA_TRABALHO);
-        trabalhoDAO = new TrabalhoDAO();
 
     }
     private void configuraBotaoCadastraNovoTrabalho() {

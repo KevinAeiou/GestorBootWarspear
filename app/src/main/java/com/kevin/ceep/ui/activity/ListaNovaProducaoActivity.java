@@ -243,10 +243,11 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
         novaProducaoViewModel.pegaTodosTrabalhos().observe(this, arrayListResource -> {
             if (arrayListResource.getDado() != null) {
                 todosTrabalhos = arrayListResource.getDado();
+                listaTrabalhosFiltrada = (ArrayList<Trabalho>) todosTrabalhos.clone();
                 indicadorProgresso.setVisibility(View.GONE);
                 configuraListaDeProfissoes();
                 configuraGrupoChipsProfissoes();
-                listaTrabalhoEspecificoAdapter.atualizaLista(todosTrabalhos);
+                listaTrabalhoEspecificoAdapter.atualizaLista(listaTrabalhosFiltrada);
             } else {
                 Snackbar.make(binding.getRoot(), "Erro: "+arrayListResource.getErro(), Snackbar.LENGTH_LONG).show();
             }

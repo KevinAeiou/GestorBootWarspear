@@ -43,13 +43,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
-import com.kevin.ceep.dao.TrabalhoEstoqueDAO;
 import com.kevin.ceep.dao.TrabalhoDAO;
+import com.kevin.ceep.dao.TrabalhoEstoqueDAO;
 import com.kevin.ceep.dao.TrabalhoProducaoDAO;
 import com.kevin.ceep.databinding.ActivityTrabalhoEspecificoBinding;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoProducao;
-import com.kevin.ceep.repository.TrabalhoProducaoRepository;
 
 import java.util.ArrayList;
 import java.util.Objects;
