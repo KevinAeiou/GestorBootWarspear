@@ -8,6 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -62,8 +64,16 @@ public class TrabalhoRepository {
         minhaReferencia.child(trabalhoModificado.getId()).setValue(trabalhoModificado);
     }
 
-    public void salvaNovoTrabalho(Trabalho novoTrabalho) {
-        minhaReferencia.child(novoTrabalho.getId()).setValue(novoTrabalho);
+    public LiveData<Resource<Void>> salvaNovoTrabalho(Trabalho novoTrabalho) {
+        MutableLiveData<Resource<Void>> liveData = new  MutableLiveData<>();
+        minhaReferencia.child(novoTrabalho.getId()).setValue(novoTrabalho).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                liveData.setValue(new Resource<>(null, null));
+            } else if (task.isCanceled()) {
+                liveData.setValue(new Resource<>(null, task.getException().toString()));
+            }
+        });
+        return liveData;
     }
 
     public void excluiTrabalho(Trabalho trabalhoRecebido) {

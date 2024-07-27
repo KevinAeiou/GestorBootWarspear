@@ -29,6 +29,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -49,6 +50,9 @@ import com.kevin.ceep.dao.TrabalhoProducaoDAO;
 import com.kevin.ceep.databinding.ActivityTrabalhoEspecificoBinding;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoProducao;
+import com.kevin.ceep.repository.TrabalhoRepository;
+import com.kevin.ceep.ui.viewModel.TrabalhoEspecificoViewModel;
+import com.kevin.ceep.ui.viewModel.factory.TrabalhoEspecificoViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -76,6 +80,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private TrabalhoEstoqueDAO trabalhoEstoqueDAO;
     private TrabalhoDAO trabalhoDAO;
     private TrabalhoProducaoDAO trabalhoProducaoDAO;
+    private TrabalhoEspecificoViewModel trabalhoEspecificoViewModel;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -123,6 +128,9 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         btnExcluir = binding.btnExcluiTrabalhoEspecifico;
 
         estadosTrabalho = getResources().getStringArray(R.array.estados);
+
+        TrabalhoEspecificoViewModelFactory trabalhoEspecificoViewModelFactory = new TrabalhoEspecificoViewModelFactory(new TrabalhoRepository());
+        trabalhoEspecificoViewModel = new ViewModelProvider(this, trabalhoEspecificoViewModelFactory).get(TrabalhoEspecificoViewModel.class);
         trabalhoDAO = new TrabalhoDAO();
     }
     private void pegaTodosTrabalhosComunsMelhorados() {
@@ -239,32 +247,21 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
             } else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO) {
                 if (verificaCamposNovoTrabalho()) {
                     Trabalho novoTrabalho = defineNovoTrabalho(trabalhoNecessario);
-                    trabalhoDAO.salvaNovoTrabalho(novoTrabalho);
-                    edtNomeTrabalho.setText("");
-                    edtNomeProducaoTrabalho.setText("");
-                    edtNomeTrabalho.requestFocus();
+                    trabalhoEspecificoViewModel.salvaNovoTrabalho(novoTrabalho).observe(this, resultado -> {
+                        indicadorProgresso.setVisibility(View.GONE);
+                        if (resultado.getErro() != null) {
+                            Snackbar.make(binding.getRoot(), "Erro: "+resultado.getErro(), Snackbar.LENGTH_LONG).show();
+                        } else {
+                            Snackbar.make(binding.getRoot(), novoTrabalho.getNome()+" cadastrado!", Snackbar.LENGTH_LONG).show();
+                            edtNomeTrabalho.setText("");
+                            edtNomeProducaoTrabalho.setText("");
+                            edtNomeTrabalho.requestFocus();
+                        }
+                    });
                 }
             }
         }
         return super.onOptionsItemSelected(item);
-    }
-    private void runThread(TrabalhoProducao trabalhoModificado) {
-        Log.d("segundoPlano", "runThread: inicializou segundo plano");
-        new Thread() {
-            public void run() {
-                int i =0;
-                while (i++ < 1000) {
-                    try {
-                        runOnUiThread(() -> {
-                        });
-                        Thread.sleep(300);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }.start();
-        Log.d("segundoPlano", "runThread: finalizou segundo plano");
     }
     private void recuperaValoresCampos() {
         nome = Objects.requireNonNull(edtNomeTrabalho.getText()).toString().trim();
@@ -327,7 +324,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 }
             }
         } if (trabalhosNecessarios.isEmpty()){
-            Snackbar.make(binding.getRoot(), "Trabalho necessário não encontrado!", Snackbar.LENGTH_LONG).show();
             trabalhosNecessarios.clear();
             trabalhosNecessarios.add("Nada encontrado");
         }
