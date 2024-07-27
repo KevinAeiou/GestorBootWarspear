@@ -13,6 +13,10 @@ public class TrabalhoEspecificoViewModel extends ViewModel {
     }
 
     public LiveData<Resource<Void>> salvaNovoTrabalho(Trabalho novoTrabalho) {
-        return trabalhoRepository.salvaNovoTrabalho(novoTrabalho);
+        if (novoTrabalho.getId() == null) {
+            return trabalhoRepository.salvaNovoTrabalho(novoTrabalho);
+        } else {
+            return trabalhoRepository.modificaTrabalho(novoTrabalho);
+        }
     }
 }

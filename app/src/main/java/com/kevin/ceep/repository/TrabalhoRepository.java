@@ -1,6 +1,7 @@
 package com.kevin.ceep.repository;
 
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
+import static com.kevin.ceep.utilitario.Utilitario.geraIdAleatorio;
 
 import android.os.Build;
 
@@ -8,8 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -19,6 +18,7 @@ import com.kevin.ceep.model.Trabalho;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Objects;
 
 public class TrabalhoRepository {
     private final DatabaseReference minhaReferencia;
@@ -60,17 +60,27 @@ public class TrabalhoRepository {
         return trabalhosEncontrados;
     }
 
-    public void modificaTrabalho(Trabalho trabalhoModificado) {
-        minhaReferencia.child(trabalhoModificado.getId()).setValue(trabalhoModificado);
+    public LiveData<Resource<Void>> modificaTrabalho(Trabalho trabalhoModificado) {
+        MutableLiveData<Resource<Void>> liveData = new  MutableLiveData<>();
+        minhaReferencia.child(trabalhoModificado.getId()).setValue(trabalhoModificado).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                liveData.setValue(new Resource<>(null, null));
+            } else if (task.isCanceled()) {
+                liveData.setValue(new Resource<>(null, Objects.requireNonNull(task.getException()).toString()));
+            }
+        });
+        return liveData;
     }
 
     public LiveData<Resource<Void>> salvaNovoTrabalho(Trabalho novoTrabalho) {
         MutableLiveData<Resource<Void>> liveData = new  MutableLiveData<>();
+        String novoId = geraIdAleatorio();
+        novoTrabalho.setId(novoId);
         minhaReferencia.child(novoTrabalho.getId()).setValue(novoTrabalho).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 liveData.setValue(new Resource<>(null, null));
             } else if (task.isCanceled()) {
-                liveData.setValue(new Resource<>(null, task.getException().toString()));
+                liveData.setValue(new Resource<>(null, Objects.requireNonNull(task.getException()).toString()));
             }
         });
         return liveData;

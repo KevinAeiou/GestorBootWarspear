@@ -10,7 +10,6 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICA
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INVALIDA;
 import static com.kevin.ceep.utilitario.Utilitario.comparaString;
-import static com.kevin.ceep.utilitario.Utilitario.geraIdAleatorio;
 import static com.kevin.ceep.utilitario.Utilitario.stringContemString;
 
 import android.annotation.SuppressLint;
@@ -241,7 +240,14 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
             } else if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO) {
                 if (verificaTrabalhoModificado()) {
                     Trabalho trabalhoModificado = defineTrabalhoModificado(trabalhoNecessario);
-                    trabalhoDAO.modificaTrabalho(trabalhoModificado);
+                    trabalhoEspecificoViewModel.salvaNovoTrabalho(trabalhoModificado).observe(this, resultado -> {
+                        indicadorProgresso.setVisibility(View.GONE);
+                        if (resultado.getErro() == null) {
+                            finish();
+                        } else {
+                            Snackbar.make(binding.getRoot(), "Erro: "+resultado.getErro(), Snackbar.LENGTH_LONG).show();
+                        }
+                    });
                 }
                 finish();
             } else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO) {
@@ -324,7 +330,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 }
             }
         } if (trabalhosNecessarios.isEmpty()){
-            trabalhosNecessarios.clear();
             trabalhosNecessarios.add("Nada encontrado");
         }
         trabalhoNecessarioAdapter = new ArrayAdapter<>(getApplication(), R.layout.item_dropdrown, trabalhosNecessarios);
@@ -548,9 +553,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     }
 
     private Trabalho defineNovoTrabalho(String trabalhoNecessario) {
-        String novoId = geraIdAleatorio();
         return new Trabalho(
-                novoId,
+                null,
                 nome,
                 nomeProducao,
                 profissao,

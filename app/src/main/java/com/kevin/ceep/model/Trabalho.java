@@ -63,6 +63,10 @@ public class Trabalho implements Serializable {
         return id;
     }
 
+    public void setId(String novoId) {
+        this.id = novoId;
+    }
+
     public Integer getExperiencia() {
         return experiencia;
     }
