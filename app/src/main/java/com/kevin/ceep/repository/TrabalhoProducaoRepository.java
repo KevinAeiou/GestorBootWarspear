@@ -6,6 +6,7 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,18 +26,15 @@ public class TrabalhoProducaoRepository {
                 .child(personagemID).child(CHAVE_LISTA_DESEJO);
     }
 
-    public MutableLiveData<Boolean> modificaTrabalhoProducaoServidor(TrabalhoProducao trabalhoModificado) {
-        MutableLiveData<Boolean> confirmacao = new MutableLiveData<>(false);
+    public LiveData<Resource<Void>> modificaTrabalhoProducaoServidor(TrabalhoProducao trabalhoModificado) {
+        MutableLiveData<Resource<Void>> confirmacao = new MutableLiveData<>();
         minhaReferenciaListaDeDesejos.child(trabalhoModificado.getId()).setValue(trabalhoModificado).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        confirmacao.setValue(true);
-                        Log.d("segundoPlano", "modificaTrabalhoProducaoServidor: Sucesso");
+                        confirmacao.setValue(new Resource<>(null, null));
                     } else if (task.isCanceled()) {
-                        confirmacao.setValue(false);
-                        Log.d("segundoPlano", "modificaTrabalhoProducaoServidor: Falha");
+                        confirmacao.setValue(new Resource<>(null, task.getException().toString()));
                     }
                 });
-        Log.d("segundoPlano", "modificaTrabalhoProducaoServidor: retornou: "+ confirmacao.getValue());
         return confirmacao;
     }
 }

@@ -86,7 +86,15 @@ public class TrabalhoRepository {
         return liveData;
     }
 
-    public void excluiTrabalho(Trabalho trabalhoRecebido) {
-        minhaReferencia.child(trabalhoRecebido.getId()).removeValue();
+    public LiveData<Resource<Void>> excluiTrabalho(Trabalho trabalhoRecebido) {
+        MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
+        minhaReferencia.child(trabalhoRecebido.getId()).removeValue().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                liveData.setValue(new Resource<>(null, null));
+            } else if (task.isCanceled()) {
+                liveData.setValue(new Resource<>(null, Objects.requireNonNull(task.getException()).toString()));
+            }
+        });
+        return liveData;
     }
 }
