@@ -47,7 +47,7 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
     private ProgressBar indicadorProgresso;
     private RecyclerView meuRecycler;
     private ListaTrabalhoEspecificoNovaProducaoAdapter listaTrabalhoEspecificoAdapter;
-    private String personagemId;
+    private String personagemId, textoFiltro;
     private HorizontalScrollView linearLayoutGruposChips;
     private ChipGroup grupoChipsProfissoes;
     private ArrayList<String> listaProfissoes;
@@ -66,11 +66,11 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void configuraChipSelecionado() {
-        grupoChipsProfissoes.setOnCheckedStateChangeListener((grupo, listaIds) -> filtraTrabalhoPorChipSelecionado(listaIds));
+        grupoChipsProfissoes.setOnCheckedStateChangeListener((grupo, listaIds) -> filtraTrabalhoPorProfissaoSelecionada(listaIds));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void filtraTrabalhoPorChipSelecionado(List<Integer> listaIds) {
+    private void filtraTrabalhoPorProfissaoSelecionada(List<Integer> listaIds) {
         listaTrabalhosFiltrada.clear();
         List<String> profissoesSelecionadas = defineListaDeProfissoesSelecionadas(listaIds);
         if (!profissoesSelecionadas.isEmpty()) {
@@ -84,12 +84,7 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
         } else {
             listaTrabalhosFiltrada = (ArrayList<Trabalho>) todosTrabalhos.clone();
         }
-        if (listaTrabalhosFiltrada.isEmpty()) {
-            listaTrabalhoEspecificoAdapter.limpaLista();
-            Snackbar.make(binding.getRoot(), "Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
-        } else {
-            listaTrabalhoEspecificoAdapter.atualizaLista(listaTrabalhosFiltrada);
-        }
+        filtroLista();
     }
 
     @NonNull
@@ -135,17 +130,22 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_personagem, menu);
+        MenuItem itemBusca = configuraItemDeBusca(menu);
+        configuraCampoDeBusca(itemBusca);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @NonNull
+    private MenuItem configuraItemDeBusca(Menu menu) {
         MenuItem itemBusca = menu.findItem(R.id.itemMenuBusca);
         itemBusca.setOnMenuItemClickListener(item -> {
             linearLayoutGruposChips.setVisibility(View.VISIBLE);
             return true;
         });
-
-        configuraCampoDeVBusca(itemBusca);
-        return super.onCreateOptionsMenu(menu);
+        return itemBusca;
     }
 
-    private void configuraCampoDeVBusca(MenuItem itemBusca) {
+    private void configuraCampoDeBusca(MenuItem itemBusca) {
         androidx.appcompat.widget.SearchView busca = (androidx.appcompat.widget.SearchView) itemBusca.getActionView();
         assert busca != null;
         busca.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -157,7 +157,8 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String texto) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    filtroLista(texto);
+                    textoFiltro = texto;
+                    filtroLista();
                 }
                 return false;
             }
@@ -165,16 +166,18 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void filtroLista(String texto) {
-        if (!texto.isEmpty()) {
+    private void filtroLista() {
+        if (!textoFiltro.isEmpty()) {
             ArrayList<Trabalho> listaFiltrada =
                     (ArrayList<Trabalho>) listaTrabalhosFiltrada.stream().filter(
-                            trabalho -> stringContemString(trabalho.getNome(), texto))
+                            trabalho -> stringContemString(trabalho.getNome(), textoFiltro))
                             .collect(Collectors.toList());
             if (listaFiltrada.isEmpty()) {
                 Snackbar.make(binding.constrintLayoutListaNovaProducao, "Nem um trabalho encontrado!", Snackbar.LENGTH_LONG).show();
             }
             listaTrabalhoEspecificoAdapter.atualizaLista(listaFiltrada);
+        } else {
+            listaTrabalhoEspecificoAdapter.atualizaLista(listaTrabalhosFiltrada);
         }
     }
 
