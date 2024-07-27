@@ -44,6 +44,7 @@ import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.ActivityTrabalhoEspecificoBinding;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoProducao;
+import com.kevin.ceep.repository.TrabalhoEstoqueRepository;
 import com.kevin.ceep.repository.TrabalhoProducaoRepository;
 import com.kevin.ceep.repository.TrabalhoRepository;
 import com.kevin.ceep.ui.viewModel.TrabalhoEspecificoViewModel;
@@ -159,7 +160,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         if (dadosRecebidos != null && dadosRecebidos.hasExtra(CHAVE_TRABALHO)){
             codigoRequisicao = (int) dadosRecebidos.getSerializableExtra(CHAVE_TRABALHO);
             String personagemId = (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
-            TrabalhoEspecificoViewModelFactory trabalhoEspecificoViewModelFactory = new TrabalhoEspecificoViewModelFactory(new TrabalhoRepository(), new TrabalhoProducaoRepository(personagemId));
+            TrabalhoEspecificoViewModelFactory trabalhoEspecificoViewModelFactory = new TrabalhoEspecificoViewModelFactory(new TrabalhoRepository(), new TrabalhoProducaoRepository(personagemId), new TrabalhoEstoqueRepository(personagemId));
             trabalhoEspecificoViewModel = new ViewModelProvider(this, trabalhoEspecificoViewModelFactory).get(TrabalhoEspecificoViewModel.class);
             if (codigoRequisicao != CODIGO_REQUISICAO_INVALIDA){
                 if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO){
@@ -220,7 +221,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                                         switch (estado) {
                                             case 1:
                                                 if (trabalhoModificado.possueTrabalhoNecessarioValido()) {
-//                                                    trabalhoEstoqueDAO.modificaQuantidadeTrabalhoNecessarioNoEstoque(trabalhoModificado);
+                                                    trabalhoEspecificoViewModel.modificaQuantidadeTrabalhoNecessarioNoEstoque(trabalhoModificado);
                                                 }
                                                 break;
                                             case 2:

@@ -10,6 +10,8 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -31,7 +33,8 @@ public class TrabalhoEstoqueRepository {
                 .child(personagemID).child(CHAVE_LISTA_ESTOQUE);
     }
 
-    public void modificaQuantidadeTrabalhoNecessarioNoEstoque(TrabalhoProducao trabalhoProducao) {
+    public LiveData<Resource<Void>> modificaQuantidadeTrabalhoNecessarioNoEstoque(TrabalhoProducao trabalhoProducao) {
+        LiveData<Resource<Void>> liveData = new MutableLiveData<>();
         String[] listaTrabalhosNecessarios = trabalhoProducao.getTrabalhoNecessario().split(",");
         minhaReferencia.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -58,6 +61,7 @@ public class TrabalhoEstoqueRepository {
 
                     }
                 });
+        return liveData;
     }
 
     private void alteraQuantidadeTrabalhoNoEstoque(TrabalhoEstoque trabalho, int novaQuantidade) {
@@ -66,7 +70,7 @@ public class TrabalhoEstoqueRepository {
         }
     }
 
-    public void modificaTrabalhoNoEstoque(TrabalhoProducao trabalhoConcluido) {
+    public LiveData<Resource<Void>> modificaTrabalhoNoEstoque(TrabalhoProducao trabalhoConcluido) {
         minhaReferencia.addListenerForSingleValueEvent(new ValueEventListener() {
                     @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
@@ -94,6 +98,7 @@ public class TrabalhoEstoqueRepository {
 
                     }
                 });
+        return null;
     }
 
     @NonNull
