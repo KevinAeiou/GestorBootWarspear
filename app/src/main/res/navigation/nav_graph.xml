@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/listaTrabalhosProducaoFragment">
+
+    <fragment
+        android:id="@+id/listaTrabalhosProducaoFragment"
+        android:name="com.kevin.ceep.ui.fragment.ListaTrabalhosProducaoFragment"
+        android:label="Lista de produtos"
+        tools:layout="@layout/fragment_lista_trabalhos_producao">
+        <action
+            android:id="@+id/action_listaTrabalhosProducaoFragment_to_listaEstoqueFragment"
+            app:destination="@id/listaEstoqueFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/listaEstoqueFragment"
+        android:name="com.kevin.ceep.ui.fragment.ListaEstoqueFragment"
+        android:label="Estoque"
+        tools:layout="@layout/fragment_lista_estoque">
+        <action
+            android:id="@+id/action_listaEstoqueFragment_to_listaProdutosVendidosFragment"
+            app:destination="@id/listaProdutosVendidosFragment" />
+        <action
+            android:id="@+id/action_listaEstoqueFragment_to_listaTrabalhosProducaoFragment"
+            app:destination="@id/listaTrabalhosProducaoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/listaProdutosVendidosFragment"
+        android:name="com.kevin.ceep.ui.fragment.ListaProdutosVendidosFragment"
+        android:label="Produtos vendidos"
+        tools:layout="@layout/fragment_lista_produtos_vendidos">
+        <action
+            android:id="@+id/action_listaProdutosVendidosFragment_to_listaProfissoesFragment"
+            app:destination="@id/listaProfissoesFragment" />
+        <action
+            android:id="@+id/action_listaProdutosVendidosFragment_to_listaEstoqueFragment"
+            app:destination="@id/listaEstoqueFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/listaProfissoesFragment"
+        android:name="com.kevin.ceep.ui.fragment.ListaProfissoesFragment"
+        android:label="Profissões"
+        tools:layout="@layout/fragment_lista_profissoes">
+        <action
+            android:id="@+id/action_listaProfissoesFragment_to_listaProdutosVendidosFragment"
+            app:destination="@id/listaProdutosVendidosFragment" />
+    </fragment>
+</navigation>

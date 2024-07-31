@@ -28,9 +28,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,6 +41,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
+import com.kevin.ceep.databinding.ActivityMainBinding;
 import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.ui.fragment.ListaEstoqueFragment;
 import com.kevin.ceep.ui.fragment.ListaProdutosVendidosFragment;
@@ -48,35 +52,58 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class MenuNavegacaoLateral extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private ActivityMainBinding binding;
+    private AppBarConfiguration appBarConfiguration;
     private DrawerLayout drawerLayout;
     private List<Personagem> personagens;
     private String idPersonagemRecebido;
     private NavigationView navigationView;
     private Personagem personagemSelecionado;
-    private CircularProgressIndicator indicadorProgresso;
     private TextView txtCabecalhoNome, txtCabecalhoEstado, txtCabecalhoUso, txtCabecalhoEspacoProducao;
     private int itemNavegacao;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_menu_navegacao_lateral);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        inicializaComponentes();
+        /*setSupportActionBar(binding.appBarMain.toolbar);
+        binding.appBarMain.floatingActionButton.setOnClickListener(v -> {
 
+        });
+        DrawerLayout drawer = binding.drawerLayout;
+        NavigationView navigation = binding.navegacaoView;
+        appBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.nav_trabalhos, R.id.nav_estoque, R.id.nav_produtos_vendidos, R.id.nav_profissoes)
+                .setOpenableLayout(drawer)
+                .build();
+        NavController navControler = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+        NavigationUI.setupActionBarWithNavController(this, navControler, appBarConfiguration);
+        NavigationUI.setupWithNavController(navigation, navControler);*/
         configuraToolbar();
-
+        inicializaComponentes();
         navigationView.bringToFront();
         configuraToogle();
-
         navigationView.setNavigationItemSelectedListener(this);
         pegaTodosPersonagens();
-
         navigationView.setCheckedItem(itemNavegacao);
-        Log.d("menuNavegacao", "Definiu item: " + itemNavegacao);
+    }
+/*
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+        return NavigationUI.navigateUp(navController, appBarConfiguration)
+                || super.onSupportNavigateUp();
+    }
+*/
     private void configuraSubMenuPersonagem() {
         Menu menuNavigation = navigationView.getMenu();
         MenuItem menuPersonagens = menuNavigation.findItem(R.id.nav_lista_personagem);
@@ -113,7 +140,6 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         itemNavegacao = recebeDadosIntent(itemNavegacao);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navegacao_view);
-        indicadorProgresso = findViewById(R.id.indicadorProgressoMenuNavegacao);
         View cabecalho = navigationView.getHeaderView(0);
         txtCabecalhoNome = cabecalho.findViewById(R.id.txtCabecalhoNomePersonagem);
         txtCabecalhoEstado = cabecalho.findViewById(R.id.txtCabecalhoEstadoPersonagem);
@@ -249,7 +275,6 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
                             personagens.add(personagem);
                         }
                         configuraSubMenuPersonagem();
-                        indicadorProgresso.setVisibility(View.GONE);
                     }
 
                     @Override
