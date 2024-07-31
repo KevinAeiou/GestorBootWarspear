@@ -91,4 +91,8 @@ public class Profissao implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
+
+    public void setExperiencia(int experiencia) {
+        this.experiencia = experiencia;
+    }
 }

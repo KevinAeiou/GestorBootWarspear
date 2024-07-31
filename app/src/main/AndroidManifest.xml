@@ -51,9 +51,6 @@
         <activity
             android:name=".ui.activity.ListaTodosTrabalhosActivity"
             android:exported="false" />
-        <activity
-            android:name=".ui.activity.ListaProfissoesActivity"
-            android:exported="false" />
     </application>
 
 </manifest>

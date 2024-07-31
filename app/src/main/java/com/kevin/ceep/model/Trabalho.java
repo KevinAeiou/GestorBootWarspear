@@ -1,6 +1,5 @@
 package com.kevin.ceep.model;
 
-import static com.kevin.ceep.utilitario.Utilitario.comparaString;
 import static com.kevin.ceep.utilitario.Utilitario.limpaString;
 
 import android.content.res.Resources;
@@ -89,6 +88,6 @@ public class Trabalho implements Serializable {
     }
 
     private List<String> recuperaListaRecursos() {
-        return Arrays.asList(Resources.getSystem().getStringArray(R.array.producaoRecursos));
+        return new ArrayList<>(Arrays.asList(Resources.getSystem().getStringArray(R.array.producaoRecursos)));
     }
 }

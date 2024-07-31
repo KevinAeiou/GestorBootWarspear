@@ -4,54 +4,57 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_ESTO
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_ESTOQUE;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 
+import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
+import com.kevin.ceep.databinding.FragmentListaEstoqueBinding;
+import com.kevin.ceep.databinding.FragmentListaProfissoesBinding;
 import com.kevin.ceep.model.ProdutoVendido;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
+import com.kevin.ceep.model.TrabalhoProducao;
+import com.kevin.ceep.repository.TrabalhoEstoqueRepository;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEspecificoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEstoqueAdapter;
+import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoProducaoAdapter;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
+import com.kevin.ceep.ui.viewModel.TrabalhoEstoqueViewModel;
+import com.kevin.ceep.ui.viewModel.factory.TrabalhoEstoqueViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 public class ListaEstoqueFragment extends Fragment {
+    private FragmentListaEstoqueBinding binding;
     private ListaTrabalhoEstoqueAdapter trabalhoEstoqueAdapter;
-    private DatabaseReference minhaReferencia;
     private RecyclerView recyclerView;
-    private List<TrabalhoEstoque> trabalhos;
-    private String usuarioId, personagemId;
+    private ArrayList<TrabalhoEstoque> todosTrabalhosEstoque;
+    private String personagemId;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private ConstraintLayout layoutFragmentoEstoque;
+    private ProgressBar indicadorDeProgresso;
+    private TrabalhoEstoqueViewModel trabalhoEstoqueViewModel;
     public ListaEstoqueFragment() {
-        // Required empty public constructor
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,16 +72,17 @@ public class ListaEstoqueFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        binding = FragmentListaEstoqueBinding.inflate(inflater, container, false);
         requireActivity().setTitle(CHAVE_TITULO_ESTOQUE);
-        return inflater.inflate(R.layout.fragment_lista_estoque, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        inicializaComponentes(view);
-        atualizaListaEstoque();
+        inicializaComponentes();
+        configuraRecyclerView();
+        configuraDeslizeItem();
         configuraSwipeRefreshLayout();
     }
     private void configuraSwipeRefreshLayout() {
@@ -89,19 +93,32 @@ public class ListaEstoqueFragment extends Fragment {
         });
     }
 
-    private void inicializaComponentes(View view) {
-        usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        recyclerView = view.findViewById(R.id.listaTrabalhoEstoqueRecyclerView);
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        minhaReferencia = database.getReference(CHAVE_USUARIOS);
-        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutTrabalhosEstoque);
-        layoutFragmentoEstoque = view.findViewById(R.id.constraintLayoutFragmentoListaEstoque);
-    }
     private void atualizaListaEstoque() {
-        List<TrabalhoEstoque> todosTrabalhosEstoque = pegaTodosTrabalhosEstoque();
-        configuraRecyclerView(todosTrabalhosEstoque);
+        trabalhoEstoqueViewModel.pegaTodosTrabalhosEstoque().observe(getViewLifecycleOwner(), resultado -> {
+            todosTrabalhosEstoque = resultado.getDado();
+            if (todosTrabalhosEstoque != null) {
+                indicadorDeProgresso.setVisibility(View.GONE);
+                swipeRefreshLayout.setRefreshing(false);
+                if (todosTrabalhosEstoque.isEmpty()) {
+                    Snackbar.make(binding.getRoot(), "Estoque vazio", Snackbar.LENGTH_LONG).show();
+                } else {
+                    trabalhoEstoqueAdapter.atualiza(todosTrabalhosEstoque);
+                }
+            } else if (resultado.getErro() != null) {
+                Snackbar.make(binding.getRoot(), "Erro: "+resultado.getErro(), Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
-    private void configuraRecyclerView(List<TrabalhoEstoque> todosTrabalhosEstoque) {
+
+    private void inicializaComponentes() {
+        recyclerView = binding.listaTrabalhoEstoqueRecyclerView;
+        swipeRefreshLayout = binding.swipeRefreshLayoutTrabalhosEstoque;
+        indicadorDeProgresso = binding.indicadorProgressoListaEstoqueFragment;
+        todosTrabalhosEstoque = new ArrayList<>();
+        TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository(personagemId));
+        trabalhoEstoqueViewModel = new ViewModelProvider(this, trabalhoEstoqueViewModelFactory).get(TrabalhoEstoqueViewModel.class);
+    }
+    private void configuraRecyclerView() {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         configuraAdapter(todosTrabalhosEstoque, recyclerView);
@@ -132,71 +149,94 @@ public class ListaEstoqueFragment extends Fragment {
         });
     }
 
-    private void alteraQuantidade(TrabalhoEstoque trabalhoEstoque, int adapterPosition, int botaoId) {
-        int novaQuantidade = trabalhoEstoque.getQuantidade();
-        if (botaoId == R.id.itemBotaoMenosUm && trabalhoEstoque.getQuantidade() > 0){
-            novaQuantidade -= 1;
-        } else if (botaoId == R.id.itemBotaoMenosCinquenta && trabalhoEstoque.getQuantidade() > 0) {
-            novaQuantidade -= 50;
-            if (novaQuantidade < 0) {
-                novaQuantidade = 0;
-            }
-        } else if (botaoId == R.id.itemBotaoMaisUm){
-            novaQuantidade += 1;
-        } else if (botaoId == R.id.itemBotaoMaisCinquenta) {
-            novaQuantidade += 50;
+    @SuppressLint("NonConstantResourceId")
+    private void alteraQuantidade(TrabalhoEstoque trabalhoEstoqueModificado, int adapterPosition, int botaoId) {
+        int novaQuantidade = trabalhoEstoqueModificado.getQuantidade();
+        switch (botaoId) {
+            case R.id.itemBotaoMenosUm:
+                if (trabalhoEstoqueModificado.getQuantidade() > 0) {
+                    novaQuantidade -= 1;
+                }
+                break;
+            case R.id.itemBotaoMaisUm:
+                novaQuantidade += 1;
+                break;
+            case R.id.itemBotaoMenosCinquenta:
+                if (trabalhoEstoqueModificado.getQuantidade() > 0) {
+                    novaQuantidade -= 50;
+                    if (novaQuantidade < 0) {
+                        novaQuantidade = 0;
+                    }
+                }
+                break;
+            case R.id.itemBotaoMaisCinquenta:
+                novaQuantidade += 50;
+                break;
         }
-        int finalNovaQuantidade = novaQuantidade;
-        minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
-                    .child(personagemId).child(CHAVE_LISTA_ESTOQUE)
-                    .child(trabalhoEstoque.getId()).child("quantidade")
-                    .setValue(novaQuantidade, ((databaseError, databaseReference) -> {
-                        if (databaseError != null){
-                            Snackbar.make(layoutFragmentoEstoque,databaseError.getMessage(),Snackbar.LENGTH_SHORT).show();
-                        } else {
-                            TrabalhoEstoque trabalhoAlterado = new TrabalhoEstoque(
-                                    trabalhoEstoque.getId(),
-                                    trabalhoEstoque.getNome(),
-                                    trabalhoEstoque.getNomeProducao(),
-                                    trabalhoEstoque.getProfissao(),
-                                    trabalhoEstoque.getRaridade(),
-                                    trabalhoEstoque.getTrabalhoNecessario(),
-                                    trabalhoEstoque.getNivel(),
-                                    trabalhoEstoque.getExperiencia(),
-                                    finalNovaQuantidade);
-                            Snackbar.make(layoutFragmentoEstoque,"Quantidade alterada!",Snackbar.LENGTH_SHORT).show();
-                            trabalhoEstoqueAdapter.altera(adapterPosition,trabalhoAlterado);
+        trabalhoEstoqueModificado.setQuantidade(novaQuantidade);
+        trabalhoEstoqueViewModel.modificaQuantidadeTrabalhoEspecificoNoEstoque(trabalhoEstoqueModificado).observe(this, resultado -> {
+            if (resultado.getErro() != null) {
+                Snackbar.make(binding.getRoot(),resultado.getErro(),Snackbar.LENGTH_SHORT).show();
+            } else {
+                trabalhoEstoqueAdapter.altera(adapterPosition,trabalhoEstoqueModificado);
+            }
+        });
+    }
+    private void configuraDeslizeItem() {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int itemPosicao = viewHolder.getAdapterPosition();
+                ListaTrabalhoEstoqueAdapter trabalhoAdapter = (ListaTrabalhoEstoqueAdapter) recyclerView.getAdapter();
+                if (trabalhoAdapter != null) {
+                    TrabalhoEstoque trabalhoremovido = todosTrabalhosEstoque.get(itemPosicao);
+                    trabalhoAdapter.remove(itemPosicao);
+                    Snackbar snackbarDesfazer = Snackbar.make(binding.getRoot(), trabalhoremovido.getNome()+ " excluido", Snackbar.LENGTH_LONG);
+                    snackbarDesfazer.addCallback(new Snackbar.Callback(){
+                        @Override
+                        public void onDismissed(Snackbar transientBottomBar, int event) {
+                            super.onDismissed(transientBottomBar, event);
+                            if (event != DISMISS_EVENT_ACTION){
+                                removeTrabalhoDoBanco(trabalhoremovido);
+                                removeTrabalhoDaLista(trabalhoremovido);
+                            }
                         }
-                    }));
+                    });
+                    snackbarDesfazer.setAction(getString(R.string.stringDesfazer), v -> trabalhoEstoqueAdapter.adiciona(trabalhoremovido, itemPosicao));
+                    snackbarDesfazer.show();
+                }
+            }
+        };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    private List<TrabalhoEstoque> pegaTodosTrabalhosEstoque() {
-        trabalhos = new ArrayList<>();
-        Log.d("fragmentoEstoque","ID do usuario: "+usuarioId);
-        minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
-                child(personagemId).child(CHAVE_LISTA_ESTOQUE).
-                addValueEventListener(new ValueEventListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.N)
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        trabalhos.clear();
-                        for (DataSnapshot dn:dataSnapshot.getChildren()){
-                            TrabalhoEstoque trabalho = dn.getValue(TrabalhoEstoque.class);
-                            if (trabalho != null && trabalho.getNome().equals("Licença de produção do aprendiz")) {
-                                trabalho.setProfissao("");
-                            }
-                            trabalhos.add(trabalho);
-                        }
-                        trabalhos.sort(Comparator.comparing(TrabalhoEstoque::getProfissao).thenComparing(Trabalho::getNivel).thenComparing(Trabalho::getRaridade).thenComparing(TrabalhoEstoque::getNome));
-                        trabalhoEstoqueAdapter.notifyDataSetChanged();
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
+    private void removeTrabalhoDaLista(TrabalhoEstoque trabalhoRemovido) {
+        todosTrabalhosEstoque.remove(trabalhoRemovido);
+    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+    private void removeTrabalhoDoBanco(TrabalhoEstoque trabalhoremovido) {
+        trabalhoEstoqueViewModel.deletaTrabalhoEstoque(trabalhoremovido).observe(this, resultadoRemoveTrabalho -> {
+            if (resultadoRemoveTrabalho.getErro() != null) {
 
-                    }
-                });
-        return trabalhos;
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        atualizaListaEstoque();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        binding = null;
     }
 }

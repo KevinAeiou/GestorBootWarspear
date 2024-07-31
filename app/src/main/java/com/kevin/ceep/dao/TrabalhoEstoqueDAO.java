@@ -13,8 +13,4 @@ public class TrabalhoEstoqueDAO {
     public void modificaQuantidadeTrabalhoNecessarioNoEstoque(TrabalhoProducao trabalhoProducao) {
         trabalhoEstoqueRepository.modificaQuantidadeTrabalhoNecessarioNoEstoque(trabalhoProducao);
     }
-
-    public void modificaQuantidadeTrabalhoNoEstoque(TrabalhoProducao trabalhoConcluido) {
-        trabalhoEstoqueRepository.modificaTrabalhoNoEstoque(trabalhoConcluido);
-    }
 }
