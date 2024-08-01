@@ -15,10 +15,6 @@ public class TrabalhoProducao extends Trabalho implements Serializable {
         this.recorrencia = recorrencia;
     }
 
-    public TrabalhoProducao(TrabalhoProducao trabalhoProducao) {
-
-    }
-
     public Boolean getRecorrencia() {
         return recorrencia;
     }

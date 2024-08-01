@@ -1,38 +1,33 @@
 package com.kevin.ceep.ui.activity;
 
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
 import static com.kevin.ceep.utilitario.Utilitario.comparaString;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.ActivityListaTodosTrabalhosBinding;
 import com.kevin.ceep.model.ProfissaoTrabalho;
 import com.kevin.ceep.model.Trabalho;
+import com.kevin.ceep.repository.TrabalhoRepository;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaTodosTrabalhosAdapter;
+import com.kevin.ceep.ui.viewModel.TrabalhoViewModel;
+import com.kevin.ceep.ui.viewModel.factory.TrabalhoViewModelFactory;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class ListaTodosTrabalhosActivity extends AppCompatActivity {
@@ -43,7 +38,7 @@ public class ListaTodosTrabalhosActivity extends AppCompatActivity {
     private List<ProfissaoTrabalho> profissoesTrabalhos;
     private List<Trabalho> todosTrabalhos;
     private ProgressBar indicadorProgresso;
-    private DatabaseReference minhaReferencia;
+    private TrabalhoViewModel trabalhoViewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,9 +55,8 @@ public class ListaTodosTrabalhosActivity extends AppCompatActivity {
         botaoNovoTrabalho = binding.floatingButtonProfissoesTrabalhos;
         indicadorProgresso = binding.indicadorProgressoProfissoesTrabalhos;
         meuRecycler = binding.recyclerViewProfissoesTrabalhos;
-        FirebaseDatabase meuBanco = FirebaseDatabase.getInstance();
-        minhaReferencia = meuBanco.getReference(CHAVE_LISTA_TRABALHO);
-
+        TrabalhoViewModelFactory trabalhoViewModelFactory = new TrabalhoViewModelFactory(new TrabalhoRepository());
+        trabalhoViewModel = new ViewModelProvider(this, trabalhoViewModelFactory).get(TrabalhoViewModel.class);
     }
     private void configuraBotaoCadastraNovoTrabalho() {
         botaoNovoTrabalho.setOnClickListener(view -> vaiParaCadastraNovoTrabalhoActivity());
@@ -100,7 +94,7 @@ public class ListaTodosTrabalhosActivity extends AppCompatActivity {
             }
         }
         indicadorProgresso.setVisibility(View.GONE);
-        listaTodosTrabalhosAdapter.setListaFiltrada(profissoesTrabalhos);
+        listaTodosTrabalhosAdapter.atualiza(profissoesTrabalhos);
     }
 
     private boolean profissaoExiste(Trabalho trabalho) {
@@ -115,25 +109,12 @@ public class ListaTodosTrabalhosActivity extends AppCompatActivity {
 
     private void pegaTodosTrabalhos() {
         todosTrabalhos = new ArrayList<>();
-        minhaReferencia.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                todosTrabalhos.clear();
-                for (DataSnapshot dn:dataSnapshot.getChildren()){
-                    Trabalho trabalho = dn.getValue(Trabalho.class);
-                    if (trabalho != null){
-                        todosTrabalhos.add(trabalho);
-                    }
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    todosTrabalhos.sort(Comparator.comparing(Trabalho::getProfissao).thenComparing(Trabalho::getRaridade).thenComparing(Trabalho::getNivel).thenComparing(Trabalho::getNome));
-                }
+        trabalhoViewModel.pegaTodosTrabalhos().observe(this, arrayListResource -> {
+            if (arrayListResource.getDado() != null) {
+                todosTrabalhos = arrayListResource.getDado();
                 filtraTrabalhosProfissao();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Snackbar.make(binding.constraintLayoutProfissoesTrabalhos, "Erro ao carregar dados: "+ databaseError, Snackbar.LENGTH_LONG).show();
+            } else {
+                Snackbar.make(binding.getRoot(), "Erro: "+arrayListResource.getErro(), Snackbar.LENGTH_LONG).show();
             }
         });
     }

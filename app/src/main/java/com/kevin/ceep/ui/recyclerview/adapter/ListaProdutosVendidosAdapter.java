@@ -62,7 +62,7 @@ public class ListaProdutosVendidosAdapter extends RecyclerView.Adapter<ListaProd
     }
 
     public void adiciona(ProdutoVendido produtoVendidoRemovido, int itemPosicao) {
-        if (itemPosicao < 0 || itemPosicao >= listaProdutosVendidos.size()){
+        if (itemPosicao < 0 || itemPosicao > listaProdutosVendidos.size()){
             return;
         }
         listaProdutosVendidos.add(itemPosicao, produtoVendidoRemovido);

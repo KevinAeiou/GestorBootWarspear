@@ -33,7 +33,7 @@
             android:name=".ui.activity.TrabalhoEspecificoActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activity.MenuNavegacaoLateral"
+            android:name=".ui.activity.MainActivity"
             android:exported="false"
             android:theme="@style/Theme.Ceep.NoActionBar" />
         <activity
@@ -50,9 +50,6 @@
             android:exported="false" />
         <activity
             android:name=".ui.activity.ListaTodosTrabalhosActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.ListaProfissoesActivity"
             android:exported="false" />
     </application>
 

@@ -144,7 +144,7 @@ public class ListaProfissoesFragment extends Fragment {
                         }
                         indicadorProgresso.setVisibility(View.GONE);
                         swipeRefreshLayout.setRefreshing(false);
-                        listaProfissaoAdapter.setLista(profissoes);
+                        listaProfissaoAdapter.atualiza(profissoes);
                     }
 
                     @Override

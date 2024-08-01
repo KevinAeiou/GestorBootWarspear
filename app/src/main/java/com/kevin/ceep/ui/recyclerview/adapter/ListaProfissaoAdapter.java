@@ -54,7 +54,7 @@ public class ListaProfissaoAdapter extends RecyclerView.Adapter<ListaProfissaoAd
         return profissoes.size();
     }
 
-    public void setLista(ArrayList<Profissao> profissoes) {
+    public void atualiza(ArrayList<Profissao> profissoes) {
         this.profissoes = profissoes;
         notifyDataSetChanged();
     }

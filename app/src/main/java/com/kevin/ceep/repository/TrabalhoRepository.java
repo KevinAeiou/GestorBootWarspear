@@ -1,11 +1,13 @@
 package com.kevin.ceep.repository;
 
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
+import static com.kevin.ceep.utilitario.Utilitario.comparaString;
 import static com.kevin.ceep.utilitario.Utilitario.geraIdAleatorio;
 
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -15,6 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.model.Trabalho;
+import com.kevin.ceep.model.TrabalhoProducao;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,6 +34,7 @@ public class TrabalhoRepository {
 
     public LiveData<Resource<ArrayList<Trabalho>>> pegaTodosTrabalhos() {
         minhaReferencia.addListenerForSingleValueEvent(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ArrayList<Trabalho> trabalhos = new ArrayList<>();
@@ -40,9 +44,7 @@ public class TrabalhoRepository {
                         trabalhos.add(trabalho);
                     }
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    trabalhos.sort(Comparator.comparing(Trabalho::getProfissao).thenComparing(Trabalho::getRaridade).thenComparing(Trabalho::getNivel).thenComparing(Trabalho::getNome));
-                }
+                trabalhos.sort(Comparator.comparing(Trabalho::getProfissao).thenComparing(Trabalho::getRaridade).thenComparing(Trabalho::getNivel).thenComparing(Trabalho::getNome));
                 trabalhosEncontrados.setValue(new Resource<>(trabalhos, null));
             }
             @Override
@@ -96,5 +98,14 @@ public class TrabalhoRepository {
             }
         });
         return liveData;
+    }
+
+    public Trabalho retornaTrabalhoPorChaveNome(ArrayList<Trabalho> trabalhos,TrabalhoProducao trabalhoModificado) {
+        for (Trabalho trabalho : trabalhos) {
+            if (comparaString(trabalho.getNome(), trabalhoModificado.getNome())) {
+                return trabalho;
+            }
+        }
+        return null;
     }
 }
