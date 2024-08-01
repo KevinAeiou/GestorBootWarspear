@@ -218,6 +218,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                                 Integer estado = trabalhoModificado.getEstado();
                                 if (estado == 1 || estado == 2) {
                                     if (!trabalhoModificado.ehProducaoDeRecursos()) {
+                                        Log.d("trabalhoModificado", "Ñ É PRODUÇÃO DE RECURSOS");
                                         switch (estado) {
                                             case 1:
                                                 if (trabalhoModificado.possueTrabalhoNecessarioValido()) {
@@ -228,6 +229,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 //                                                trabalhoEstoqueDAO.modificaQuantidadeTrabalhoNoEstoque(trabalhoModificado);
                                                 break;
                                         }
+                                    } else {
+                                        Log.d("trabalhoModificado", "É PRODUÇÃO DE RECURSOS");
                                     }
                                 }
                             }

@@ -80,15 +80,7 @@ public class Trabalho implements Serializable {
     }
 
     public boolean ehProducaoDeRecursos() {
-        ArrayList<String> listaProducaoRecursos = new ArrayList<>();
-        List<String> listaRecursos = recuperaListaRecursos();
-        for (String nomeRecurso : listaRecursos) {
-            listaProducaoRecursos.add(nomeRecurso);
-        }
+        ArrayList<String> listaProducaoRecursos = new ArrayList<>(List.of(Resources.getSystem().getStringArray(R.array.producaoRecursos)));
         return listaProducaoRecursos.contains(limpaString(nomeProducao));
-    }
-
-    private List<String> recuperaListaRecursos() {
-        return Arrays.asList(Resources.getSystem().getStringArray(R.array.producaoRecursos));
     }
 }

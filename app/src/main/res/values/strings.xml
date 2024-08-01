@@ -80,29 +80,29 @@
         <item>9</item>
     </string-array>
     <string-array name="producaoRecursos">
-        <item>melhorarlicençacomum</item>
-        <item>licençadeproduçãodoaprendiz</item>
-        <item>grandecoleçãoderecursoscomuns</item>
-        <item>grandecoleçãoderecursosavançados</item>
-        <item>coletaemmassaderecursosavançados</item>
-        <item>melhoriadaessênciacomum</item>
-        <item>melhoriadasubstânciacomum</item>
+        <item>melhorarlicencacomum</item>
+        <item>licençadeproducaodoaprendiz</item>
+        <item>grandecolecaoderecursoscomuns</item>
+        <item>grandecolecaoderecursosavancados</item>
+        <item>coletaemmassaderecursosavancados</item>
+        <item>melhoriadaessenciacomum</item>
+        <item>melhoriadasubstanciacomum</item>
         <item>melhoriadocatalizadorcomum</item>
         <item>melhoriadaessênciacomposta</item>
-        <item>melhoriadasubtânciacomposta</item>
+        <item>melhoriadasubtanciacomposta</item>
         <item>melhoriadocatalizadoramplificado</item>
         <item>criaresferadoaprendiz</item>
         <item>produzindoavarinhademadeira</item>
-        <item>produzindocabeçadocajadodejade</item>
-        <item>produzindocabeçadecajadodeônix</item>
-        <item>criaresferadoneófito</item>
+        <item>produzindocabecadocajadodejade</item>
+        <item>produzindocabecadecajadodeonix</item>
+        <item>criaresferadoneofito</item>
         <item>produzindoavarinhadeaço</item>
-        <item>extraçãodelascas</item>
-        <item>manipulaçãodelascas</item>
-        <item>fazermódoaprendiz</item>
+        <item>extracaodelascas</item>
+        <item>manipulacaodelascas</item>
+        <item>fazermodoaprendiz</item>
         <item>preparandolascasdequartzo</item>
-        <item>manipulaçãodeminériodecobre</item>
-        <item>fazermódoprincipiante</item>
+        <item>manipulacaodemineriodecobre</item>
+        <item>fazermodoprincipiante</item>
         <item>adquirirtesouradoaprendiz</item>
         <item>produzindofioresistente</item>
         <item>fazendotecidodelinho</item>
@@ -115,35 +115,35 @@
         <item>adquirirfacadoprincipiante</item>
         <item>recebendoescamasdolagarto</item>
         <item>curtindocourogrosso</item>
-        <item>adquirirmarretãodoaprendiz</item>
+        <item>adquirirmarretaodoaprendiz</item>
         <item>forjandoplacasdecobre</item>
         <item>fazendoplacasdebronze</item>
-        <item>adquirirmarretãodoprincipiante</item>
+        <item>adquirirmarretaodoprincipiante</item>
         <item>forjandoplacasdeferro</item>
-        <item>fazendoanéisdeaço</item>
+        <item>fazendoaneisdeaco</item>
         <item>adquirirmoldedoaprendiz</item>
-        <item>extraçãodepepitasdecobre</item>
+        <item>extracaodepepitasdecobre</item>
         <item>recebendogemadassombras</item>
         <item>adquirirmoldedoprincipiante</item>
-        <item>extraçãodepepitasdeprata</item>
+        <item>extracaodepepitasdeprata</item>
         <item>recebendogemadaluz</item>
-        <item>adquirirpinçadoaprendiz</item>
-        <item>extraçãodejadebruta</item>
+        <item>adquirirpincadoaprendiz</item>
+        <item>extracaodejadebruta</item>
         <item>recebendoenergiainicial</item>
         <item>adquirirpinçasdoprincipiante</item>
-        <item>extraçãodeônixextraordinária</item>
-        <item>recebendoéterinicial</item>
+        <item>extracaodeonixextraordinaria</item>
+        <item>recebendoeterinicial</item>
         <item>adquirirfuradordoaprendiz</item>
         <item>produzindotecidodelicado</item>
-        <item>extraçãodesubstânciainstável</item>
+        <item>extracaodesubstanciainstável</item>
         <item>adquirirfuradordoprincipiante</item>
         <item>produzindotecidodenso</item>
-        <item>extraçãodesubstânciaestável</item>
+        <item>extracaodesubstanciaestável</item>
         <item>recebendofibradebronze</item>
         <item>recebendoprata</item>
-        <item>recebendoinsígniadeestudante</item>
+        <item>recebendoinsigniadeestudante</item>
         <item>recebendofibradeplatina</item>
-        <item>recebendoâmbar</item>
+        <item>recebendoambar</item>
         <item>recebendodistintivodeaprendiz</item>
     </string-array>
     <string name="title_activity_splashscreen">SplashscreenActivity</string>
