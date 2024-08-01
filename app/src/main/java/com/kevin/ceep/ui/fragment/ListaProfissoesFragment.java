@@ -64,16 +64,15 @@ public class ListaProfissoesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentListaProfissoesBinding.inflate(inflater, container, false);
-        requireActivity().setTitle(CHAVE_TITULO_PROFISSAO);
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        inicializaComponentes();
-        atualizaListaProfissoes();
-        configuraSwipeRefreshLayout();
+//        inicializaComponentes();
+//        atualizaListaProfissoes();
+//        configuraSwipeRefreshLayout();
     }
 
     private void atualizaListaProfissoes() {

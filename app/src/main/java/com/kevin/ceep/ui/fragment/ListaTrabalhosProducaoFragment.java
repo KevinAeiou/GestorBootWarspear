@@ -18,6 +18,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,6 +46,7 @@ import java.util.ArrayList;
 
 public class ListaTrabalhosProducaoFragment extends Fragment {
     private FragmentListaTrabalhosProducaoBinding binding;
+    private NavController controlador;
     private ListaTrabalhoProducaoAdapter trabalhoAdapter;
     private RecyclerView recyclerView;
     private ArrayList<TrabalhoProducao> trabalhos, trabalhosFiltrados;
@@ -65,7 +68,6 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentListaTrabalhosProducaoBinding.inflate(inflater, container, false);
-        requireActivity().setTitle(CHAVE_TITULO_TRABALHO);
         return binding.getRoot();
     }
 
@@ -193,13 +195,17 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
     }
 
     private void inicializaComponentes() {
+        controlador = Navigation.findNavController(getActivity(), R.id.nav_host_fragment_content_main);
+
         trabalhos = new ArrayList<>();
         recyclerView = binding.listaTrabalhoRecyclerView;
         swipeRefreshLayout = binding.swipeRefreshLayoutTrabalhos;
         indicadorProgresso = binding.indicadorProgressoListaTrabalhosFragment;
         grupoChipsEstados = binding.chipGrupId;
-        TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(new TrabalhoProducaoRepository(personagemId));
-        trabalhoProducaoViewModel = new ViewModelProvider(this, trabalhoProducaoViewModelFactory).get(TrabalhoProducaoViewModel.class);
+        if (personagemId != null) {
+            TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(new TrabalhoProducaoRepository(personagemId));
+            trabalhoProducaoViewModel = new ViewModelProvider(this, trabalhoProducaoViewModelFactory).get(TrabalhoProducaoViewModel.class);
+        }
     }
     private void atualizaListaTrabalho() {
         int chipId = grupoChipsEstados.getCheckedChipId();

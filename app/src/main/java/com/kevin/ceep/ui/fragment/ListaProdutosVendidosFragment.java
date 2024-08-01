@@ -72,17 +72,16 @@ public class ListaProdutosVendidosFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentListaProdutosVendidosBinding.inflate(inflater, container, false);
-        requireActivity().setTitle("Produtos vendidos");
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        inicializaComponentes();
-        configuraRecyclerView();
-        configuraSwipeRefreshLayout();
-        configuraDeslizeItem();
+//        inicializaComponentes();
+//        configuraRecyclerView();
+//        configuraSwipeRefreshLayout();
+//        configuraDeslizeItem();
     }
     private void configuraDeslizeItem() {
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT) {
@@ -215,7 +214,7 @@ public class ListaProdutosVendidosFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        pegaTodosProdutosVendidos();
+//        pegaTodosProdutosVendidos();
     }
 
     @Override

@@ -3,10 +3,7 @@ package com.kevin.ceep.ui.activity;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_REQUISICAO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
@@ -25,9 +22,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -43,18 +37,16 @@ import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.ActivityMainBinding;
 import com.kevin.ceep.model.Personagem;
-import com.kevin.ceep.ui.fragment.ListaEstoqueFragment;
-import com.kevin.ceep.ui.fragment.ListaProdutosVendidosFragment;
-import com.kevin.ceep.ui.fragment.ListaProfissoesFragment;
-import com.kevin.ceep.ui.fragment.ListaTrabalhosProducaoFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+//public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private AppBarConfiguration appBarConfiguration;
+    private NavController controlador;
     private DrawerLayout drawerLayout;
     private List<Personagem> personagens;
     private String idPersonagemRecebido;
@@ -68,42 +60,46 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        /*setSupportActionBar(binding.appBarMain.toolbar);
-        binding.appBarMain.floatingActionButton.setOnClickListener(v -> {
-
-        });
-        DrawerLayout drawer = binding.drawerLayout;
-        NavigationView navigation = binding.navegacaoView;
-        appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_trabalhos, R.id.nav_estoque, R.id.nav_produtos_vendidos, R.id.nav_profissoes)
-                .setOpenableLayout(drawer)
-                .build();
-        NavController navControler = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        NavigationUI.setupActionBarWithNavController(this, navControler, appBarConfiguration);
-        NavigationUI.setupWithNavController(navigation, navControler);*/
-        configuraToolbar();
         inicializaComponentes();
-        navigationView.bringToFront();
+
+        setSupportActionBar(binding.appBarMain.toolbar);
+
+        appBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.listaTrabalhosProducao, R.id.listaEstoque, R.id.listaProdutosVendidos, R.id.listaProfissoes)
+                .setOpenableLayout(drawerLayout)
+                .build();
+        controlador = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+        controlador.addOnDestinationChangedListener((navController,
+                                                     navDestination,
+                                                     bundle) -> {
+                if (bundle != null) {
+                    if (bundle.containsKey(CHAVE_PERSONAGEM)){
+                        idPersonagemRecebido = bundle.getString(CHAVE_PERSONAGEM);
+                    }
+                }
+                Log.d("controlador",
+                "onDestinationChanged: "+navDestination.getLabel());
+        });
+        NavigationUI.setupActionBarWithNavController(this, controlador, appBarConfiguration);
+        NavigationUI.setupWithNavController(navigationView, controlador);
         configuraToogle();
-        navigationView.setNavigationItemSelectedListener(this);
+        configuraToolbar();
+        recebeDadosIntent();
         pegaTodosPersonagens();
-        navigationView.setCheckedItem(itemNavegacao);
     }
 /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
-    }
+    }*/
 
     @Override
     public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        return NavigationUI.navigateUp(navController, appBarConfiguration)
+        return NavigationUI.navigateUp(controlador, appBarConfiguration)
                 || super.onSupportNavigateUp();
     }
-*/
+
     private void configuraSubMenuPersonagem() {
         Menu menuNavigation = navigationView.getMenu();
         MenuItem menuPersonagens = menuNavigation.findItem(R.id.nav_lista_personagem);
@@ -135,11 +131,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void inicializaComponentes() {
-        setTitle(CHAVE_TITULO_TRABALHO);
-        itemNavegacao = R.id.nav_trabalhos;
-        itemNavegacao = recebeDadosIntent(itemNavegacao);
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.navegacao_view);
+        drawerLayout = binding.drawerLayout;
+        navigationView = binding.navegacaoView;
         View cabecalho = navigationView.getHeaderView(0);
         txtCabecalhoNome = cabecalho.findViewById(R.id.txtCabecalhoNomePersonagem);
         txtCabecalhoEstado = cabecalho.findViewById(R.id.txtCabecalhoEstadoPersonagem);
@@ -155,47 +148,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             txtCabecalhoUso.setText("Uso: "+personagemSelecionado.getUso());
             txtCabecalhoEspacoProducao.setText("Espaço de produção: "+personagemSelecionado.getEspacoProducao());
             idPersonagemRecebido = personagemSelecionado.getId();
-            mostraFragmentSelecionado(navigationView.getCheckedItem());
-        }
-    }
-
-    private void mostraFragmentSelecionado(MenuItem itemNavegacao) {
-        Fragment fragmentoSelecionado = null;
-        Bundle argumento = new Bundle();
-        argumento.putString(CHAVE_PERSONAGEM, idPersonagemRecebido);
-        switch (itemNavegacao.getItemId()){
-            case R.id.nav_trabalhos:
-                fragmentoSelecionado = new ListaTrabalhosProducaoFragment();
-                fragmentoSelecionado.setArguments(argumento);
-                break;
-            case R.id.nav_estoque:
-                fragmentoSelecionado = new ListaEstoqueFragment();
-                fragmentoSelecionado.setArguments(argumento);
-                break;
-            case R.id.nav_produtos_vendidos:
-                fragmentoSelecionado = new ListaProdutosVendidosFragment();
-                fragmentoSelecionado.setArguments(argumento);
-                break;
-            case R.id.nav_profissoes:
-                fragmentoSelecionado = new ListaProfissoesFragment();
-                fragmentoSelecionado.setArguments(argumento);
-                break;
-            case R.id.nav_configuracao:
-                vaiParaAtributosPersonagem(CODIGO_REQUISICAO_ALTERA_TRABALHO);
-                break;
-            case R.id.nav_novo_personagem:
-                vaiParaAtributosPersonagem(CODIGO_REQUISICAO_INSERE_TRABALHO);
-                break;
-            case R.id.nav_novo_trabalho:
-                vaiParaListaTodosTrabalhos();
-                break;
-            case R.id.nav_sair:
-                FirebaseAuth.getInstance().signOut();
-                vaiParaEntraActivity();
-                break;
-        }
-        if (fragmentoSelecionado != null) {
-            reposicionaFragmento(fragmentoSelecionado);
         }
     }
 
@@ -211,54 +163,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivity(iniciaVaiParaAtributosPersonagem);
     }
 
-    private int recebeDadosIntent(int itemNavegacao) {
+    private void recebeDadosIntent() {
         Intent dadosRecebidos = getIntent();
         idPersonagemRecebido = null;
         if (dadosRecebidos.hasExtra(CHAVE_PERSONAGEM)){
             idPersonagemRecebido = (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
-            Log.d("menuNavegacao", "String id personagem recebido: "+ idPersonagemRecebido);
-            if (idPersonagemRecebido != null){
-                itemNavegacao = R.id.nav_trabalhos;
-            }
-        }
-        return itemNavegacao;
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
-            drawerLayout.closeDrawer(GravityCompat.START);
-        }else {
-            super.onBackPressed();
         }
     }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        Log.d("menuNavegacao", "Item selecionado: "+item);
-        Log.d("menuNavegacao", "ID do menu do item selecionado: "+item.getGroupId());
-        if (item.getGroupId() == 0) {
-            personagemSelecionado = personagens.get(item.getOrder());
-            Log.d("menuNavegacao", "Personagem selecionado: "+personagemSelecionado.getNome());
-            atualizaPersonagemSelecionado();
-        } else {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        }
-        item.setChecked(true);
-        mostraFragmentSelecionado(item);
-        return true;
-    }
-
     private void vaiParaEntraActivity() {
         Intent vaiParaEntraActivity = new Intent(getApplicationContext(),
                 EntrarUsuarioActivity.class);
         startActivity(vaiParaEntraActivity, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
-    }
-    private void reposicionaFragmento(Fragment fragmento) {
-        FragmentManager gerenciadorDeFragmento = getSupportFragmentManager();
-        FragmentTransaction transicaoDeFragmento = gerenciadorDeFragmento.beginTransaction();
-        transicaoDeFragmento.replace(R.id.frameLayout, fragmento);
-        transicaoDeFragmento.commit();
     }
     private void pegaTodosPersonagens() {
         personagens = new ArrayList<>();

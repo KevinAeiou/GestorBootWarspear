@@ -59,12 +59,10 @@ public class ListaEstoqueFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
         Bundle argumento = getArguments();
         if (argumento != null) {
             if (argumento.containsKey(CHAVE_PERSONAGEM)){
                 personagemId = argumento.getString(CHAVE_PERSONAGEM);
-                Log.d("fragmentoEstoque", "ID do personagem recebido: "+personagemId);
             }
         }
     }
@@ -73,17 +71,16 @@ public class ListaEstoqueFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentListaEstoqueBinding.inflate(inflater, container, false);
-        requireActivity().setTitle(CHAVE_TITULO_ESTOQUE);
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        inicializaComponentes();
-        configuraRecyclerView();
-        configuraDeslizeItem();
-        configuraSwipeRefreshLayout();
+//        inicializaComponentes();
+//        configuraRecyclerView();
+//        configuraDeslizeItem();
+//        configuraSwipeRefreshLayout();
     }
     private void configuraSwipeRefreshLayout() {
         swipeRefreshLayout.setOnRefreshListener(()->{
@@ -231,7 +228,7 @@ public class ListaEstoqueFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        atualizaListaEstoque();
+//        atualizaListaEstoque();
     }
 
     @Override

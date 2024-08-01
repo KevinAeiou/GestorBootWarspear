@@ -16,16 +16,16 @@
         android:checkableBehavior="single"
         android:id="@+id/grupo2">
         <item
-            android:id="@+id/nav_trabalhos"
+            android:id="@+id/listaTrabalhosProducao"
             android:title="@string/trabalhos"/>
         <item
-            android:id="@+id/nav_estoque"
+            android:id="@+id/listaEstoque"
             android:title="@string/estoque"/>
         <item
-            android:id="@+id/nav_produtos_vendidos"
+            android:id="@+id/listaProdutosVendidos"
             android:title="@string/stringProdutosVendidos"/>
         <item
-            android:id="@+id/nav_profissoes"
+            android:id="@+id/listaProfissoes"
             android:title="@string/stringProfissoes"/>
     </group>
 
