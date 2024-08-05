@@ -28,6 +28,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
@@ -39,10 +40,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Personagem;
+import com.kevin.ceep.repository.PersonagemRepository;
 import com.kevin.ceep.ui.fragment.ListaEstoqueFragment;
 import com.kevin.ceep.ui.fragment.ListaProdutosVendidosFragment;
 import com.kevin.ceep.ui.fragment.ListaProfissoesFragment;
 import com.kevin.ceep.ui.fragment.ListaTrabalhosProducaoFragment;
+import com.kevin.ceep.ui.viewModel.PersonagemViewModel;
+import com.kevin.ceep.ui.viewModel.factory.PersonagemViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -236,25 +240,17 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
     }
     private void pegaTodosPersonagens() {
         personagens = new ArrayList<>();
-        String usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = database.getReference(CHAVE_USUARIOS);
-        databaseReference.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
-                addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        personagens.clear();
-                        for (DataSnapshot dn:dataSnapshot.getChildren()){
-                            Personagem personagem = dn.getValue(Personagem.class);
-                            personagens.add(personagem);
-                        }
-                        configuraSubMenuPersonagem();
-                        indicadorProgresso.setVisibility(View.GONE);
-                    }
+        PersonagemViewModelFactory personagemViewModelFactory = new PersonagemViewModelFactory(new PersonagemRepository());
+        PersonagemViewModel personagemViewModel = new ViewModelProvider(this, personagemViewModelFactory).get(PersonagemViewModel.class);
+        personagemViewModel.pegaTodosPersonagens().observe(this, resultadoPersonagens -> {
+            if (resultadoPersonagens.getDado() != null) {
+                personagens = resultadoPersonagens.getDado();
+                configuraSubMenuPersonagem();
+                indicadorProgresso.setVisibility(View.GONE);
+            }
+            if (resultadoPersonagens.getErro() != null) {
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                    }
-                });
+            }
+        });
     }
 }
