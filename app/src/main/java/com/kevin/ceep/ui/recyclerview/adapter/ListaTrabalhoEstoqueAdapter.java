@@ -21,7 +21,7 @@ import java.util.List;
 
 public class ListaTrabalhoEstoqueAdapter extends RecyclerView.Adapter<ListaTrabalhoEstoqueAdapter.TrabalhoEstoqueViewHolder> {
 
-    private final List<TrabalhoEstoque> trabalhosEstoque;
+    private List<TrabalhoEstoque> trabalhosEstoque;
     private final Context context;
     private OnItemClickListener onItemClickListener;
 
@@ -55,6 +55,12 @@ public class ListaTrabalhoEstoqueAdapter extends RecyclerView.Adapter<ListaTraba
         trabalhosEstoque.set(posicao,trabalhoEstoque);
         notifyItemChanged(posicao);
     }
+
+    public void atualiza(List<TrabalhoEstoque> trabalhosEstoque) {
+        this.trabalhosEstoque = trabalhosEstoque;
+        notifyDataSetChanged();
+    }
+
     public class TrabalhoEstoqueViewHolder extends RecyclerView.ViewHolder{
         private final TextView nomeTrabalho;
         private final TextView profissaoTrabalho;

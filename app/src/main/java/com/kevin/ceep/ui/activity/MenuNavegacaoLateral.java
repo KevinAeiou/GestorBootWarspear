@@ -1,13 +1,12 @@
 package com.kevin.ceep.ui.activity;
 
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_REQUISICAO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_TRABALHO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -32,12 +32,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.repository.PersonagemRepository;
@@ -58,7 +54,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
     private String idPersonagemRecebido;
     private NavigationView navigationView;
     private Personagem personagemSelecionado;
-    private CircularProgressIndicator indicadorProgresso;
+    private ProgressBar indicadorProgresso;
     private TextView txtCabecalhoNome, txtCabecalhoEstado, txtCabecalhoUso, txtCabecalhoEspacoProducao;
     private int itemNavegacao;
 
@@ -84,8 +80,8 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
     private void configuraSubMenuPersonagem() {
         Menu menuNavigation = navigationView.getMenu();
         MenuItem menuPersonagens = menuNavigation.findItem(R.id.nav_lista_personagem);
-        menuPersonagens.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         SubMenu subItens = menuPersonagens.getSubMenu();
+        assert subItens != null;
         subItens.clear();
         int indice = 0;
         for (Personagem personagem : personagens) {
@@ -129,14 +125,15 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
     private void atualizaPersonagemSelecionado() {
         if (personagemSelecionado != null) {
             txtCabecalhoNome.setText(personagemSelecionado.getNome());
-            txtCabecalhoEstado.setText("Estado: "+personagemSelecionado.getEstado());
-            txtCabecalhoUso.setText("Uso: "+personagemSelecionado.getUso());
-            txtCabecalhoEspacoProducao.setText("Espaço de produção: "+personagemSelecionado.getEspacoProducao());
+            txtCabecalhoEstado.setText(getString(R.string.stringEstadoValor,personagemSelecionado.getEstado()));
+            txtCabecalhoUso.setText(getString(R.string.stringUsoValor,personagemSelecionado.getUso()));
+            txtCabecalhoEspacoProducao.setText(getString(R.string.stringEspacoProducaoValor,personagemSelecionado.getEspacoProducao()));
             idPersonagemRecebido = personagemSelecionado.getId();
-            mostraFragmentSelecionado(navigationView.getCheckedItem());
+            mostraFragmentSelecionado(Objects.requireNonNull(navigationView.getCheckedItem()));
         }
     }
 
+    @SuppressLint("NonConstantResourceId")
     private void mostraFragmentSelecionado(MenuItem itemNavegacao) {
         Fragment fragmentoSelecionado = null;
         Bundle argumento = new Bundle();
@@ -231,6 +228,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         Intent vaiParaEntraActivity = new Intent(getApplicationContext(),
                 EntrarUsuarioActivity.class);
         startActivity(vaiParaEntraActivity, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+        finish();
     }
     private void reposicionaFragmento(Fragment fragmento) {
         FragmentManager gerenciadorDeFragmento = getSupportFragmentManager();
@@ -249,7 +247,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
                 indicadorProgresso.setVisibility(View.GONE);
             }
             if (resultadoPersonagens.getErro() != null) {
-
+                Snackbar.make(getApplicationContext(), Objects.requireNonNull(getCurrentFocus()), "Erro: "+resultadoPersonagens.getErro(), Snackbar.LENGTH_LONG).show();
             }
         });
     }

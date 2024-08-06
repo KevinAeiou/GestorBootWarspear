@@ -9,6 +9,7 @@ import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO_PRODUCAO;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -72,12 +73,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
     public ListaTrabalhosProducaoFragment() {
         // Required empty public constructor
     }
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
+    @SuppressLint("ResourceType")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -97,6 +93,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         configuraDeslizeItem();
         configuraChipSelecionado();
     }
+
     private void configuraChipSelecionado() {
         grupoChipFiltro.setOnCheckedChangeListener((group, checkedId) -> configuraChipFiltro(checkedId));
     }
@@ -132,14 +129,6 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
                 personagemId = dadosRecebidos.getString(CHAVE_PERSONAGEM);
             }
         }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_personagem, menu);
-        MenuItem itemBusca = menu.findItem(R.id.itemMenuBusca);
-        configuraCampoDeBusca(itemBusca);
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     private void configuraCampoDeBusca(MenuItem itemBusca) {

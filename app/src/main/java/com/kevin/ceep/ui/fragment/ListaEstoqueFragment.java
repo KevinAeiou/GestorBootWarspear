@@ -46,7 +46,7 @@ public class ListaEstoqueFragment extends Fragment {
     private ListaTrabalhoEstoqueAdapter trabalhoEstoqueAdapter;
     private DatabaseReference minhaReferencia;
     private RecyclerView recyclerView;
-    private List<TrabalhoEstoque> trabalhos;
+    private List<TrabalhoEstoque> trabalhosEstoque;
     private String usuarioId, personagemId;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ConstraintLayout layoutFragmentoEstoque;
@@ -69,7 +69,6 @@ public class ListaEstoqueFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         requireActivity().setTitle(CHAVE_TITULO_ESTOQUE);
         return inflater.inflate(R.layout.fragment_lista_estoque, container, false);
     }
@@ -78,18 +77,19 @@ public class ListaEstoqueFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaComponentes(view);
-        atualizaListaEstoque();
+        configuraRecyclerView();
         configuraSwipeRefreshLayout();
     }
     private void configuraSwipeRefreshLayout() {
         swipeRefreshLayout.setOnRefreshListener(()->{
             if (personagemId != null){
-                atualizaListaEstoque();
+                pegaTodosTrabalhosEstoque();
             }
         });
     }
 
     private void inicializaComponentes(View view) {
+        trabalhosEstoque = new ArrayList<>();
         usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         recyclerView = view.findViewById(R.id.listaTrabalhoEstoqueRecyclerView);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -97,17 +97,13 @@ public class ListaEstoqueFragment extends Fragment {
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutTrabalhosEstoque);
         layoutFragmentoEstoque = view.findViewById(R.id.constraintLayoutFragmentoListaEstoque);
     }
-    private void atualizaListaEstoque() {
-        List<TrabalhoEstoque> todosTrabalhosEstoque = pegaTodosTrabalhosEstoque();
-        configuraRecyclerView(todosTrabalhosEstoque);
-    }
-    private void configuraRecyclerView(List<TrabalhoEstoque> todosTrabalhosEstoque) {
+    private void configuraRecyclerView() {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        configuraAdapter(todosTrabalhosEstoque, recyclerView);
+        configuraAdapter(recyclerView);
     }
-    private void configuraAdapter(List<TrabalhoEstoque> todosTrabalhosEstoque, RecyclerView listaTrabalhos) {
-        trabalhoEstoqueAdapter = new ListaTrabalhoEstoqueAdapter(todosTrabalhosEstoque,getContext());
+    private void configuraAdapter(RecyclerView listaTrabalhos) {
+        trabalhoEstoqueAdapter = new ListaTrabalhoEstoqueAdapter(trabalhosEstoque,getContext());
         listaTrabalhos.setAdapter(trabalhoEstoqueAdapter);
         trabalhoEstoqueAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -170,25 +166,23 @@ public class ListaEstoqueFragment extends Fragment {
                     }));
     }
 
-    private List<TrabalhoEstoque> pegaTodosTrabalhosEstoque() {
-        trabalhos = new ArrayList<>();
-        Log.d("fragmentoEstoque","ID do usuario: "+usuarioId);
+    private void pegaTodosTrabalhosEstoque() {
         minhaReferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).
                 child(personagemId).child(CHAVE_LISTA_ESTOQUE).
                 addValueEventListener(new ValueEventListener() {
                     @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        trabalhos.clear();
+                        trabalhosEstoque.clear();
                         for (DataSnapshot dn:dataSnapshot.getChildren()){
                             TrabalhoEstoque trabalho = dn.getValue(TrabalhoEstoque.class);
                             if (trabalho != null && trabalho.getNome().equals("Licença de produção do aprendiz")) {
                                 trabalho.setProfissao("");
                             }
-                            trabalhos.add(trabalho);
+                            trabalhosEstoque.add(trabalho);
                         }
-                        trabalhos.sort(Comparator.comparing(TrabalhoEstoque::getProfissao).thenComparing(Trabalho::getNivel).thenComparing(Trabalho::getRaridade).thenComparing(TrabalhoEstoque::getNome));
-                        trabalhoEstoqueAdapter.notifyDataSetChanged();
+                        trabalhosEstoque.sort(Comparator.comparing(TrabalhoEstoque::getProfissao).thenComparing(Trabalho::getNivel).thenComparing(Trabalho::getRaridade).thenComparing(TrabalhoEstoque::getNome));
+                        trabalhoEstoqueAdapter.atualiza(trabalhosEstoque);
                         swipeRefreshLayout.setRefreshing(false);
                     }
 
@@ -197,6 +191,13 @@ public class ListaEstoqueFragment extends Fragment {
 
                     }
                 });
-        return trabalhos;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (personagemId != null) {
+            pegaTodosTrabalhosEstoque();
+        }
     }
 }

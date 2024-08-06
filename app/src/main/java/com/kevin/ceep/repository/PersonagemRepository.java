@@ -3,8 +3,6 @@ package com.kevin.ceep.repository;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 
-import android.os.Build;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -16,10 +14,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.model.Personagem;
-import com.kevin.ceep.model.Trabalho;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Objects;
 
 public class PersonagemRepository {
