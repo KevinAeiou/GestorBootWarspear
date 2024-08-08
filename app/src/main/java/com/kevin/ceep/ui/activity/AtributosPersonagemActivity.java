@@ -221,7 +221,7 @@ public class AtributosPersonagemActivity extends AppCompatActivity {
 
     }
     private void vaiParaFragmentoPersonagens() {
-        Intent iniciaVaiParaFragmentoPersonagens = new Intent(getApplicationContext(), MenuNavegacaoLateral.class);
+        Intent iniciaVaiParaFragmentoPersonagens = new Intent(getApplicationContext(), MainActivity.class);
         setResult(1,iniciaVaiParaFragmentoPersonagens);
         AtributosPersonagemActivity.super.onBackPressed();
     }

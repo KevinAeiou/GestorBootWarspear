@@ -1,34 +1,27 @@
 package com.kevin.ceep.ui.activity;
 
-import static com.kevin.ceep.utilitario.Utilitario.comparaString;
-import static com.kevin.ceep.utilitario.Utilitario.geraIdAleatorio;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_DESEJO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_CONFIRMA;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.TAG_ACTIVITY;
+import static com.kevin.ceep.utilitario.Utilitario.comparaString;
+import static com.kevin.ceep.utilitario.Utilitario.geraIdAleatorio;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.lifecycle.ViewModelProvider;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.kevin.ceep.R;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoProducao;
-
-import java.util.Objects;
+import com.kevin.ceep.repository.TrabalhoProducaoRepository;
+import com.kevin.ceep.ui.viewModel.TrabalhoProducaoViewModel;
+import com.kevin.ceep.ui.viewModel.factory.TrabalhoProducaoViewModelFactory;
 
 public class ConfirmaTrabalhoActivity extends AppCompatActivity {
 
@@ -62,7 +55,6 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         configuraDropDrow();
-        Log.i(TAG_ACTIVITY,"onResumeConfirma");
     }
     private void configuraDropDrow() {
         autoCompleteLicenca = findViewById(R.id.txtAutoCompleteLicencaConfirmaTrabalho);
@@ -79,9 +71,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         adapterLicenca.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         adapterQuantidade.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         autoCompleteLicenca.setText(licencas[3]);
-        autoCompleteLicenca.setTextColor(Color.BLACK);
         autoCompleteLicenca.setAdapter(adapterLicenca);
-        autoCompleteQuantidade.setTextColor(Color.BLACK);
         autoCompleteQuantidade.setAdapter(adapterQuantidade);
     }
 
@@ -94,15 +84,20 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
     }
 
     private void cadastraNovoTrabalho() {
+        TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(new TrabalhoProducaoRepository(personagemId));
+        TrabalhoProducaoViewModel trabalhoProducaoViewModel = new ViewModelProvider(this, trabalhoProducaoViewModelFactory).get(TrabalhoProducaoViewModel.class);
         int quantidadeSelecionada = Integer.parseInt(autoCompleteQuantidade.getText().toString());
-        Log.d("confirmaTrabalho", "Quantidade selecionada: "+quantidadeSelecionada);
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference minhareferencia = database.getReference(CHAVE_USUARIOS);
-        String usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        contador = 0;
-        for (int x=0;x<quantidadeSelecionada;x++){
+        contador = 1;
+        for (int x = 0; x < quantidadeSelecionada; x ++){
             TrabalhoProducao novoTrabalho = defineNovoModeloTrabalhoProducao();
-            salvaDadosBanco(minhareferencia, usuarioId, novoTrabalho, quantidadeSelecionada);
+            trabalhoProducaoViewModel.salvaNovoTrabalhoProducao(novoTrabalho).observe(this, resposta -> {
+                if (resposta.getErro() == null) {
+                    if (contador == quantidadeSelecionada) {
+                        finish();
+                    }
+                    contador += 1;
+                }
+            });
         }
     }
 
@@ -114,7 +109,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         if (comparaString(licencaSelecionada,"licença de produção do principiante")){
             experiencia = (int) (experiencia * 1.5);
         }
-        TrabalhoProducao novoTrabalho = new TrabalhoProducao(
+        return new TrabalhoProducao(
                 novoId,
                 trabalhoRecebido.getNome(),
                 trabalhoRecebido.getNomeProducao(),
@@ -126,18 +121,5 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
                 licencaSelecionada,
                 0,
                 checkRecorrencia.isChecked());
-        return novoTrabalho;
-    }
-    private void salvaDadosBanco(DatabaseReference minhareferencia, String usuarioId, TrabalhoProducao novoTrabalho, int quantidadeSelecionada) {
-        minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
-                .child(personagemId).child(CHAVE_LISTA_DESEJO)
-                .child(novoTrabalho.getId())
-                .setValue(novoTrabalho).addOnSuccessListener(unused -> {
-                    Log.d("confirmaTrabalho", "Adicionado: "+novoTrabalho.getId());
-                    contador += 1;
-                    if (contador == quantidadeSelecionada) {
-                        finish();
-                    }
-                });
     }
 }

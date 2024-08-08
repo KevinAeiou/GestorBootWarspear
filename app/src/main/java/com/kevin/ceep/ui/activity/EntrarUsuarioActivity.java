@@ -146,7 +146,7 @@ public class EntrarUsuarioActivity extends AppCompatActivity implements View.OnC
     }
 
     private void vaiParaMenuNavegacao() {
-        Intent vaiParaMenuNavegacao =  new Intent(getApplicationContext(), MenuNavegacaoLateral.class);
+        Intent vaiParaMenuNavegacao =  new Intent(getApplicationContext(), MainActivity.class);
         startActivity(vaiParaMenuNavegacao,
                 ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
         finish();

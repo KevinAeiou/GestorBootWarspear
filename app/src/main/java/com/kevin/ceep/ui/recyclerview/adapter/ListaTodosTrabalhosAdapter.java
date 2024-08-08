@@ -38,7 +38,7 @@ public class ListaTodosTrabalhosAdapter extends RecyclerView.Adapter<ListaTodosT
         this.profissoes = profissaoTrabalhos;
         this.context = context;
     }
-    public void setListaFiltrada(List<ProfissaoTrabalho> listaFiltrada) {
+    public void atualiza(List<ProfissaoTrabalho> listaFiltrada) {
         this.profissoes = listaFiltrada;
         notifyDataSetChanged();
     }

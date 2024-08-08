@@ -31,7 +31,7 @@ public class ListaTrabalhoProducaoAdapter extends RecyclerView.Adapter<ListaTrab
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
-    public void setListaFiltrada(List<TrabalhoProducao> listaFiltrada){
+    public void atualiza(List<TrabalhoProducao> listaFiltrada){
         this.trabalhosProducao=listaFiltrada;
         notifyDataSetChanged();
     }
@@ -54,7 +54,7 @@ public class ListaTrabalhoProducaoAdapter extends RecyclerView.Adapter<ListaTrab
         return trabalhosProducao.size();
     }
     public void adiciona(TrabalhoProducao trabalhoProducao, int posicao){
-        if (posicao < 0 || posicao >= trabalhosProducao.size()){
+        if (posicao < 0 || posicao > trabalhosProducao.size()){
             return;
         }
         trabalhosProducao.add(posicao, trabalhoProducao);

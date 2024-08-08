@@ -26,7 +26,7 @@ public class ListaProdutosVendidosAdapter extends RecyclerView.Adapter<ListaProd
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){
         this.onItemClickListener = onItemClickListener;
     }
-    public  void setListaFiltrada(List<ProdutoVendido> listaFiltrada) {
+    public  void atualiza(List<ProdutoVendido> listaFiltrada) {
         this.listaProdutosVendidos = listaFiltrada;
         notifyDataSetChanged();
     }
@@ -62,7 +62,7 @@ public class ListaProdutosVendidosAdapter extends RecyclerView.Adapter<ListaProd
     }
 
     public void adiciona(ProdutoVendido produtoVendidoRemovido, int itemPosicao) {
-        if (itemPosicao < 0 || itemPosicao >= listaProdutosVendidos.size()){
+        if (itemPosicao < 0 || itemPosicao > listaProdutosVendidos.size()){
             return;
         }
         listaProdutosVendidos.add(itemPosicao, produtoVendidoRemovido);

@@ -15,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,10 +30,10 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.kevin.ceep.R;
+import com.kevin.ceep.databinding.ActivityMainBinding;
 import com.kevin.ceep.model.Personagem;
 import com.kevin.ceep.repository.PersonagemRepository;
 import com.kevin.ceep.ui.fragment.ListaEstoqueFragment;
@@ -48,21 +47,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class MenuNavegacaoLateral extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private ActivityMainBinding binding;
     private DrawerLayout drawerLayout;
     private List<Personagem> personagens;
     private String idPersonagemRecebido;
     private NavigationView navigationView;
     private Personagem personagemSelecionado;
-    private ProgressBar indicadorProgresso;
     private TextView txtCabecalhoNome, txtCabecalhoEstado, txtCabecalhoUso, txtCabecalhoEspacoProducao;
     private int itemNavegacao;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_menu_navegacao_lateral);
-
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         inicializaComponentes();
 
         configuraToolbar();
@@ -74,7 +73,6 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         pegaTodosPersonagens();
 
         navigationView.setCheckedItem(itemNavegacao);
-        Log.d("menuNavegacao", "Definiu item: " + itemNavegacao);
     }
 
     private void configuraSubMenuPersonagem() {
@@ -109,11 +107,10 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
 
     private void inicializaComponentes() {
         setTitle(CHAVE_TITULO_TRABALHO);
-        itemNavegacao = R.id.nav_trabalhos;
+        itemNavegacao = R.id.listaTrabalhosProducao;
         itemNavegacao = recebeDadosIntent(itemNavegacao);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navegacao_view);
-        indicadorProgresso = findViewById(R.id.indicadorProgressoMenuNavegacao);
         View cabecalho = navigationView.getHeaderView(0);
         txtCabecalhoNome = cabecalho.findViewById(R.id.txtCabecalhoNomePersonagem);
         txtCabecalhoEstado = cabecalho.findViewById(R.id.txtCabecalhoEstadoPersonagem);
@@ -139,19 +136,19 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
         Bundle argumento = new Bundle();
         argumento.putString(CHAVE_PERSONAGEM, idPersonagemRecebido);
         switch (itemNavegacao.getItemId()){
-            case R.id.nav_trabalhos:
+            case R.id.listaTrabalhosProducao:
                 fragmentoSelecionado = new ListaTrabalhosProducaoFragment();
                 fragmentoSelecionado.setArguments(argumento);
                 break;
-            case R.id.nav_estoque:
+            case R.id.listaEstoque:
                 fragmentoSelecionado = new ListaEstoqueFragment();
                 fragmentoSelecionado.setArguments(argumento);
                 break;
-            case R.id.nav_produtos_vendidos:
+            case R.id.listaProdutosVendidos:
                 fragmentoSelecionado = new ListaProdutosVendidosFragment();
                 fragmentoSelecionado.setArguments(argumento);
                 break;
-            case R.id.nav_profissoes:
+            case R.id.listaProfissoes:
                 fragmentoSelecionado = new ListaProfissoesFragment();
                 fragmentoSelecionado.setArguments(argumento);
                 break;
@@ -193,7 +190,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
             idPersonagemRecebido = (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
             Log.d("menuNavegacao", "String id personagem recebido: "+ idPersonagemRecebido);
             if (idPersonagemRecebido != null){
-                itemNavegacao = R.id.nav_trabalhos;
+                itemNavegacao = R.id.listaTrabalhosProducao;
             }
         }
         return itemNavegacao;
@@ -233,7 +230,7 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
     private void reposicionaFragmento(Fragment fragmento) {
         FragmentManager gerenciadorDeFragmento = getSupportFragmentManager();
         FragmentTransaction transicaoDeFragmento = gerenciadorDeFragmento.beginTransaction();
-        transicaoDeFragmento.replace(R.id.frameLayout, fragmento);
+        transicaoDeFragmento.replace(R.id.nav_host_fragment_content_main, fragmento);
         transicaoDeFragmento.commit();
     }
     private void pegaTodosPersonagens() {
@@ -244,7 +241,6 @@ public class MenuNavegacaoLateral extends AppCompatActivity implements Navigatio
             if (resultadoPersonagens.getDado() != null) {
                 personagens = resultadoPersonagens.getDado();
                 configuraSubMenuPersonagem();
-                indicadorProgresso.setVisibility(View.GONE);
             }
             if (resultadoPersonagens.getErro() != null) {
                 Snackbar.make(getApplicationContext(), Objects.requireNonNull(getCurrentFocus()), "Erro: "+resultadoPersonagens.getErro(), Snackbar.LENGTH_LONG).show();

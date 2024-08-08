@@ -1,16 +1,9 @@
 package com.kevin.ceep.model;
 
-import static com.kevin.ceep.utilitario.Utilitario.comparaString;
 import static com.kevin.ceep.utilitario.Utilitario.limpaString;
-
-import android.content.res.Resources;
-import android.util.Log;
-
-import com.kevin.ceep.R;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Trabalho implements Serializable {
@@ -75,12 +68,31 @@ public class Trabalho implements Serializable {
         return trabalhoNecessario;
     }
 
-    public void setTrabalhoNecessario(String trabalhoNecessario) {
-        this.trabalhoNecessario = trabalhoNecessario;
-    }
-
     public boolean ehProducaoDeRecursos() {
-        ArrayList<String> listaProducaoRecursos = new ArrayList<>(List.of(Resources.getSystem().getStringArray(R.array.producaoRecursos)));
+        ArrayList<String> listaProducaoRecursos = new ArrayList<>(List.of(
+                "melhorarlicencacomum","licençadeproducaodoaprendiz","grandecolecaoderecursoscomuns",
+                "grandecolecaoderecursosavancados","coletaemmassaderecursosavancados","melhoriadaessenciacomum",
+                "melhoriadasubstanciacomum","melhoriadocatalizadorcomum","melhoriadaessenciacomposta",
+                "melhoriadasubtanciacomposta","melhoriadocatalizadoramplificado","criaresferadoaprendiz",
+                "produzindoavarinhademadeira","produzindocabecadocajadodejade","produzindocabecadecajadodeonix",
+                "criaresferadoneofito","produzindoavarinhadeaço","extracaodelascas",
+                "manipulacaodelascas","fazermodoaprendiz","preparandolascasdequartzo",
+                "manipulacaodemineriodecobre","fazermodoprincipiante","adquirirtesouradoaprendiz",
+                "produzindofioresistente","fazendotecidodelinho","fazendotecidodecetim",
+                "comprartesouradoprincipiante","produzindofiogrosso","adquirirfacadoaprendiz",
+                "recebendoescamasdaserpente","concluindocouroresistente","adquirirfacadoprincipiante",
+                "recebendoescamasdolagarto","curtindocourogrosso","adquirirmarretaodoaprendiz",
+                "forjandoplacasdecobre","fazendoplacasdebronze","adquirirmarretaodoprincipiante",
+                "forjandoplacasdeferro","fazendoaneisdeaco","adquirirmoldedoaprendiz",
+                "extracaodepepitasdecobre","recebendogemadassombras","adquirirmoldedoprincipiante",
+                "extracaodepepitasdeprata","recebendogemadaluz","adquirirpincadoaprendiz",
+                "extracaodejadebruta","recebendoenergiainicial","adquirirpinçasdoprincipiante",
+                "extracaodeonixextraordinaria","recebendoeterinicial","adquirirfuradordoaprendiz",
+                "produzindotecidodelicado","extracaodesubstanciainstável","adquirirfuradordoprincipiante",
+                "produzindotecidodenso","extracaodesubstanciaestável","recebendofibradebronze",
+                "recebendoprata","recebendoinsigniadeestudante","recebendofibradeplatina",
+                "recebendoambar","recebendodistintivodeaprendiz"
+        ));
         return listaProducaoRecursos.contains(limpaString(nomeProducao));
     }
 }

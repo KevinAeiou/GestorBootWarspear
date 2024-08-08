@@ -10,7 +10,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp">
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/indicadorProgressoTrabalhoEspecifico"
@@ -43,7 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
-                android:textSize="18sp" />
+                android:textSize="24sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -63,7 +63,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
-                android:textSize="18sp" />
+                android:textSize="24sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -86,6 +86,7 @@
                 android:gravity="start"
                 android:inputType="none"
                 android:padding="8dp"
+                android:textSize="24sp"
                 android:text="@string/stringProfissoes"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -112,7 +113,7 @@
                     android:id="@+id/edtExperienciaTrabalho"
                     android:gravity="start"
                     android:inputType="numberSigned"
-                    android:textSize="18sp"
+                    android:textSize="24sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
@@ -130,7 +131,7 @@
                     android:id="@+id/edtNivelTrabalho"
                     android:gravity="start"
                     android:inputType="numberSigned"
-                    android:textSize="18sp"
+                    android:textSize="24sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
@@ -155,6 +156,7 @@
                 android:gravity="start"
                 android:inputType="none"
                 android:padding="8dp"
+                android:textSize="24sp"
                 android:text="@string/stringRaridade"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -241,6 +243,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
+                android:textSize="24sp"
                 android:text="@string/stringRecorrente" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -258,6 +261,7 @@
                     android:gravity="start"
                     android:inputType="none"
                     android:padding="8dp"
+                    android:textSize="24sp"
                     android:text="@string/stringLicenca"/>
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -278,25 +282,27 @@
                     android:gravity="start"
                     android:inputType="none"
                     android:padding="8dp"
+                    android:textSize="24sp"
                     android:text="@string/string_estado"/>
             </com.google.android.material.textfield.TextInputLayout>
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <com.google.android.material.button.MaterialButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnExcluiTrabalhoEspecifico"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:text="@string/stringExcluir"
-            android:textAllCaps="false"
-            android:padding="8dp"
-            android:textSize="18sp"
-            android:textStyle="bold"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
+            android:background="@drawable/botao_estados_background"
+            android:padding="8dp"
+            android:text="@string/stringExcluir"
+            android:textAllCaps="false"
+            android:textSize="24sp"
+            android:textStyle="bold"
             android:visibility="gone"
-            style="@style/Widget.Material3.Button.IconButton.Filled"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@id/linearLayout1TrabalhoEspecifico"
             app:layout_constraintTop_toBottomOf="@id/linearLayout2TrabalhoEspecifico"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintVertical_bias="1.0" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

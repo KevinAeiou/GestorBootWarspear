@@ -17,6 +17,7 @@ import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListaTrabalhoEstoqueAdapter extends RecyclerView.Adapter<ListaTrabalhoEstoqueAdapter.TrabalhoEstoqueViewHolder> {
@@ -56,9 +57,27 @@ public class ListaTrabalhoEstoqueAdapter extends RecyclerView.Adapter<ListaTraba
         notifyItemChanged(posicao);
     }
 
-    public void atualiza(List<TrabalhoEstoque> trabalhosEstoque) {
-        this.trabalhosEstoque = trabalhosEstoque;
+    public void atualiza(ArrayList<TrabalhoEstoque> todosTrabalhosEstoque) {
+        this.trabalhosEstoque = todosTrabalhosEstoque;
         notifyDataSetChanged();
+    }
+
+    public void adiciona(TrabalhoEstoque trabalhoremovido, int itemPosicao) {
+        if (itemPosicao < 0 || itemPosicao > trabalhosEstoque.size()){
+            return;
+        }
+        trabalhosEstoque.add(itemPosicao, trabalhoremovido);
+        notifyItemInserted(itemPosicao);
+        notifyItemRangeChanged(itemPosicao, trabalhosEstoque.size());
+    }
+
+    public void remove(int itemPosicao) {
+        if (itemPosicao<0 || itemPosicao>= trabalhosEstoque.size()){
+            return;
+        }
+        trabalhosEstoque.remove(itemPosicao);
+        notifyItemRemoved(itemPosicao);
+        notifyItemRangeChanged(itemPosicao,trabalhosEstoque.size());
     }
 
     public class TrabalhoEstoqueViewHolder extends RecyclerView.ViewHolder{
@@ -95,7 +114,7 @@ public class ListaTrabalhoEstoqueAdapter extends RecyclerView.Adapter<ListaTraba
                 nivelTrabalho.setText(context.getString(R.string.stringNivelValor, trabalhoEstoque.getNivel()));
                 quantidadeTrabalho.setText(String.valueOf(trabalhoEstoque.getQuantidade()));
         }
-        private void confiuraCorNomeTrabalho(Trabalho trabalhoEstoque) {
+        private void confiuraCorNomeTrabalho(TrabalhoEstoque trabalhoEstoque) {
             String raridade = trabalhoEstoque.getRaridade();
             switch (raridade) {
                 case "Comum":
