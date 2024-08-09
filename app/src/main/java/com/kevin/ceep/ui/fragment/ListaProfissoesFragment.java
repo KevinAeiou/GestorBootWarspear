@@ -43,10 +43,16 @@ public class ListaProfissoesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        recebeDadosIntent();
+    }
+
+    private void recebeDadosIntent() {
         Bundle argumento = getArguments();
         if (argumento != null) {
             if (argumento.containsKey(CHAVE_PERSONAGEM)) {
                 personagemId = argumento.getString(CHAVE_PERSONAGEM);
+                ProfissaoViewModelFactory profissaoViewModelFactory = new ProfissaoViewModelFactory(new ProfissaoRepository(personagemId));
+                profissaoViewModel = new ViewModelProvider(this, profissaoViewModelFactory).get(ProfissaoViewModel.class);
             }
         }
     }
@@ -68,11 +74,11 @@ public class ListaProfissoesFragment extends Fragment {
     private void configuraRecyclerView() {
         meuRecycler.setHasFixedSize(true);
         meuRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        configuraAdapter(todasProfissoes, meuRecycler);
+        configuraAdapter(meuRecycler);
     }
 
-    private void configuraAdapter(ArrayList<Profissao> profissoes, RecyclerView meuRecycler) {
-        listaProfissaoAdapter = new ListaProfissaoAdapter(getContext(), profissoes);
+    private void configuraAdapter(RecyclerView meuRecycler) {
+        listaProfissaoAdapter = new ListaProfissaoAdapter(getContext(), todasProfissoes);
         meuRecycler.setAdapter(listaProfissaoAdapter);
         listaProfissaoAdapter.setAddTextChangedListener(new AddTextChangedListenerInterface() {
             @Override
@@ -133,8 +139,6 @@ public class ListaProfissoesFragment extends Fragment {
         meuRecycler = binding.recyclerViewListaProfissoesFragment;
         swipeRefreshLayout = binding.swipeRefreshLayoutListaProfissoesFragment;
         indicadorProgresso = binding.indicadorProgressoListaProfissoesFragment;
-        ProfissaoViewModelFactory profissaoViewModelFactory = new ProfissaoViewModelFactory(new ProfissaoRepository(personagemId));
-        profissaoViewModel = new ViewModelProvider(this, profissaoViewModelFactory).get(ProfissaoViewModel.class);
     }
 
     @Override

@@ -240,22 +240,26 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
         ListaNovaProducaoViewModelFactory listaNovaProducaoViewModelFactory = new ListaNovaProducaoViewModelFactory(new TrabalhoRepository());
         novaProducaoViewModel = new ViewModelProvider(this, listaNovaProducaoViewModelFactory).get(ListaNovaProducaoViewModel.class);
     }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        novaProducaoViewModel.pegaTodosTrabalhos().observe(this, arrayListResource -> {
-            if (arrayListResource.getDado() != null) {
-                todosTrabalhos = arrayListResource.getDado();
+
+    private void pegaTodosTrabalhos() {
+        novaProducaoViewModel.pegaTodosTrabalhos().observe(this, resultadoPegaTodosTrabalhos -> {
+            if (resultadoPegaTodosTrabalhos.getDado() != null) {
+                todosTrabalhos = resultadoPegaTodosTrabalhos.getDado();
                 listaTrabalhosFiltrada = (ArrayList<Trabalho>) todosTrabalhos.clone();
                 indicadorProgresso.setVisibility(View.GONE);
                 configuraListaDeProfissoes();
                 configuraGrupoChipsProfissoes();
                 listaTrabalhoEspecificoAdapter.atualizaLista(listaTrabalhosFiltrada);
-            } else {
-                Snackbar.make(binding.getRoot(), "Erro: "+arrayListResource.getErro(), Snackbar.LENGTH_LONG).show();
+            }
+            if (resultadoPegaTodosTrabalhos.getErro() != null) {
+                Snackbar.make(binding.getRoot(), "Erro: "+resultadoPegaTodosTrabalhos.getErro(), Snackbar.LENGTH_LONG).show();
             }
         });
-
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        pegaTodosTrabalhos();
     }
 
     @Override

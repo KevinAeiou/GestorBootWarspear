@@ -50,10 +50,16 @@ public class ListaProdutosVendidosFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        recebeDadosIntent();
+    }
+
+    private void recebeDadosIntent() {
         Bundle argumento = getArguments();
         if (argumento != null) {
             if (argumento.containsKey(CHAVE_PERSONAGEM)){
                 personagemId = argumento.getString(CHAVE_PERSONAGEM);
+                ProdutosVendidosViewModelFactory produtosVendidosViewModelFactory = new ProdutosVendidosViewModelFactory(new ProdutosVendidosRepository(personagemId));
+                produtosVendidosViewModel = new ViewModelProvider(this, produtosVendidosViewModelFactory).get(ProdutosVendidosViewModel.class);
             }
         }
     }
@@ -112,7 +118,11 @@ public class ListaProdutosVendidosFragment extends Fragment {
     }
 
     private void removeTrabalhoDoBanco(ProdutoVendido trabalhoRemovido) {
-        produtosVendidosViewModel.deletaProduto(trabalhoRemovido);
+        produtosVendidosViewModel.deletaProduto(trabalhoRemovido).observe(getViewLifecycleOwner(), resultadoRemoveTrabalho -> {
+            if (resultadoRemoveTrabalho.getErro() != null) {
+                Snackbar.make(binding.getRoot(), "Erro: "+resultadoRemoveTrabalho.getErro(), Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
     private void configuraSwipeRefreshLayout() {
         swipeRefreshLayout.setOnRefreshListener(() -> {
@@ -181,8 +191,6 @@ public class ListaProdutosVendidosFragment extends Fragment {
         meuRecycler = binding.recyclerViewListaProdutosVendidos;
         swipeRefreshLayout = binding.swipeRefreshLayoutProdutosVendidos;
         indicadorProgresso = binding.indicadorProgressoListaProdutosVendidosFragment;
-        ProdutosVendidosViewModelFactory produtosVendidosViewModelFactory = new ProdutosVendidosViewModelFactory(new ProdutosVendidosRepository(personagemId));
-        produtosVendidosViewModel = new ViewModelProvider(this, produtosVendidosViewModelFactory).get(ProdutosVendidosViewModel.class);
     }
 
     @Override
