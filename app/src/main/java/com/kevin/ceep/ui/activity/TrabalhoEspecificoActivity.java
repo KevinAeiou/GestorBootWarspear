@@ -14,6 +14,7 @@ import static com.kevin.ceep.utilitario.Utilitario.stringContemString;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -93,7 +94,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityTrabalhoEspecificoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         inicializaComponentes();
         recebeDadosIntent();
         configuraAcaoImagem();
@@ -104,131 +104,148 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
             indicadorProgresso.setVisibility(View.VISIBLE);
             recuperaValoresCampos();
             if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO_PRODUCAO) {
-                if (verificaTrabalhoProducaoModificado()) {
-                    TrabalhoProducao trabalhoModificado = defineTrabalhoProducaoModificado();
-                    trabalhoProducaoViewModel.modificaTrabalhoProducaoServidor(trabalhoModificado).observe(this, resultado -> {
-                        if (resultado.getErro() == null) {
-                            if (verificaEstadoModificado()) {
-                                Integer estado = trabalhoModificado.getEstado();
-                                if (estado == 1 || estado == 2) {
-                                    if (!trabalhoModificado.ehProducaoDeRecursos()) {
-                                        switch (estado) {
-                                            case 1:
-                                                if (trabalhoModificado.possueTrabalhoNecessarioValido()) {
-                                                    String[] listaTrabalhosNecessarios = trabalhoModificado.getTrabalhoNecessario().split(",");
-                                                    for (String trabalhoNecessario2 : listaTrabalhosNecessarios) {
-                                                        TrabalhoEstoque trabalhoEstoqueEncontrado = trabalhoEstoqueViewModel.retornaTrabalhoEspecificoEstoque(todosTrabalhosEstoque, trabalhoNecessario2);
-                                                        if (trabalhoEstoqueEncontrado != null) {
-                                                            int novaQuantidade = trabalhoEstoqueEncontrado.getQuantidade() - 1;
-                                                            if (novaQuantidade < 0) {
-                                                                novaQuantidade = 0;
-                                                            }
-                                                            trabalhoEstoqueEncontrado.setQuantidade(novaQuantidade);
-                                                            trabalhoEstoqueViewModel.modificaQuantidadeTrabalhoEspecificoNoEstoque(trabalhoEstoqueEncontrado);
-                                                        }
-                                                    }
-                                                }
-                                                finish();
-                                                break;
-                                            case 2:
-                                                MutableLiveData<Boolean> confirmacao = new MutableLiveData<>(true);
-                                                TrabalhoEstoque trabalhoEstoqueEncontrado = trabalhoEstoqueViewModel.retornaTrabalhoEspecificoEstoque(todosTrabalhosEstoque, trabalhoModificado.getNome());
-                                                if (trabalhoEstoqueEncontrado != null) {
-                                                    trabalhoEstoqueEncontrado.setQuantidade(trabalhoEstoqueEncontrado.getQuantidade()+1);
-                                                    trabalhoEstoqueViewModel.modificaQuantidadeTrabalhoEspecificoNoEstoque(trabalhoEstoqueEncontrado).observe(this, resultaModificaQuantidade -> {
-                                                        if (resultaModificaQuantidade.getErro() != null){
-                                                            Snackbar.make(binding.getRoot(), "Erro: "+resultaModificaQuantidade.getErro(), Snackbar.LENGTH_LONG).show();
-                                                            confirmacao.setValue(false);
-                                                        }
-                                                    });
-                                                } else {
-                                                    Trabalho trabalhoEncontrado = trabalhoViewModel.retornaTrabalhoPorChaveNome(todosTrabalhos, trabalhoModificado);
-                                                    TrabalhoEstoque novoTrabalhoEstoque = trabalhoEstoqueViewModel.defineNovoTrabalhoEstoque(trabalhoModificado);
-                                                    if (trabalhoEncontrado != null) {
-                                                        novoTrabalhoEstoque.setTrabalhoId(trabalhoEncontrado.getId());
-                                                        trabalhoEstoqueViewModel.salvaNovoTrabalhoEstoque(novoTrabalhoEstoque).observe(this, resultaSalvaTrabalhoEstoque -> {
-                                                            if (resultaSalvaTrabalhoEstoque.getErro() != null){
-                                                                Snackbar.make(binding.getRoot(), "Erro: "+resultaSalvaTrabalhoEstoque.getErro(), Snackbar.LENGTH_LONG).show();
-                                                                confirmacao.setValue(false);
-                                                            }
-                                                        });
-                                                    }
-                                                }
-                                                profissaoViewModel.pegaTodasProfissoes().observe(this, resultadoProfissoes -> {
-                                                    if (resultadoProfissoes.getDado() != null) {
-                                                        Profissao profissaoEncontrada = profissaoViewModel.retornaProfissaoModificada(resultadoProfissoes.getDado(), trabalhoModificado);
-                                                        if (profissaoEncontrada != null && profissaoEncontrada.getExperiencia() < 830000) {
-                                                            int novaExperiencia = profissaoEncontrada.getExperiencia()+trabalhoModificado.getExperiencia();
-                                                            if (novaExperiencia > 830000) {
-                                                                novaExperiencia = 830000;
-                                                            }
-                                                            profissaoEncontrada.setExperiencia(novaExperiencia);
-                                                            profissaoViewModel.modificaExperienciaProfissao(profissaoEncontrada).observe(this, resultadoModificaExperiencia -> {
-                                                                if (resultadoModificaExperiencia.getErro() != null){
-                                                                    Snackbar.make(binding.getRoot(), "Erro: "+resultadoModificaExperiencia.getErro(), Snackbar.LENGTH_LONG).show();
-                                                                    confirmacao.setValue(false);
-                                                                }
-                                                                if (confirmacao.getValue()) {
-                                                                    finish();
-                                                                }
-                                                            });
-                                                        } else {
-                                                            finish();
-                                                        }
-                                                    } else {
-                                                        finish();
-                                                    }
-                                                });
-                                                break;
-                                        }
-                                    } else {
-                                        finish();
-                                    }
-                                } else {
-                                    finish();
-                                }
-                            }
-                        } else {
-                            Snackbar.make(binding.getRoot(), "Erro: "+resultado.getErro(), Snackbar.LENGTH_LONG).show();
-                        }
-                    });
-                }
+                verificaModificacaoTrabalhoProducao();
             }
             else if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO) {
-                if (verificaTrabalhoModificado()) {
-                    Trabalho trabalhoModificado = defineTrabalhoModificado(trabalhoNecessario);
-                    trabalhoViewModel.salvaNovoTrabalho(trabalhoModificado).observe(this, resultado -> {
-                        indicadorProgresso.setVisibility(View.GONE);
-                        if (resultado.getErro() == null) {
-                            finish();
-                        } else {
-                            Snackbar.make(binding.getRoot(), "Erro: "+resultado.getErro(), Snackbar.LENGTH_LONG).show();
-                        }
-                    });
-                }
-                finish();
+                verificaModificacaoTrabalho();
             }
             else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO) {
-                if (verificaCamposNovoTrabalho()) {
-                    Trabalho novoTrabalho = defineNovoTrabalho(trabalhoNecessario);
-                    trabalhoViewModel.salvaNovoTrabalho(novoTrabalho).observe(this, resultado -> {
-                        indicadorProgresso.setVisibility(View.GONE);
-                        if (resultado.getErro() == null) {
-                            Snackbar.make(binding.getRoot(), novoTrabalho.getNome()+" cadastrado!", Snackbar.LENGTH_LONG).show();
-                            edtNomeTrabalho.setText("");
-                            edtNomeProducaoTrabalho.setText("");
-                            edtNomeTrabalho.requestFocus();
-                        } else {
-                            Snackbar.make(binding.getRoot(), "Erro: "+resultado.getErro(), Snackbar.LENGTH_LONG).show();
-                        }
-                    });
-                } else {
-                    indicadorProgresso.setVisibility(View.GONE);
-                }
+                verificaNovoTrabalho();
             }
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private void verificaNovoTrabalho() {
+        if (verificaCamposNovoTrabalho()) {
+            Trabalho novoTrabalho = defineNovoTrabalho(trabalhoNecessario);
+            trabalhoViewModel.salvaNovoTrabalho(novoTrabalho).observe(this, resultadoSalvaNovoTrabalho -> {
+                indicadorProgresso.setVisibility(View.GONE);
+                if (resultadoSalvaNovoTrabalho.getErro() == null) {
+                    Snackbar.make(binding.getRoot(), novoTrabalho.getNome()+" cadastrado!", Snackbar.LENGTH_LONG).show();
+                    limpaCampos();
+                } else {
+                    Snackbar.make(binding.getRoot(), "Erro: "+resultadoSalvaNovoTrabalho.getErro(), Snackbar.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            indicadorProgresso.setVisibility(View.GONE);
+        }
+    }
+
+    private void limpaCampos() {
+        edtNomeTrabalho.setText("");
+        edtNomeProducaoTrabalho.setText("");
+        edtNomeTrabalho.requestFocus();
+    }
+
+    private void verificaModificacaoTrabalho() {
+        if (verificaTrabalhoModificado()) {
+            Trabalho trabalhoModificado = defineTrabalhoModificado(trabalhoNecessario);
+            trabalhoViewModel.salvaNovoTrabalho(trabalhoModificado).observe(this, resultadoModificaTrabalho -> {
+                indicadorProgresso.setVisibility(View.GONE);
+                if (resultadoModificaTrabalho.getErro() == null) {
+                    finish();
+                } else {
+                    Snackbar.make(binding.getRoot(), "Erro: "+resultadoModificaTrabalho.getErro(), Snackbar.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            finish();
+        }
+    }
+
+    private void verificaModificacaoTrabalhoProducao() {
+        if (verificaTrabalhoProducaoModificado()) {
+            TrabalhoProducao trabalhoModificado = defineTrabalhoProducaoModificado();
+            trabalhoProducaoViewModel.modificaTrabalhoProducaoServidor(trabalhoModificado).observe(this, resultado -> {
+                if (resultado.getErro() == null) {
+                    if (verificaEstadoModificado()) {
+                        Integer estado = trabalhoModificado.getEstado();
+                        switch (estado) {
+                            case 0:
+                                finish();
+                                break;
+                            case 1:
+                                if (trabalhoModificado.possueTrabalhoNecessarioValido()) {
+                                    String[] listaTrabalhosNecessarios = trabalhoModificado.getTrabalhoNecessario().split(",");
+                                    for (String trabalhoNecessario2 : listaTrabalhosNecessarios) {
+                                        TrabalhoEstoque trabalhoEstoqueEncontrado = trabalhoEstoqueViewModel.retornaTrabalhoEspecificoEstoque(todosTrabalhosEstoque, trabalhoNecessario2);
+                                        if (trabalhoEstoqueEncontrado != null) {
+                                            int novaQuantidade = trabalhoEstoqueEncontrado.getQuantidade() - 1;
+                                            if (novaQuantidade < 0) {
+                                                novaQuantidade = 0;
+                                            }
+                                            trabalhoEstoqueEncontrado.setQuantidade(novaQuantidade);
+                                            trabalhoEstoqueViewModel.modificaQuantidadeTrabalhoEspecificoNoEstoque(trabalhoEstoqueEncontrado);
+                                        }
+                                    }
+                                }
+                                finish();
+                                break;
+                            case 2:
+                                MutableLiveData<Boolean> confirmacao = new MutableLiveData<>(true);
+                                TrabalhoEstoque trabalhoEstoqueEncontrado = trabalhoEstoqueViewModel.retornaTrabalhoEspecificoEstoque(todosTrabalhosEstoque, trabalhoModificado.getNome());
+                                if (trabalhoEstoqueEncontrado != null) {
+                                    trabalhoEstoqueEncontrado.setQuantidade(trabalhoEstoqueEncontrado.getQuantidade()+1);
+                                    trabalhoEstoqueViewModel.modificaQuantidadeTrabalhoEspecificoNoEstoque(trabalhoEstoqueEncontrado).observe(this, resultaModificaQuantidade -> {
+                                        if (resultaModificaQuantidade.getErro() != null){
+                                            Snackbar.make(binding.getRoot(), "Erro: "+resultaModificaQuantidade.getErro(), Snackbar.LENGTH_LONG).show();
+                                            confirmacao.setValue(false);
+                                        }
+                                    });
+                                } else {
+                                    Trabalho trabalhoEncontrado = trabalhoViewModel.retornaTrabalhoPorChaveNome(todosTrabalhos, trabalhoModificado);
+                                    if (trabalhoEncontrado != null && trabalhoEncontrado.getNivel() != 3 && trabalhoEncontrado.getNivel() != 5 && trabalhoEncontrado.getNivel() != 10) {
+                                        TrabalhoEstoque novoTrabalhoEstoque = trabalhoEstoqueViewModel.defineNovoTrabalhoEstoque(trabalhoModificado);
+                                        novoTrabalhoEstoque.setTrabalhoId(trabalhoEncontrado.getId());
+                                        trabalhoEstoqueViewModel.salvaNovoTrabalhoEstoque(novoTrabalhoEstoque).observe(this, resultaSalvaTrabalhoEstoque -> {
+                                            if (resultaSalvaTrabalhoEstoque.getErro() != null){
+                                                Snackbar.make(binding.getRoot(), "Erro: "+resultaSalvaTrabalhoEstoque.getErro(), Snackbar.LENGTH_LONG).show();
+                                                confirmacao.setValue(false);
+                                            }
+                                        });
+                                    }
+                                }
+                                profissaoViewModel.pegaTodasProfissoes().observe(this, resultadoProfissoes -> {
+                                    if (resultadoProfissoes.getDado() != null) {
+                                        Profissao profissaoEncontrada = profissaoViewModel.retornaProfissaoModificada(resultadoProfissoes.getDado(), trabalhoModificado);
+                                        if (profissaoEncontrada != null && profissaoEncontrada.getExperiencia() < 830000) {
+                                            int novaExperiencia = profissaoEncontrada.getExperiencia()+trabalhoModificado.getExperiencia();
+                                            if (novaExperiencia > 830000) {
+                                                novaExperiencia = 830000;
+                                            }
+                                            profissaoEncontrada.setExperiencia(novaExperiencia);
+                                            profissaoViewModel.modificaExperienciaProfissao(profissaoEncontrada).observe(this, resultadoModificaExperiencia -> {
+                                                if (resultadoModificaExperiencia.getErro() != null){
+                                                    Snackbar.make(binding.getRoot(), "Erro: "+resultadoModificaExperiencia.getErro(), Snackbar.LENGTH_LONG).show();
+                                                    confirmacao.setValue(false);
+                                                }
+                                                if (confirmacao.getValue()) {
+                                                    finish();
+                                                }
+                                            });
+                                        } else {
+                                            finish();
+                                        }
+                                    } else {
+                                        finish();
+                                    }
+                                });
+                                break;
+                        }
+                    } else {
+                        finish();
+                    }
+                } else {
+                    Snackbar.make(binding.getRoot(), "Erro: "+resultado.getErro(), Snackbar.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            finish();
+        }
+    }
+
     private void inicializaComponentes() {
         todosTrabalhos = new ArrayList<>();
         todosTrabalhosEstoque = new ArrayList<>();
@@ -270,45 +287,53 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         Intent dadosRecebidos = getIntent();
         if (dadosRecebidos != null && dadosRecebidos.hasExtra(CHAVE_TRABALHO)){
             codigoRequisicao = (int) dadosRecebidos.getSerializableExtra(CHAVE_TRABALHO);
-            String personagemId = (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
             if (codigoRequisicao != CODIGO_REQUISICAO_INVALIDA){
-                trabalhoViewModel.pegaTodosTrabalhos().observe(this, resultado -> {
-                    if (resultado.getDado() != null) {
-                        todosTrabalhos = resultado.getDado();
-                    } else if (resultado.getErro() != null) {
-                        Snackbar.make(binding.getRoot(), "Erro: "+resultado.getErro(), Snackbar.LENGTH_LONG).show();
+                trabalhoViewModel.pegaTodosTrabalhos().observe(this, resultadoTodosTrabalhos -> {
+                    if (resultadoTodosTrabalhos.getDado() != null) {
+                        todosTrabalhos = resultadoTodosTrabalhos.getDado();
+                    } else if (resultadoTodosTrabalhos.getErro() != null) {
+                        Snackbar.make(binding.getRoot(), "Erro: "+resultadoTodosTrabalhos.getErro(), Snackbar.LENGTH_LONG).show();
                     }
                 });
                 if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO){
                     configuraLayoutNovoTrabalho();
                 } else if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO){
-                    trabalhoRecebido = (Trabalho) dadosRecebidos
-                            .getSerializableExtra(CHAVE_NOME_TRABALHO);
-                    if (trabalhoRecebido != null){
-                        configuraComponentesAlteraTrabalho();
-                        configuraBotaoExcluiTrabalhoEspecifico();
-                    }
+                    trabalhoRecebido = (Trabalho) dadosRecebidos.getSerializableExtra(CHAVE_NOME_TRABALHO);
+                    configuraLayoutModificaTrabalho(trabalhoRecebido);
                 } else if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO_PRODUCAO) {
-                    trabalhoProducaoRecebido = (TrabalhoProducao) dadosRecebidos
-                            .getSerializableExtra(CHAVE_NOME_TRABALHO);
-                    if (trabalhoProducaoRecebido != null) {
-                        TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(new TrabalhoProducaoRepository(personagemId));
-                        trabalhoProducaoViewModel = new ViewModelProvider(this, trabalhoProducaoViewModelFactory).get(TrabalhoProducaoViewModel.class);
-                        TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository(personagemId));
-                        trabalhoEstoqueViewModel = new ViewModelProvider(this, trabalhoEstoqueViewModelFactory).get(TrabalhoEstoqueViewModel.class);
-                        ProfissaoViewModelFactory profissaoViewModelFactory = new ProfissaoViewModelFactory(new ProfissaoRepository(personagemId));
-                        profissaoViewModel = new ViewModelProvider(this, profissaoViewModelFactory).get(ProfissaoViewModel.class);
-                        trabalhoEstoqueViewModel.pegaTodosTrabalhosEstoque().observe(this, resultadoEstoque -> {
-                            if (resultadoEstoque.getDado() != null) {
-                                todosTrabalhosEstoque = resultadoEstoque.getDado();
-                            }
-                        });
-                        configuraComponentesAlteraTrabalhoProducao();
-                    }
+                    configuraLayoutModificaTrabalhoProducao(dadosRecebidos);
                 }
             }
         }
     }
+
+    private void configuraLayoutModificaTrabalhoProducao(Intent dadosRecebidos) {
+        trabalhoProducaoRecebido = (TrabalhoProducao) dadosRecebidos
+                .getSerializableExtra(CHAVE_NOME_TRABALHO);
+        String personagemId = (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
+        if (trabalhoProducaoRecebido != null) {
+            TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(new TrabalhoProducaoRepository(personagemId));
+            trabalhoProducaoViewModel = new ViewModelProvider(this, trabalhoProducaoViewModelFactory).get(TrabalhoProducaoViewModel.class);
+            TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository(personagemId));
+            trabalhoEstoqueViewModel = new ViewModelProvider(this, trabalhoEstoqueViewModelFactory).get(TrabalhoEstoqueViewModel.class);
+            ProfissaoViewModelFactory profissaoViewModelFactory = new ProfissaoViewModelFactory(new ProfissaoRepository(personagemId));
+            profissaoViewModel = new ViewModelProvider(this, profissaoViewModelFactory).get(ProfissaoViewModel.class);
+            trabalhoEstoqueViewModel.pegaTodosTrabalhosEstoque().observe(this, resultadoEstoque -> {
+                if (resultadoEstoque.getDado() != null) {
+                    todosTrabalhosEstoque = resultadoEstoque.getDado();
+                }
+            });
+            configuraComponentesAlteraTrabalhoProducao();
+        }
+    }
+
+    private void configuraLayoutModificaTrabalho(Trabalho trabalhoRecebido) {
+        if (trabalhoRecebido != null){
+            configuraComponentesAlteraTrabalho();
+            configuraBotaoExcluiTrabalhoEspecifico();
+        }
+    }
+
     private void configuraAcaoImagem() {
         imagemTrabalhoNecessario1.setOnClickListener(view -> linearLayoutTrabalhoNecessario3.setVisibility(View.VISIBLE));
         imagemTrabalhoNecessario2.setOnClickListener(view -> {
@@ -380,19 +405,20 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         profissao = autoCompleteProfissao.getText().toString();
         nivel = Objects.requireNonNull(edtNivelTrabalho.getText()).toString();
         raridade = Objects.requireNonNull(autoCompleteRaridade).getText().toString().trim();
-
+        Log.d("dropDown", "Profissao: "+profissao+" Nivel: "+nivel+" Raridade: "+raridade);
         ArrayList<String> trabalhosNecessarios = new ArrayList<>();
         ArrayAdapter<String> trabalhoNecessarioAdapter;
-        trabalhoNecessarioAdapter = new ArrayAdapter<>(getApplication(), R.layout.item_dropdrown, trabalhosNecessarios);
-        trabalhoNecessarioAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         for (Trabalho trabalho : todosTrabalhos) {
-            if (comparaString(raridade, "Melhorado")) {
+            Log.d("dropDown", "Trabalho: "+trabalho.getNome());
+            if (comparaString(raridade, "melhorado")) {
+                Log.d("dropDown", "Trabalho melhorado");
                 if (comparaString(trabalho.getProfissao(), profissao)
                     && comparaString(trabalho.getNivel().toString(), nivel)
                     && comparaString(trabalho.getRaridade(), "Comum")){
                     trabalhosNecessarios.add(trabalho.getNome());
                 }
-            } else if (comparaString(raridade, "Raro")) {
+            } else if (comparaString(raridade, "raro")) {
+                Log.d("dropDown", "Trabalho raro");
                 if (comparaString(trabalho.getProfissao(), profissao)
                     && comparaString(trabalho.getNivel().toString(), nivel)
                     && comparaString(trabalho.getRaridade(), "Melhorado")){
@@ -403,6 +429,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         if (trabalhosNecessarios.isEmpty()){
             trabalhosNecessarios.add("Nada encontrado");
         }
+        trabalhoNecessarioAdapter = new ArrayAdapter<>(getApplication(), R.layout.item_dropdrown, trabalhosNecessarios);
+        trabalhoNecessarioAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         autoCompleteTrabalhoNecessario1.setAdapter(trabalhoNecessarioAdapter);
         autoCompleteTrabalhoNecessario2.setAdapter(trabalhoNecessarioAdapter);
     }
@@ -456,6 +484,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
             }
             if (trabalhosNecessarios != null) {
                 if (trabalhosNecessarios.length > 1) {
+                    binding.linearLayoutTrabalhoNecessario3.setVisibility(View.VISIBLE);
                     autoCompleteTrabalhoNecessario1.setText(trabalhosNecessarios[0]);
                     autoCompleteTrabalhoNecessario2.setText(trabalhosNecessarios[1]);
                 } else {
