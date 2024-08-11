@@ -149,6 +149,7 @@ public class ListaEstoqueFragment extends Fragment {
     }
 
     private void configuraGrupoChipsProfissoes() {
+        grupoChipsProfissoes.removeAllViews();
         if (!profissoes.isEmpty() && profissoes.size() > 1) {
             int idProfissao = 0;
             for (String profissao : profissoes) {

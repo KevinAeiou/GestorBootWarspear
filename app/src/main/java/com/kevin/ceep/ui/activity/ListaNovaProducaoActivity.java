@@ -97,6 +97,7 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
     }
 
     private void configuraGrupoChipsProfissoes() {
+        grupoChipsProfissoes.removeAllViews();
         if (!listaProfissoes.isEmpty()) {
             int idProfissao = 0;
             for (String profissao : listaProfissoes) {
