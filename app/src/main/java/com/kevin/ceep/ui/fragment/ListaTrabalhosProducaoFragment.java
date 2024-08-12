@@ -112,8 +112,10 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         if (dadosRecebidos != null) {
             if (dadosRecebidos.containsKey(CHAVE_PERSONAGEM)){
                 personagemId = dadosRecebidos.getString(CHAVE_PERSONAGEM);
-                TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(new TrabalhoProducaoRepository(personagemId));
-                trabalhoProducaoViewModel = new ViewModelProvider(this, trabalhoProducaoViewModelFactory).get(TrabalhoProducaoViewModel.class);
+                if (personagemId != null) {
+                    TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(new TrabalhoProducaoRepository(personagemId));
+                    trabalhoProducaoViewModel = new ViewModelProvider(this, trabalhoProducaoViewModelFactory).get(TrabalhoProducaoViewModel.class);
+                }
             }
         }
     }

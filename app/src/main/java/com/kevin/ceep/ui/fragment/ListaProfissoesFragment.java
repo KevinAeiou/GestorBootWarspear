@@ -51,8 +51,10 @@ public class ListaProfissoesFragment extends Fragment {
         if (argumento != null) {
             if (argumento.containsKey(CHAVE_PERSONAGEM)) {
                 personagemId = argumento.getString(CHAVE_PERSONAGEM);
-                ProfissaoViewModelFactory profissaoViewModelFactory = new ProfissaoViewModelFactory(new ProfissaoRepository(personagemId));
-                profissaoViewModel = new ViewModelProvider(this, profissaoViewModelFactory).get(ProfissaoViewModel.class);
+                if (personagemId != null) {
+                    ProfissaoViewModelFactory profissaoViewModelFactory = new ProfissaoViewModelFactory(new ProfissaoRepository(personagemId));
+                    profissaoViewModel = new ViewModelProvider(this, profissaoViewModelFactory).get(ProfissaoViewModel.class);
+                }
             }
         }
     }

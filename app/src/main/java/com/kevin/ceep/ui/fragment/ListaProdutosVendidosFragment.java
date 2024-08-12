@@ -56,10 +56,12 @@ public class ListaProdutosVendidosFragment extends Fragment {
     private void recebeDadosIntent() {
         Bundle argumento = getArguments();
         if (argumento != null) {
-            if (argumento.containsKey(CHAVE_PERSONAGEM)){
+            if (argumento.containsKey(CHAVE_PERSONAGEM)) {
                 personagemId = argumento.getString(CHAVE_PERSONAGEM);
-                ProdutosVendidosViewModelFactory produtosVendidosViewModelFactory = new ProdutosVendidosViewModelFactory(new ProdutosVendidosRepository(personagemId));
-                produtosVendidosViewModel = new ViewModelProvider(this, produtosVendidosViewModelFactory).get(ProdutosVendidosViewModel.class);
+                if (personagemId != null) {
+                    ProdutosVendidosViewModelFactory produtosVendidosViewModelFactory = new ProdutosVendidosViewModelFactory(new ProdutosVendidosRepository(personagemId));
+                    produtosVendidosViewModel = new ViewModelProvider(this, produtosVendidosViewModelFactory).get(ProdutosVendidosViewModel.class);
+                }
             }
         }
     }

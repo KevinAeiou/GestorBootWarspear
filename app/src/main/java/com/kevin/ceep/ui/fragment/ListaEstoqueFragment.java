@@ -64,8 +64,10 @@ public class ListaEstoqueFragment extends Fragment {
         if (argumento != null) {
             if (argumento.containsKey(CHAVE_PERSONAGEM)){
                 personagemId = argumento.getString(CHAVE_PERSONAGEM);
-                TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository(personagemId));
-                trabalhoEstoqueViewModel = new ViewModelProvider(this, trabalhoEstoqueViewModelFactory).get(TrabalhoEstoqueViewModel.class);
+                if (personagemId != null) {
+                    TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository(personagemId));
+                    trabalhoEstoqueViewModel = new ViewModelProvider(this, trabalhoEstoqueViewModelFactory).get(TrabalhoEstoqueViewModel.class);
+                }
             }
         }
     }
