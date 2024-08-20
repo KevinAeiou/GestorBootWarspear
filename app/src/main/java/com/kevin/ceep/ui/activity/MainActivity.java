@@ -63,15 +63,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         inicializaComponentes();
-
+        pegaTodosPersonagens();
         configuraToolbar();
-
         navigationView.bringToFront();
         configuraToogle();
-
         navigationView.setNavigationItemSelectedListener(this);
-        pegaTodosPersonagens();
-
         navigationView.setCheckedItem(itemNavegacao);
     }
 
