@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,6 +52,8 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar indicadorProgresso;
     private ChipGroup grupoChipsEstados;
+    private ImageView iconeListaVazia;
+    private TextView txtListaVazia;
     private TrabalhoProducaoViewModel trabalhoProducaoViewModel;
 
     public ListaTrabalhosProducaoFragment() {
@@ -101,8 +105,11 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         trabalhosFiltrados = filtroListaChip(estado);
         if (trabalhosFiltrados.isEmpty()) {
             trabalhoAdapter.limpaLista();
-            Snackbar.make(binding.getRoot(), "Nem um resultado encontrado!", Snackbar.LENGTH_LONG).show();
+            iconeListaVazia.setVisibility(View.VISIBLE);
+            txtListaVazia.setVisibility(View.VISIBLE);
         } else {
+            iconeListaVazia.setVisibility(View.GONE);
+            txtListaVazia.setVisibility(View.GONE);
             trabalhoAdapter.atualiza(trabalhosFiltrados);
         }
     }
@@ -200,6 +207,8 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         swipeRefreshLayout = binding.swipeRefreshLayoutTrabalhos;
         indicadorProgresso = binding.indicadorProgressoListaTrabalhosFragment;
         grupoChipsEstados = binding.chipGrupId;
+        iconeListaVazia = binding.iconeVazia;
+        txtListaVazia = binding.txtListaVazia;
     }
     private void atualizaListaTrabalho() {
         int chipId = grupoChipsEstados.getCheckedChipId();

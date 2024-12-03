@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -51,6 +53,8 @@ public class ListaEstoqueFragment extends Fragment {
     private ProgressBar indicadorDeProgresso;
     private ChipGroup grupoChipsProfissoes;
     private TrabalhoEstoqueViewModel trabalhoEstoqueViewModel;
+    private ImageView iconeListaVazia;
+    private TextView txtListaVazia;
     public ListaEstoqueFragment() {
     }
     @Override
@@ -137,8 +141,11 @@ public class ListaEstoqueFragment extends Fragment {
                 indicadorDeProgresso.setVisibility(View.GONE);
                 swipeRefreshLayout.setRefreshing(false);
                 if (listaTrabalhosEstoqueFiltrada.isEmpty()) {
-                    Snackbar.make(binding.getRoot(), "Estoque vazio", Snackbar.LENGTH_LONG).show();
+                    iconeListaVazia.setVisibility(View.VISIBLE);
+                    txtListaVazia.setVisibility(View.VISIBLE);
                 } else {
+                    iconeListaVazia.setVisibility(View.GONE);
+                    txtListaVazia.setVisibility(View.GONE);
                     trabalhoEstoqueAdapter.atualiza(listaTrabalhosEstoqueFiltrada);
                     configuraListaDeProfissoes();
                     configuraGrupoChipsProfissoes();
@@ -186,6 +193,8 @@ public class ListaEstoqueFragment extends Fragment {
         grupoChipsProfissoes = binding.grupoProfissoesChipListaEstoque;
         swipeRefreshLayout = binding.swipeRefreshLayoutTrabalhosEstoque;
         indicadorDeProgresso = binding.indicadorProgressoListaEstoqueFragment;
+        iconeListaVazia = binding.iconeVazia;
+        txtListaVazia = binding.txtListaVazia;
     }
     private void configuraRecyclerView() {
         recyclerView.setHasFixedSize(true);

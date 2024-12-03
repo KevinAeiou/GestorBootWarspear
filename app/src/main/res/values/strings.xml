@@ -161,7 +161,7 @@
 
     <string name="stringCasoChaMa">(.*[A-Z].*)</string>
     <string name="stringCasoCharMi">(.*[a-z].*)</string>
-    <string name="stringCasoCharNum">(.*[0-9].*)</string>
+    <string name="stringCasoCharNum">(.*[0–9].*)</string>
     <string name="stringCasoCharS">(.*[@,#,$,%].*$)</string>
     <string name="string_senha_curta">Senha muito curta.</string>
     <string name="string_senha_numerica">Senha deve conter ao menos um número.</string>
@@ -172,7 +172,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="stringAtivo">Ativo</string>
     <string name="stringInativo">Inativo</string>
-    <string name="stringCarregandoDados">Carregando dados...</string>
+    <string name="stringCarregandoDados">Carregando dados…</string>
 
     <string name="abre_menu_navegacao">Abre menu de navegação</string>
     <string name="fecha_menu_navegacao">Fecha menu de navegação</string>
@@ -208,4 +208,5 @@
     <string name="stringUsoValor">Uso: %1$b</string>
     <string name="stringEspacoProducaoValor">Espaço de produção: %1$d</string>
     <string name="teste">teste</string>
+    <string name="stringListaVazia">Lista vazia</string>
 </resources>

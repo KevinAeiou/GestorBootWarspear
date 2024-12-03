@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,6 +46,8 @@ public class ListaProdutosVendidosFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar indicadorProgresso;
     private ProdutosVendidosViewModel produtosVendidosViewModel;
+    private ImageView iconeListaVazia;
+    private TextView txtListaVazia;
 
     public ListaProdutosVendidosFragment() {
     }
@@ -139,6 +143,13 @@ public class ListaProdutosVendidosFragment extends Fragment {
         produtosVendidosViewModel.pegaTodosProdutosVendidos().observe(getViewLifecycleOwner(), resultadoTodosProdutos -> {
             if (resultadoTodosProdutos.getDado() != null) {
                 produtosVendidos = resultadoTodosProdutos.getDado();
+                if (produtosVendidos.isEmpty()) {
+                    iconeListaVazia.setVisibility(View.VISIBLE);
+                    txtListaVazia.setVisibility(View.VISIBLE);
+                } else {
+                    iconeListaVazia.setVisibility(View.GONE);
+                    txtListaVazia.setVisibility(View.GONE);
+                }
                 indicadorProgresso.setVisibility(View.GONE);
                 swipeRefreshLayout.setRefreshing(false);
                 produtosVendidosAdapter.atualiza(produtosVendidos);
@@ -193,6 +204,8 @@ public class ListaProdutosVendidosFragment extends Fragment {
         meuRecycler = binding.recyclerViewListaProdutosVendidos;
         swipeRefreshLayout = binding.swipeRefreshLayoutProdutosVendidos;
         indicadorProgresso = binding.indicadorProgressoListaProdutosVendidosFragment;
+        iconeListaVazia = binding.iconeVazia;
+        txtListaVazia = binding.txtListaVazia;
     }
 
     @Override
