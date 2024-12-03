@@ -111,6 +111,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         }
         return new TrabalhoProducao(
                 novoId,
+                trabalhoRecebido.getId(),
                 trabalhoRecebido.getNome(),
                 trabalhoRecebido.getNomeProducao(),
                 trabalhoRecebido.getProfissao(),
