@@ -6,10 +6,12 @@ public class TrabalhoProducao extends Trabalho implements Serializable {
     private String tipo_licenca;
     private Integer estado;
     private Boolean recorrencia;
+    private String idTrabalho;
 
     public TrabalhoProducao(){}
-    public TrabalhoProducao(String id,String nome,String nomeProducao,String profissao,String raridade, String trabalhoNecessario, Integer nivel,Integer experiencia,String tipoLicenca, Integer estado,Boolean recorrencia) {
+    public TrabalhoProducao(String id, String idTrabalho, String nome,String nomeProducao,String profissao,String raridade, String trabalhoNecessario, Integer nivel,Integer experiencia,String tipoLicenca, Integer estado,Boolean recorrencia) {
         super(id,nome, nomeProducao,profissao,raridade, trabalhoNecessario, nivel,experiencia);
+        this.idTrabalho = idTrabalho;
         this.tipo_licenca = tipoLicenca;
         this.estado = estado;
         this.recorrencia = recorrencia;
