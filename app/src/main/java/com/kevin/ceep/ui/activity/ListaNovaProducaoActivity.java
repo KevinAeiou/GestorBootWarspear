@@ -13,7 +13,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -53,6 +55,8 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
     private ArrayList<String> listaProfissoes;
     private ArrayList<Trabalho> todosTrabalhos, listaTrabalhosFiltrada;
     private ListaNovaProducaoViewModel novaProducaoViewModel;
+    private TextView txtListaVazia;
+    private ImageView iconeListaVazia;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -174,7 +178,11 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
                             trabalho -> stringContemString(trabalho.getNome(), textoFiltro))
                             .collect(Collectors.toList());
             if (listaFiltrada.isEmpty()) {
-                Snackbar.make(binding.constrintLayoutListaNovaProducao, "Nem um trabalho encontrado!", Snackbar.LENGTH_LONG).show();
+                iconeListaVazia.setVisibility(View.VISIBLE);
+                txtListaVazia.setVisibility(View.VISIBLE);
+            } else {
+                txtListaVazia.setVisibility(View.GONE);
+                iconeListaVazia.setVisibility(View.GONE);
             }
             listaTrabalhoEspecificoAdapter.atualizaLista(listaFiltrada);
         } else {
@@ -240,6 +248,8 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
         listaTrabalhosFiltrada = new ArrayList<>();
         ListaNovaProducaoViewModelFactory listaNovaProducaoViewModelFactory = new ListaNovaProducaoViewModelFactory(new TrabalhoRepository());
         novaProducaoViewModel = new ViewModelProvider(this, listaNovaProducaoViewModelFactory).get(ListaNovaProducaoViewModel.class);
+        iconeListaVazia = binding.iconeVazia;
+        txtListaVazia = binding.txtListaVazia;
     }
 
     private void pegaTodosTrabalhos() {
@@ -248,6 +258,13 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
                 todosTrabalhos = resultadoPegaTodosTrabalhos.getDado();
                 listaTrabalhosFiltrada = (ArrayList<Trabalho>) todosTrabalhos.clone();
                 indicadorProgresso.setVisibility(View.GONE);
+                if (listaTrabalhosFiltrada.isEmpty()) {
+                    iconeListaVazia.setVisibility(View.VISIBLE);
+                    txtListaVazia.setVisibility(View.VISIBLE);
+                } else {
+                    txtListaVazia.setVisibility(View.GONE);
+                    iconeListaVazia.setVisibility(View.GONE);
+                }
                 configuraListaDeProfissoes();
                 configuraGrupoChipsProfissoes();
                 listaTrabalhoEspecificoAdapter.atualizaLista(listaTrabalhosFiltrada);
