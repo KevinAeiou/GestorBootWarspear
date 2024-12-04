@@ -40,7 +40,7 @@ public class TrabalhoDAO {
     }
 
     public void salvaNovoTrabalho(Trabalho novoTrabalho) {
-        trabalhoRepository.salvaNovoTrabalho(novoTrabalho);
+        trabalhoRepository.adicionaTrabalho(novoTrabalho);
     }
 
     public void excluiTrabalhoEspecificoServidor(Trabalho trabalhoRecebido) {

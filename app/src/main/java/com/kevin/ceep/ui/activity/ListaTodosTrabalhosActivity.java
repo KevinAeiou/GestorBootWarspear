@@ -109,7 +109,7 @@ public class ListaTodosTrabalhosActivity extends AppCompatActivity {
 
     private void pegaTodosTrabalhos() {
         todosTrabalhos = new ArrayList<>();
-        trabalhoViewModel.pegaTodosTrabalhosDb().observe(this, arrayListResource -> {
+        trabalhoViewModel.pegaTodosTrabalhos().observe(this, arrayListResource -> {
             if (arrayListResource.getDado() != null) {
                 todosTrabalhos = arrayListResource.getDado();
                 filtraTrabalhosProfissao();

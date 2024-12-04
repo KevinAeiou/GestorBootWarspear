@@ -119,7 +119,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private void verificaNovoTrabalho() {
         if (verificaCamposNovoTrabalho()) {
             Trabalho novoTrabalho = defineNovoTrabalho(trabalhoNecessario);
-            trabalhoViewModel.salvaNovoTrabalhoDb(novoTrabalho).observe(this, resultadoSalvaNovoTrabalho -> {
+            trabalhoViewModel.salvaNovoTrabalho(novoTrabalho).observe(this, resultadoSalvaNovoTrabalho -> {
                 indicadorProgresso.setVisibility(View.GONE);
                 if (resultadoSalvaNovoTrabalho.getErro() == null) {
                     Snackbar.make(binding.getRoot(), novoTrabalho.getNome()+" cadastrado!", Snackbar.LENGTH_LONG).show();
