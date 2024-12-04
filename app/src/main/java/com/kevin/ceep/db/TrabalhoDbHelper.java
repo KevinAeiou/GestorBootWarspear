@@ -4,10 +4,11 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.kevin.ceep.db.contracts.PersoagemDbContract;
 import com.kevin.ceep.db.contracts.TrabalhoDbContract;
 
 public class TrabalhoDbHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "autoProducao.db";
 
     public TrabalhoDbHelper(Context context) {
@@ -27,11 +28,24 @@ public class TrabalhoDbHelper extends SQLiteOpenHelper {
                 TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_TRABALHO_NECESSARIO + " TEXT" +
                 ")"
         );
+        sqLiteDatabase.execSQL(
+                "CREATE TABLE " + PersoagemDbContract.PersonagemEntry.TABLE_NAME + " (" +
+                        PersoagemDbContract.PersonagemEntry.COLUMN_NAME_ID + " VARCHAR(30) PRIMARY KEY," +
+                        PersoagemDbContract.PersonagemEntry.COLUMN_NAME_ID_USUARIO + " VARCHAR(30)," +
+                        PersoagemDbContract.PersonagemEntry.COLUMN_NAME_NOME + " TEXT," +
+                        PersoagemDbContract.PersonagemEntry.COLUMN_NAME_EMAIL + " TEXT," +
+                        PersoagemDbContract.PersonagemEntry.COLUMN_NAME_SENHA + " TEXT," +
+                        PersoagemDbContract.PersonagemEntry.COLUMN_NAME_ESTADO + " BOOLEAN," +
+                        PersoagemDbContract.PersonagemEntry.COLUMN_NAME_USO + " BOOLEAN," +
+                        PersoagemDbContract.PersonagemEntry.COLUMN_NAME_ESPACO_PRODUCAO + " INTEGER" +
+                        ")"
+        );
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TrabalhoDbContract.TrabalhoEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + PersoagemDbContract.PersonagemEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 }
