@@ -44,7 +44,6 @@ public class TrabalhoRepository {
             if (task.isSuccessful()) {
                 SQLiteDatabase db = trabalhoDbHelper.getWritableDatabase();
                 ContentValues values = new ContentValues();
-                values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_ID, trabalhoModificado.getId());
                 values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_NOME, trabalhoModificado.getNome());
                 values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_NOME_PRODUCAO, trabalhoModificado.getNomeProducao());
                 values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_EXPERIENCIA, trabalhoModificado.getExperiencia());
@@ -52,7 +51,9 @@ public class TrabalhoRepository {
                 values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_PROFISSAO, trabalhoModificado.getProfissao());
                 values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_RARIDADE, trabalhoModificado.getRaridade());
                 values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_TRABALHO_NECESSARIO, trabalhoModificado.getTrabalhoNecessario());
-                long newRowId = db.replace(TrabalhoDbContract.TrabalhoEntry.TABLE_NAME, null, values);
+                String selection = TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_ID + " LIKE ?";
+                String[] selectionArgs = {trabalhoModificado.getId()};
+                long newRowId = db.update(TrabalhoDbContract.TrabalhoEntry.TABLE_NAME, values, selection, selectionArgs);
                 if (newRowId == -1) {
                     liveData.setValue(new Resource<>(null, "Erro ao adicionar novo trabalho a lista"));
                 } else {
