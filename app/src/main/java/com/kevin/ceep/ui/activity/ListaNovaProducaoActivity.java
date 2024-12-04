@@ -246,7 +246,7 @@ public class ListaNovaProducaoActivity extends AppCompatActivity {
         listaProfissoes = new ArrayList<>();
         todosTrabalhos = new ArrayList<>();
         listaTrabalhosFiltrada = new ArrayList<>();
-        ListaNovaProducaoViewModelFactory listaNovaProducaoViewModelFactory = new ListaNovaProducaoViewModelFactory(new TrabalhoRepository());
+        ListaNovaProducaoViewModelFactory listaNovaProducaoViewModelFactory = new ListaNovaProducaoViewModelFactory(new TrabalhoRepository(getApplicationContext()));
         novaProducaoViewModel = new ViewModelProvider(this, listaNovaProducaoViewModelFactory).get(ListaNovaProducaoViewModel.class);
         iconeListaVazia = binding.iconeVazia;
         txtListaVazia = binding.txtListaVazia;

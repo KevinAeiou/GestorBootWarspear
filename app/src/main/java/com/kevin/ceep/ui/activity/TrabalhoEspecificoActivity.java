@@ -119,7 +119,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private void verificaNovoTrabalho() {
         if (verificaCamposNovoTrabalho()) {
             Trabalho novoTrabalho = defineNovoTrabalho(trabalhoNecessario);
-            trabalhoViewModel.salvaNovoTrabalho(novoTrabalho).observe(this, resultadoSalvaNovoTrabalho -> {
+            trabalhoViewModel.salvaNovoTrabalhoDb(novoTrabalho).observe(this, resultadoSalvaNovoTrabalho -> {
                 indicadorProgresso.setVisibility(View.GONE);
                 if (resultadoSalvaNovoTrabalho.getErro() == null) {
                     Snackbar.make(binding.getRoot(), novoTrabalho.getNome()+" cadastrado!", Snackbar.LENGTH_LONG).show();
@@ -280,7 +280,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
         estadosTrabalho = getResources().getStringArray(R.array.estados);
 
-        TrabalhoViewModelFactory trabalhoViewModelFactory = new TrabalhoViewModelFactory(new TrabalhoRepository());
+        TrabalhoViewModelFactory trabalhoViewModelFactory = new TrabalhoViewModelFactory(new TrabalhoRepository(getApplicationContext()));
         trabalhoViewModel = new ViewModelProvider(this, trabalhoViewModelFactory).get(TrabalhoViewModel.class);
     }
     private void recebeDadosIntent() {

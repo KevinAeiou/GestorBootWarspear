@@ -13,7 +13,7 @@ public class TrabalhoDAO {
     private TrabalhoRepository trabalhoRepository;
 
     public TrabalhoDAO() {
-        this.trabalhoRepository = new TrabalhoRepository();
+        this.trabalhoRepository = new TrabalhoRepository(null);
     }
 
     public void todos(ListaTrabalhoEspecificoNovaProducaoAdapter listaTrabalhoEspecificoAdapter) {

@@ -24,13 +24,22 @@ public class TrabalhoViewModel extends ViewModel {
             return trabalhoRepository.modificaTrabalho(novoTrabalho);
         }
     }
+    public LiveData<Resource<Void>> salvaNovoTrabalhoDb(Trabalho novoTrabalho) {
+        if (novoTrabalho.getId() == null) {
+            return trabalhoRepository.salvaNovoTrabalhoDb(novoTrabalho);
+        } else {
+            return trabalhoRepository.modificaTrabalho(novoTrabalho);
+        }
+    }
     public LiveData<Resource<Void>> excluiTrabalhoEspecificoServidor(Trabalho trabalhoRecebido) {
         return trabalhoRepository.excluiTrabalho(trabalhoRecebido);
     }
     public LiveData<Resource<ArrayList<Trabalho>>> pegaTodosTrabalhos() {
         return trabalhoRepository.pegaTodosTrabalhos();
     }
-
+    public LiveData<Resource<ArrayList<Trabalho>>> pegaTodosTrabalhosDb() {
+        return trabalhoRepository.pegaTodosTrabalhosDb();
+    }
     public Trabalho retornaTrabalhoPorChaveNome(ArrayList<Trabalho> trabalhos, TrabalhoProducao trabalhoModificado) {
         return trabalhoRepository.retornaTrabalhoPorChaveNome(trabalhos, trabalhoModificado);
     }

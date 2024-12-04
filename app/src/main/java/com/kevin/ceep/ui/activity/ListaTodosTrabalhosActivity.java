@@ -55,7 +55,7 @@ public class ListaTodosTrabalhosActivity extends AppCompatActivity {
         botaoNovoTrabalho = binding.floatingButtonProfissoesTrabalhos;
         indicadorProgresso = binding.indicadorProgressoProfissoesTrabalhos;
         meuRecycler = binding.recyclerViewProfissoesTrabalhos;
-        TrabalhoViewModelFactory trabalhoViewModelFactory = new TrabalhoViewModelFactory(new TrabalhoRepository());
+        TrabalhoViewModelFactory trabalhoViewModelFactory = new TrabalhoViewModelFactory(new TrabalhoRepository(getApplicationContext()));
         trabalhoViewModel = new ViewModelProvider(this, trabalhoViewModelFactory).get(TrabalhoViewModel.class);
     }
     private void configuraBotaoCadastraNovoTrabalho() {
@@ -109,7 +109,7 @@ public class ListaTodosTrabalhosActivity extends AppCompatActivity {
 
     private void pegaTodosTrabalhos() {
         todosTrabalhos = new ArrayList<>();
-        trabalhoViewModel.pegaTodosTrabalhos().observe(this, arrayListResource -> {
+        trabalhoViewModel.pegaTodosTrabalhosDb().observe(this, arrayListResource -> {
             if (arrayListResource.getDado() != null) {
                 todosTrabalhos = arrayListResource.getDado();
                 filtraTrabalhosProfissao();
