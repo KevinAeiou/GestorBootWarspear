@@ -48,27 +48,33 @@ import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private ActivityMainBinding binding;
     private DrawerLayout drawerLayout;
     private List<Personagem> personagens;
     private String idPersonagemRecebido;
     private NavigationView navigationView;
     private Personagem personagemSelecionado;
     private TextView txtCabecalhoNome, txtCabecalhoEstado, txtCabecalhoUso, txtCabecalhoEspacoProducao;
-    private int itemNavegacao;
+    private int itemNavegacao, posicaoPersonagemSelecionado;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        com.kevin.ceep.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         inicializaComponentes();
-        pegaTodosPersonagens();
         configuraToolbar();
         navigationView.bringToFront();
         configuraToogle();
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(itemNavegacao);
+    }
+
+    @Override
+    protected void onResume() {
+        pegaTodosPersonagens();
+        personagemSelecionado = personagens.get(posicaoPersonagemSelecionado);
+        atualizaPersonagemSelecionado();
+        super.onResume();
     }
 
     private void configuraSubMenuPersonagem() {
@@ -78,14 +84,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         assert subItens != null;
         subItens.clear();
         int indice = 0;
-        for (Personagem personagem : personagens) {
-            subItens.add(0, indice, indice, personagem.getNome());
-            indice += 1;
-        }
-        if (personagemSelecionado == null) {
-            MenuItem itemMenu = subItens.getItem(0);
-            personagemSelecionado = personagens.get(itemMenu.getOrder());
-            atualizaPersonagemSelecionado();
+        if (!personagens.isEmpty()) {
+            for (Personagem personagem : personagens) {
+                subItens.add(0, indice, indice, personagem.getNome());
+                indice += 1;
+            }
+            if (personagemSelecionado == null) {
+                MenuItem itemMenu = subItens.getItem(0);
+                personagemSelecionado = personagens.get(itemMenu.getOrder());
+            }
         }
     }
 
@@ -113,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         txtCabecalhoUso = cabecalho.findViewById(R.id.txtCabecalhoUsoPersonagem);
         txtCabecalhoEspacoProducao = cabecalho.findViewById(R.id.txtCabecalhoEspacoProducaoPersonagem);
         personagemSelecionado = null;
+        posicaoPersonagemSelecionado = 0;
     }
 
     private void atualizaPersonagemSelecionado() {
@@ -203,11 +211,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        Log.d("menuNavegacao", "Item selecionado: "+item);
-        Log.d("menuNavegacao", "ID do menu do item selecionado: "+item.getGroupId());
         if (item.getGroupId() == 0) {
-            personagemSelecionado = personagens.get(item.getOrder());
-            Log.d("menuNavegacao", "Personagem selecionado: "+personagemSelecionado.getNome());
+            posicaoPersonagemSelecionado = item.getOrder();
+            personagemSelecionado = personagens.get(posicaoPersonagemSelecionado);
             atualizaPersonagemSelecionado();
         } else {
             drawerLayout.closeDrawer(GravityCompat.START);
@@ -231,11 +237,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
     private void pegaTodosPersonagens() {
         personagens = new ArrayList<>();
-        PersonagemViewModelFactory personagemViewModelFactory = new PersonagemViewModelFactory(new PersonagemRepository());
+        PersonagemViewModelFactory personagemViewModelFactory = new PersonagemViewModelFactory(new PersonagemRepository(getApplicationContext()));
         PersonagemViewModel personagemViewModel = new ViewModelProvider(this, personagemViewModelFactory).get(PersonagemViewModel.class);
         personagemViewModel.pegaTodosPersonagens().observe(this, resultadoPersonagens -> {
             if (resultadoPersonagens.getDado() != null) {
                 personagens = resultadoPersonagens.getDado();
+                if (personagens.isEmpty()) {
+                    personagemViewModel.sincronizaPersonagens().observe(this, resultadoSincroniza -> {
+                        if (resultadoSincroniza.getErro() == null) {
+                            pegaTodosPersonagens();
+                        } else {
+                            Snackbar.make(getApplicationContext(), Objects.requireNonNull(getCurrentFocus()), "Erro: "+resultadoSincroniza.getErro(), Snackbar.LENGTH_LONG).show();
+                        }
+                    });
+                }
                 configuraSubMenuPersonagem();
             }
             if (resultadoPersonagens.getErro() != null) {
