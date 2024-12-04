@@ -10,11 +10,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.db.TrabalhoDbHelper;
 import com.kevin.ceep.db.contracts.TrabalhoDbContract;
 import com.kevin.ceep.model.Trabalho;
@@ -146,5 +150,62 @@ public class TrabalhoRepository {
         }
         trabalhosEncontrados.setValue(new Resource<>(trabalhos, null));
         return trabalhosEncontrados;
+    }
+
+    public LiveData<Resource<Void>> sincronizaTrabalhos() {
+        ArrayList<Trabalho> trabalhos = new ArrayList<>();
+        MutableLiveData<Resource<Void>> liveData = new  MutableLiveData<>();
+        minhaReferencia.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dn:snapshot.getChildren()){
+                    Trabalho trabalho = dn.getValue(Trabalho.class);
+                    trabalhos.add(trabalho);
+                }
+                for (Trabalho trabalho : trabalhos) {
+                    SQLiteDatabase db = trabalhoDbHelper.getReadableDatabase();
+                    String selection = TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_ID + " LIKE ?";
+                    String[] selectionArgs = {trabalho.getId()};
+                    Cursor cursor = db.query(
+                            TrabalhoDbContract.TrabalhoEntry.TABLE_NAME,
+                            null,
+                            selection,
+                            selectionArgs,
+                            null,
+                            null,
+                            null
+                    );
+                    int contadorLinhas = 0;
+                    while(cursor.moveToNext()) {
+                        contadorLinhas += 1;
+                    }
+                    if (contadorLinhas == 0) {
+                        SQLiteDatabase db2 = trabalhoDbHelper.getWritableDatabase();
+                        ContentValues values = new ContentValues();
+                        values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_ID, trabalho.getId());
+                        values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_NOME, trabalho.getNome());
+                        values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_NOME_PRODUCAO, trabalho.getNomeProducao());
+                        values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_EXPERIENCIA, trabalho.getExperiencia());
+                        values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_NIVEL, trabalho.getNivel());
+                        values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_PROFISSAO, trabalho.getProfissao());
+                        values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_RARIDADE, trabalho.getRaridade());
+                        values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_TRABALHO_NECESSARIO, trabalho.getTrabalhoNecessario());
+                        long newRowId = db2.insert(TrabalhoDbContract.TrabalhoEntry.TABLE_NAME, null, values);
+                        if (newRowId == -1) {
+                            liveData.setValue(new Resource<>(null, "Erro ao adicionar "+trabalho.getNome()+" ao banco"));
+                        } else {
+                            liveData.setValue(new Resource<>(null, null));
+                        }
+                    }
+                    cursor.close();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                liveData.setValue(new Resource<>(null, error.getMessage()));
+            }
+        });
+        return liveData;
     }
 }

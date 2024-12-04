@@ -33,4 +33,8 @@ public class TrabalhoViewModel extends ViewModel {
     public Trabalho retornaTrabalhoPorChaveNome(ArrayList<Trabalho> trabalhos, TrabalhoProducao trabalhoModificado) {
         return trabalhoRepository.retornaTrabalhoPorChaveNome(trabalhos, trabalhoModificado);
     }
+
+    public LiveData<Resource<Void>> sicronizaTrabalhos() {
+        return trabalhoRepository.sincronizaTrabalhos();
+    }
 }
