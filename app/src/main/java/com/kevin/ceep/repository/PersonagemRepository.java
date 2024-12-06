@@ -26,7 +26,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.kevin.ceep.db.TrabalhoDbHelper;
+import com.kevin.ceep.db.DbHelper;
 import com.kevin.ceep.db.contracts.PersoagemDbContract;
 import com.kevin.ceep.model.Personagem;
 
@@ -35,7 +35,7 @@ import java.util.Objects;
 
 public class PersonagemRepository {
     private final DatabaseReference minhaReferencia;
-    private final TrabalhoDbHelper dbHelper;
+    private final DbHelper dbHelper;
     private final String usuarioID;
     private final MutableLiveData<Resource<ArrayList<Personagem>>> personagensEncontrados;
 
@@ -43,7 +43,7 @@ public class PersonagemRepository {
         this.usuarioID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         this.minhaReferencia = FirebaseDatabase.getInstance().getReference(CHAVE_USUARIOS)
                 .child(usuarioID).child(CHAVE_LISTA_PERSONAGEM);
-        this.dbHelper = new TrabalhoDbHelper(context);
+        this.dbHelper = new DbHelper(context);
         this.personagensEncontrados = new MutableLiveData<>();
     }
 

@@ -19,7 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.kevin.ceep.db.TrabalhoDbHelper;
+import com.kevin.ceep.db.DbHelper;
 import com.kevin.ceep.db.contracts.TrabalhoDbContract;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoProducao;
@@ -30,19 +30,19 @@ import java.util.Objects;
 
 public class TrabalhoRepository {
     private final DatabaseReference minhaReferencia;
-    private final TrabalhoDbHelper trabalhoDbHelper;
+    private final DbHelper dbHelper;
     private final MutableLiveData<Resource<ArrayList<Trabalho>>> trabalhosEncontrados;
 
     public TrabalhoRepository(Context context) {
         this.minhaReferencia = FirebaseDatabase.getInstance().getReference(CHAVE_LISTA_TRABALHO);
-        this.trabalhoDbHelper = new TrabalhoDbHelper(context);
+        this.dbHelper = new DbHelper(context);
         this.trabalhosEncontrados = new MutableLiveData<>();
     }
     public LiveData<Resource<Void>> modificaTrabalho(Trabalho trabalhoModificado) {
         MutableLiveData<Resource<Void>> liveData = new  MutableLiveData<>();
         minhaReferencia.child(trabalhoModificado.getId()).setValue(trabalhoModificado).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                SQLiteDatabase db = trabalhoDbHelper.getWritableDatabase();
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
                 ContentValues values = new ContentValues();
                 values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_NOME, trabalhoModificado.getNome());
                 values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_NOME_PRODUCAO, trabalhoModificado.getNomeProducao());
@@ -72,7 +72,7 @@ public class TrabalhoRepository {
         novoTrabalho.setId(novoId);
         minhaReferencia.child(novoTrabalho.getId()).setValue(novoTrabalho).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                SQLiteDatabase db = trabalhoDbHelper.getWritableDatabase();
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
                 ContentValues values = new ContentValues();
                 values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_ID, novoTrabalho.getId());
                 values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_NOME, novoTrabalho.getNome());
@@ -99,7 +99,7 @@ public class TrabalhoRepository {
         MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
         minhaReferencia.child(trabalhoRecebido.getId()).removeValue().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                SQLiteDatabase db = trabalhoDbHelper.getWritableDatabase();
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
                 String selection = TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_ID + " LIKE ?";
                 String[] selectionArgs = {trabalhoRecebido.getId()};
                 db.delete(TrabalhoDbContract.TrabalhoEntry.TABLE_NAME, selection, selectionArgs);
@@ -121,7 +121,7 @@ public class TrabalhoRepository {
     }
 
     public LiveData<Resource<ArrayList<Trabalho>>> pegaTodosTrabalhos() {
-        SQLiteDatabase db = trabalhoDbHelper.getReadableDatabase();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.query(
                 TrabalhoDbContract.TrabalhoEntry.TABLE_NAME,
                 null,
@@ -164,7 +164,7 @@ public class TrabalhoRepository {
                     trabalhos.add(trabalho);
                 }
                 for (Trabalho trabalho : trabalhos) {
-                    SQLiteDatabase db = trabalhoDbHelper.getReadableDatabase();
+                    SQLiteDatabase db = dbHelper.getReadableDatabase();
                     String selection = TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_ID + " LIKE ?";
                     String[] selectionArgs = {trabalho.getId()};
                     Cursor cursor = db.query(
@@ -181,7 +181,7 @@ public class TrabalhoRepository {
                         contadorLinhas += 1;
                     }
                     if (contadorLinhas == 0) {
-                        SQLiteDatabase db2 = trabalhoDbHelper.getWritableDatabase();
+                        SQLiteDatabase db2 = dbHelper.getWritableDatabase();
                         ContentValues values = new ContentValues();
                         values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_ID, trabalho.getId());
                         values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_NOME, trabalho.getNome());
