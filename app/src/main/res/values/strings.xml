@@ -46,16 +46,16 @@
         <item>Concluido</item>
     </string-array>
     <string-array name="licencas">
-        <item>Licença do principiante</item>
-        <item>Licença do mestre</item>
-        <item>Licença do aprendiz</item>
-        <item>Licença do iniciante</item>
+        <item>Licença do Iniciante</item>
+        <item>Licença do Mestre</item>
+        <item>Licença do Aprendiz</item>
+        <item>Licença do Novato</item>
     </string-array>
     <string-array name="licencas_completas">
-        <item>Licença de produção do principiante</item>
-        <item>Licença de produção do mestre</item>
-        <item>Licença de produção do aprendiz</item>
-        <item>Licença de produção do iniciante</item>
+        <item>Licença de Artesanato de Iniciante</item>
+        <item>Licença de Artesanato de Mestre</item>
+        <item>Licença de Artesanato de Aprendiz</item>
+        <item>Licença de Artesanato de Novato</item>
     </string-array>
     <string-array name="profissoes">
         <item>Arma de longo alcance</item>
