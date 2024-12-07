@@ -158,7 +158,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private void verificaModificacaoTrabalhoProducao() {
         if (verificaTrabalhoProducaoModificado()) {
             TrabalhoProducao trabalhoModificado = defineTrabalhoProducaoModificado();
-            trabalhoProducaoViewModel.modificaTrabalhoProducaoServidor(trabalhoModificado).observe(this, resultado -> {
+            trabalhoProducaoViewModel.modificaTrabalhoProducao(trabalhoModificado).observe(this, resultado -> {
                 if (resultado.getErro() == null) {
                     if (verificaEstadoModificado()) {
                         Integer estado = trabalhoModificado.getEstado();
@@ -312,7 +312,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 .getSerializableExtra(CHAVE_NOME_TRABALHO);
         String personagemId = (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
         if (trabalhoProducaoRecebido != null) {
-            TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(new TrabalhoProducaoRepository(personagemId));
+            TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(new TrabalhoProducaoRepository(getApplicationContext(), personagemId));
             trabalhoProducaoViewModel = new ViewModelProvider(this, trabalhoProducaoViewModelFactory).get(TrabalhoProducaoViewModel.class);
             TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository(personagemId));
             trabalhoEstoqueViewModel = new ViewModelProvider(this, trabalhoEstoqueViewModelFactory).get(TrabalhoEstoqueViewModel.class);
@@ -509,7 +509,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         desativaCamposTrabalhoProducao();
 
         recorrenciaModificada = trabalhoProducaoRecebido.getRecorrencia();
-        licencaModificada = trabalhoProducaoRecebido.getTipo_licenca();
+        licencaModificada = trabalhoProducaoRecebido.getLicenca();
         posicaoEstadoModificado = trabalhoProducaoRecebido.getEstado();
 
         if (comparaString(licencaModificada, "licença de produção do principiante")) {
@@ -570,9 +570,11 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     }
     @NonNull
     private TrabalhoProducao defineTrabalhoProducaoModificado() {
-        TrabalhoProducao trabalhoModificado = trabalhoProducaoRecebido;
+        TrabalhoProducao trabalhoModificado = new TrabalhoProducao();
+        trabalhoModificado.setId(trabalhoProducaoRecebido.getId());
+        trabalhoModificado.setIdTrabalho(trabalhoProducaoRecebido.getIdTrabalho());
         trabalhoModificado.setRecorrencia(checkBoxRecorrenciaTrabalho.isChecked());
-        trabalhoModificado.setTipo_licenca(autoCompleteLicenca.getText().toString());
+        trabalhoModificado.setLicenca(autoCompleteLicenca.getText().toString());
         trabalhoModificado.setEstado(adapterEstado.getPosition(autoCompleteEstado.getText().toString()));
         return trabalhoModificado;
     }

@@ -15,14 +15,14 @@ public class TrabalhoProducaoViewModel extends ViewModel {
     public TrabalhoProducaoViewModel(TrabalhoProducaoRepository repository) {
         this.repository = repository;
     }
-    public LiveData<Resource<Void>> modificaTrabalhoProducaoServidor(TrabalhoProducao trabalhoModificado) {
-        return repository.modificaTrabalhoProducaoServidor(trabalhoModificado);
+    public LiveData<Resource<Void>> modificaTrabalhoProducao(TrabalhoProducao trabalhoModificado) {
+        return repository.modificaTrabalhoProducao(trabalhoModificado);
     }
     public LiveData<Resource<Void>> salvaNovoTrabalhoProducao(TrabalhoProducao novoTrabalho) {
-        return repository.salvaNovoTrabalhoProducao(novoTrabalho);
+        return repository.adicionaTrabalhoProducao(novoTrabalho);
     }
     public LiveData<Resource<Void>> deletaTrabalhoProducao(TrabalhoProducao trabalhoDeletado) {
-        return repository.deletaTrabalhoProducao(trabalhoDeletado);
+        return repository.removeTrabalhoProducao(trabalhoDeletado);
     }
 
     public LiveData<Resource<ArrayList<TrabalhoProducao>>> pegaTodosTrabalhosProducao() {

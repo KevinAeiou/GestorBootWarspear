@@ -9,6 +9,8 @@ import java.util.List;
 public class Trabalho implements Serializable {
 
     private String id;
+
+
     private String nome;
     private String nomeProducao;
     private String profissao;
@@ -67,7 +69,33 @@ public class Trabalho implements Serializable {
     public String getTrabalhoNecessario() {
         return trabalhoNecessario;
     }
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
+    public void setNomeProducao(String nomeProducao) {
+        this.nomeProducao = nomeProducao;
+    }
+
+    public void setRaridade(String raridade) {
+        this.raridade = raridade;
+    }
+
+    public void setTrabalhoNecessario(String trabalhoNecessario) {
+        this.trabalhoNecessario = trabalhoNecessario;
+    }
+
+    public boolean possueTrabalhoNecessarioValido() {
+        return this.trabalhoNecessario != null && !this.trabalhoNecessario.isEmpty();
+    }
+
+    public void setNivel(Integer nivel) {
+        this.nivel = nivel;
+    }
+
+    public void setExperiencia(Integer experiencia) {
+        this.experiencia = experiencia;
+    }
     public boolean ehProducaoDeRecursos() {
         ArrayList<String> listaProducaoRecursos = new ArrayList<>(List.of(
                 "melhorarlicencacomum","licençadeproducaodoaprendiz","grandecolecaoderecursoscomuns",

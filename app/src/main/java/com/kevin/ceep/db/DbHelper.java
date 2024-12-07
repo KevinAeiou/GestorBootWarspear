@@ -1,14 +1,22 @@
 package com.kevin.ceep.db;
 
+import static com.kevin.ceep.db.contracts.TrabalhoProducaoContract.TrabalhoProducaoEntry.COLUMN_NAME_ESTADO;
+import static com.kevin.ceep.db.contracts.TrabalhoProducaoContract.TrabalhoProducaoEntry.COLUMN_NAME_ID;
+import static com.kevin.ceep.db.contracts.TrabalhoProducaoContract.TrabalhoProducaoEntry.COLUMN_NAME_ID_PERSONAGEM;
+import static com.kevin.ceep.db.contracts.TrabalhoProducaoContract.TrabalhoProducaoEntry.COLUMN_NAME_ID_TRABALHO;
+import static com.kevin.ceep.db.contracts.TrabalhoProducaoContract.TrabalhoProducaoEntry.COLUMN_NAME_LICENCA;
+import static com.kevin.ceep.db.contracts.TrabalhoProducaoContract.TrabalhoProducaoEntry.COLUMN_NAME_RECORRENCIA;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.kevin.ceep.db.contracts.PersoagemDbContract;
 import com.kevin.ceep.db.contracts.TrabalhoDbContract;
+import com.kevin.ceep.db.contracts.TrabalhoProducaoContract;
 
 public class DbHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 4;
     public static final String DATABASE_NAME = "autoProducao.db";
 
     public DbHelper(Context context) {
@@ -38,6 +46,18 @@ public class DbHelper extends SQLiteOpenHelper {
                         PersoagemDbContract.PersonagemEntry.COLUMN_NAME_ESTADO + " BOOLEAN," +
                         PersoagemDbContract.PersonagemEntry.COLUMN_NAME_USO + " BOOLEAN," +
                         PersoagemDbContract.PersonagemEntry.COLUMN_NAME_ESPACO_PRODUCAO + " INTEGER" +
+                        ")"
+        );
+        sqLiteDatabase.execSQL(
+                "CREATE TABLE " +
+                        TrabalhoProducaoContract.TrabalhoProducaoEntry.TABLE_NAME +
+                        " (" +
+                        COLUMN_NAME_ID + " VARCHAR(30) PRIMARY KEY," +
+                        COLUMN_NAME_ID_TRABALHO + " VARCHAR(30)," +
+                        COLUMN_NAME_ID_PERSONAGEM + " VARCHAR(30)," +
+                        COLUMN_NAME_LICENCA + " TEXT," +
+                        COLUMN_NAME_ESTADO + " INTEGER," +
+                        COLUMN_NAME_RECORRENCIA + " BOOLEAN" +
                         ")"
         );
     }

@@ -72,8 +72,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         pegaTodosPersonagens();
-        personagemSelecionado = personagens.get(posicaoPersonagemSelecionado);
-        atualizaPersonagemSelecionado();
+        if (!personagens.isEmpty()) {
+            personagemSelecionado = personagens.get(posicaoPersonagemSelecionado);
+            atualizaPersonagemSelecionado();
+        }
         super.onResume();
     }
 

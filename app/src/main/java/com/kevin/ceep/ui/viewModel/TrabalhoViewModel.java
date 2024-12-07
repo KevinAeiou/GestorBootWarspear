@@ -25,13 +25,13 @@ public class TrabalhoViewModel extends ViewModel {
         }
     }
     public LiveData<Resource<Void>> excluiTrabalhoEspecificoServidor(Trabalho trabalhoRecebido) {
-        return trabalhoRepository.excluiTrabalho(trabalhoRecebido);
+        return trabalhoRepository.removeTrabalho(trabalhoRecebido);
     }
     public LiveData<Resource<ArrayList<Trabalho>>> pegaTodosTrabalhos() {
         return trabalhoRepository.pegaTodosTrabalhos();
     }
     public Trabalho retornaTrabalhoPorChaveNome(ArrayList<Trabalho> trabalhos, TrabalhoProducao trabalhoModificado) {
-        return trabalhoRepository.retornaTrabalhoPorChaveNome(trabalhos, trabalhoModificado);
+        return trabalhoRepository.retornaTrabalhoPorId(trabalhos, trabalhoModificado);
     }
 
     public LiveData<Resource<Void>> sicronizaTrabalhos() {

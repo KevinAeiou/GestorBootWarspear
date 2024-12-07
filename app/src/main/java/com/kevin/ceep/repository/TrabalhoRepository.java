@@ -95,7 +95,7 @@ public class TrabalhoRepository {
         return liveData;
     }
 
-    public LiveData<Resource<Void>> excluiTrabalho(Trabalho trabalhoRecebido) {
+    public LiveData<Resource<Void>> removeTrabalho(Trabalho trabalhoRecebido) {
         MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
         minhaReferencia.child(trabalhoRecebido.getId()).removeValue().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -111,9 +111,9 @@ public class TrabalhoRepository {
         return liveData;
     }
 
-    public Trabalho retornaTrabalhoPorChaveNome(ArrayList<Trabalho> trabalhos,TrabalhoProducao trabalhoModificado) {
+    public Trabalho retornaTrabalhoPorId(ArrayList<Trabalho> trabalhos, TrabalhoProducao trabalhoModificado) {
         for (Trabalho trabalho : trabalhos) {
-            if (comparaString(trabalho.getNome(), trabalhoModificado.getNome())) {
+            if (comparaString(trabalho.getId(), trabalhoModificado.getIdTrabalho())) {
                 return trabalho;
             }
         }

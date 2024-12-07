@@ -44,6 +44,6 @@ public class TrabalhoDAO {
     }
 
     public void excluiTrabalhoEspecificoServidor(Trabalho trabalhoRecebido) {
-        trabalhoRepository.excluiTrabalho(trabalhoRecebido);
+        trabalhoRepository.removeTrabalho(trabalhoRecebido);
     }
 }

@@ -3,8 +3,6 @@ package com.kevin.ceep.ui.activity;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TITULO_CONFIRMA;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_TRABALHO;
-import static com.kevin.ceep.utilitario.Utilitario.comparaString;
-import static com.kevin.ceep.utilitario.Utilitario.geraIdAleatorio;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,7 +24,7 @@ import com.kevin.ceep.ui.viewModel.factory.TrabalhoProducaoViewModelFactory;
 public class ConfirmaTrabalhoActivity extends AppCompatActivity {
 
     private AutoCompleteTextView autoCompleteLicenca,autoCompleteQuantidade;
-    private String personagemId;
+    private String idPersonagem;
     private Trabalho trabalhoRecebido;
     private int contador;
 
@@ -47,7 +45,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
             if (trabalhoRecebido != null) {
                 setTitle(trabalhoRecebido.getNome());
             }
-            personagemId = (String) dadosRecebidos.
+            idPersonagem = (String) dadosRecebidos.
                     getSerializableExtra(CHAVE_PERSONAGEM);
         }
     }
@@ -79,12 +77,12 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         AppCompatButton botaoCadastraTrabalho = findViewById(R.id.botaoCadastraConfirmaTrabalho);
         botaoCadastraTrabalho.setOnClickListener(view -> {
             botaoCadastraTrabalho.setEnabled(false);
-            cadastraNovoTrabalho();
+            adicionaTrabalhoProducao();
         });
     }
 
-    private void cadastraNovoTrabalho() {
-        TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(new TrabalhoProducaoRepository(personagemId));
+    private void adicionaTrabalhoProducao() {
+        TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(new TrabalhoProducaoRepository(getApplicationContext(), idPersonagem));
         TrabalhoProducaoViewModel trabalhoProducaoViewModel = new ViewModelProvider(this, trabalhoProducaoViewModelFactory).get(TrabalhoProducaoViewModel.class);
         int quantidadeSelecionada = Integer.parseInt(autoCompleteQuantidade.getText().toString());
         contador = 1;
@@ -102,25 +100,13 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
     }
 
     private TrabalhoProducao defineNovoModeloTrabalhoProducao() {
-        String novoId = geraIdAleatorio();
         String licencaSelecionada = autoCompleteLicenca.getText().toString();
         CheckBox checkRecorrencia=findViewById(R.id.checkBoxProducaoRecorrenteConfirmaTrabalho);
-        int experiencia = trabalhoRecebido.getExperiencia();
-        if (comparaString(licencaSelecionada,"licença de produção do principiante")){
-            experiencia = (int) (experiencia * 1.5);
-        }
-        return new TrabalhoProducao(
-                novoId,
-                trabalhoRecebido.getId(),
-                trabalhoRecebido.getNome(),
-                trabalhoRecebido.getNomeProducao(),
-                trabalhoRecebido.getProfissao(),
-                trabalhoRecebido.getRaridade(),
-                trabalhoRecebido.getTrabalhoNecessario(),
-                trabalhoRecebido.getNivel(),
-                experiencia,
-                licencaSelecionada,
-                0,
-                checkRecorrencia.isChecked());
+        TrabalhoProducao trabalhoProducao = new TrabalhoProducao();
+        trabalhoProducao.setIdTrabalho(trabalhoRecebido.getId());
+        trabalhoProducao.setLicenca(licencaSelecionada);
+        trabalhoProducao.setRecorrencia(checkRecorrencia.isChecked());
+        trabalhoProducao.setEstado(0);
+        return trabalhoProducao;
     }
 }

@@ -100,7 +100,7 @@ public class ListaTrabalhoProducaoAdapter extends RecyclerView.Adapter<ListaTrab
         private void preencheCampo(TrabalhoProducao trabalhoProducao) {
             nome_trabalho.setText(trabalhoProducao.getNome());
             configuraCorNomeTrabalhoProducao(trabalhoProducao);
-            tipo_licenca.setText(trabalhoProducao.getTipo_licenca());
+            tipo_licenca.setText(trabalhoProducao.getLicenca());
             configuraCorLicencaTrabalhoProducao(trabalhoProducao);
             profissao_trabalho.setText(this.trabalhoProducao.getProfissao());
             profissao_trabalho.setTextColor(Color.WHITE);
@@ -121,7 +121,7 @@ public class ListaTrabalhoProducaoAdapter extends RecyclerView.Adapter<ListaTrab
         }
 
         private void configuraCorLicencaTrabalhoProducao(TrabalhoProducao trabalhoProducao) {
-            String licenca = trabalhoProducao.getTipo_licenca();
+            String licenca = trabalhoProducao.getLicenca();
             if (licenca.equals("Licença de Artesanato de Novato")){
                 tipo_licenca.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_novato));
             } else if (licenca.equals("Licença de Artesanato de Aprendiz")) {
