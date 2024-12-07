@@ -15,13 +15,18 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.db.DbHelper;
 import com.kevin.ceep.model.TrabalhoProducao;
 
@@ -50,7 +55,7 @@ public class TrabalhoProducaoRepository {
                     if (task.isSuccessful()) {
                         SQLiteDatabase db = dbHelper.getWritableDatabase();
                         ContentValues values = new ContentValues();
-                        values.put(COLUMN_NAME_LICENCA, trabalhoModificado.getLicenca());
+                        values.put(COLUMN_NAME_LICENCA, trabalhoModificado.getTipo_licenca());
                         values.put(COLUMN_NAME_ESTADO, trabalhoModificado.getEstado());
                         values.put(COLUMN_NAME_RECORRENCIA, trabalhoModificado.getRecorrencia());
                         String selection = COLUMN_NAME_ID + " LIKE ?";
@@ -79,7 +84,7 @@ public class TrabalhoProducaoRepository {
                         values.put(COLUMN_NAME_ID_PERSONAGEM, idPersonagem);
                         values.put(COLUMN_NAME_ID_TRABALHO, novoTrabalho.getIdTrabalho());
                         values.put(COLUMN_NAME_ESTADO, novoTrabalho.getEstado());
-                        values.put(COLUMN_NAME_LICENCA, novoTrabalho.getLicenca());
+                        values.put(COLUMN_NAME_LICENCA, novoTrabalho.getTipo_licenca());
                         values.put(COLUMN_NAME_RECORRENCIA, novoTrabalho.getRecorrencia());
                         long newRowId = db.insert(TABLE_NAME, null, values);
                         if (newRowId == -1) {
@@ -115,7 +120,8 @@ public class TrabalhoProducaoRepository {
                 "FROM Lista_desejo\n" +
                 "INNER JOIN trabalhos\n" +
                 "ON Lista_desejo.idTrabalho == trabalhos.id\n" +
-                "WHERE Lista_desejo.idPersonagem == ?;";
+                "WHERE Lista_desejo.idPersonagem == ?" +
+                "ORDER BY trabalhos.profissao, Lista_desejo.estado, trabalhos.raridade, trabalhos.nivel;";
         String[] selectionArgs = {idPersonagem};
         Cursor cursor = db.rawQuery(
                 sql,
@@ -123,9 +129,8 @@ public class TrabalhoProducaoRepository {
         );
         ArrayList<TrabalhoProducao> trabalhosProducao = new ArrayList<>();
         while (cursor.moveToNext()) {
-            boolean recorrencia = cursor.getInt(9) == 1;
             TrabalhoProducao trabalhoProducao = new TrabalhoProducao();
-            trabalhoProducao.setId(cursor.getString(0));
+            trabalhoProducao.setId(cursor.getString(0 ));
             trabalhoProducao.setIdTrabalho(cursor.getString(1));
             trabalhoProducao.setNome(cursor.getString(2));
             trabalhoProducao.setNomeProducao(cursor.getString(3));
@@ -134,13 +139,65 @@ public class TrabalhoProducaoRepository {
             trabalhoProducao.setProfissao(cursor.getString(6));
             trabalhoProducao.setRaridade(cursor.getString(7));
             trabalhoProducao.setTrabalhoNecessario(cursor.getString(8));
-            trabalhoProducao.setRecorrencia(recorrencia);
-            trabalhoProducao.setLicenca(cursor.getString(10));
+            trabalhoProducao.setRecorrencia(cursor.getInt(9) == 1);
+            trabalhoProducao.setTipo_licenca(cursor.getString(10));
             trabalhoProducao.setEstado(cursor.getInt(11));
+            Log.d("pegaTodosTrabalhosProducao", "Licenca: "+ trabalhoProducao.getTipo_licenca());
             trabalhosProducao.add(trabalhoProducao);
         }
         cursor.close();
         trabalhosProducaoEncontrados.setValue(new Resource<>(trabalhosProducao, null));
         return trabalhosProducaoEncontrados;
+    }
+
+    public LiveData<Resource<Void>> sincronizaTrabalhosProducao() {
+        MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
+        minhaReferenciaListaDeDesejos.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dn:snapshot.getChildren()) {
+                    TrabalhoProducao trabalhoProducao = dn.getValue(TrabalhoProducao.class);
+                    SQLiteDatabase db = dbHelper.getReadableDatabase();
+                    String selection = COLUMN_NAME_ID + " LIKE ?";
+                    String[] selectionArgs = {trabalhoProducao.getId()};
+                    Cursor cursor = db.query(
+                            TABLE_NAME,
+                            null,
+                            selection,
+                            selectionArgs,
+                            null,
+                            null,
+                            null
+                    );
+                    int contadorLinhas = 0;
+                    while(cursor.moveToNext()) {
+                        contadorLinhas += 1;
+                    }
+                    if (contadorLinhas == 0) {
+                        SQLiteDatabase db2 = dbHelper.getWritableDatabase();
+                        ContentValues values = new ContentValues();
+                        values.put(COLUMN_NAME_ID, trabalhoProducao.getId());
+                        values.put(COLUMN_NAME_ID_PERSONAGEM, idPersonagem);
+                        values.put(COLUMN_NAME_ID_TRABALHO, trabalhoProducao.getIdTrabalho());
+                        values.put(COLUMN_NAME_ESTADO, trabalhoProducao.getEstado());
+                        values.put(COLUMN_NAME_LICENCA, trabalhoProducao.getTipo_licenca());
+                        values.put(COLUMN_NAME_RECORRENCIA, trabalhoProducao.getRecorrencia());
+                        long newRowId = db2.insert(TABLE_NAME, null, values);
+                        if (newRowId == -1) {
+                            liveData.setValue(new Resource<>(null, "Erro ao adicionar novo trabalho a lista"));
+                        } else {
+                            liveData.setValue(new Resource<>(null, null));
+                        }
+                    }
+                    cursor.close();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        return liveData;
     }
 }

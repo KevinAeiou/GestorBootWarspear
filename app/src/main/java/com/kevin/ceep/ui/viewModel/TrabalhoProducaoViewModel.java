@@ -28,4 +28,8 @@ public class TrabalhoProducaoViewModel extends ViewModel {
     public LiveData<Resource<ArrayList<TrabalhoProducao>>> pegaTodosTrabalhosProducao() {
         return repository.pegaTodosTrabalhosProducao();
     }
+
+    public LiveData<Resource<Void>> sicronizaTrabalhosProducao() {
+        return repository.sincronizaTrabalhosProducao();
+    }
 }

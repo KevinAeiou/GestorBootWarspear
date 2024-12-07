@@ -258,6 +258,16 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
                 trabalhos = resultadoTodosTrabalhos.getDado();
                 indicadorProgresso.setVisibility(View.GONE);
                 swipeRefreshLayout.setRefreshing(false);
+                if (trabalhos.isEmpty()) {
+                    trabalhoProducaoViewModel.sicronizaTrabalhosProducao().observe(getViewLifecycleOwner(), resultadoSincronizaTrabalhosProducao -> {
+                        if (resultadoSincronizaTrabalhosProducao.getDado() == null) {
+                            pegaTodosTrabalhos();
+                        }
+                        if (resultadoSincronizaTrabalhosProducao.getErro() != null) {
+                            Snackbar.make(binding.getRoot(), "Erro: "+resultadoSincronizaTrabalhosProducao.getErro(), Snackbar.LENGTH_LONG).show();
+                        }
+                    });
+                }
                 atualizaListaTrabalho();
             }
             if (resultadoTodosTrabalhos.getErro() != null) {
