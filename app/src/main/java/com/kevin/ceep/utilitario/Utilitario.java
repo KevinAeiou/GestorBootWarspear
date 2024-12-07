@@ -4,6 +4,9 @@ import java.util.UUID;
 
 public class Utilitario {
     public static String removeAcentos(String string) {
+        if (string == null) {
+            return "";
+        }
         return Normalizer.normalize(string, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
     }
     public static String limpaString(String string) {
