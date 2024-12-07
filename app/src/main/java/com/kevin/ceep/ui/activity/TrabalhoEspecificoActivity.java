@@ -509,7 +509,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         desativaCamposTrabalhoProducao();
 
         recorrenciaModificada = trabalhoProducaoRecebido.getRecorrencia();
-        licencaModificada = trabalhoProducaoRecebido.getLicenca();
+        licencaModificada = trabalhoProducaoRecebido.getTipo_licenca();
         posicaoEstadoModificado = trabalhoProducaoRecebido.getEstado();
 
         if (comparaString(licencaModificada, "licença de produção do principiante")) {
@@ -574,7 +574,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         trabalhoModificado.setId(trabalhoProducaoRecebido.getId());
         trabalhoModificado.setIdTrabalho(trabalhoProducaoRecebido.getIdTrabalho());
         trabalhoModificado.setRecorrencia(checkBoxRecorrenciaTrabalho.isChecked());
-        trabalhoModificado.setLicenca(autoCompleteLicenca.getText().toString());
+        trabalhoModificado.setTipo_licenca(autoCompleteLicenca.getText().toString());
         trabalhoModificado.setEstado(adapterEstado.getPosition(autoCompleteEstado.getText().toString()));
         return trabalhoModificado;
     }

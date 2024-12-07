@@ -104,7 +104,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         CheckBox checkRecorrencia=findViewById(R.id.checkBoxProducaoRecorrenteConfirmaTrabalho);
         TrabalhoProducao trabalhoProducao = new TrabalhoProducao();
         trabalhoProducao.setIdTrabalho(trabalhoRecebido.getId());
-        trabalhoProducao.setLicenca(licencaSelecionada);
+        trabalhoProducao.setTipo_licenca(licencaSelecionada);
         trabalhoProducao.setRecorrencia(checkRecorrencia.isChecked());
         trabalhoProducao.setEstado(0);
         return trabalhoProducao;

@@ -100,7 +100,7 @@ public class ListaTrabalhoProducaoAdapter extends RecyclerView.Adapter<ListaTrab
         private void preencheCampo(TrabalhoProducao trabalhoProducao) {
             nome_trabalho.setText(trabalhoProducao.getNome());
             configuraCorNomeTrabalhoProducao(trabalhoProducao);
-            tipo_licenca.setText(trabalhoProducao.getLicenca());
+            tipo_licenca.setText(trabalhoProducao.getTipo_licenca());
             configuraCorLicencaTrabalhoProducao(trabalhoProducao);
             profissao_trabalho.setText(this.trabalhoProducao.getProfissao());
             profissao_trabalho.setTextColor(Color.WHITE);
@@ -121,13 +121,15 @@ public class ListaTrabalhoProducaoAdapter extends RecyclerView.Adapter<ListaTrab
         }
 
         private void configuraCorLicencaTrabalhoProducao(TrabalhoProducao trabalhoProducao) {
-            String licenca = trabalhoProducao.getLicenca();
-            if (licenca.equals("Licença de Artesanato de Novato")){
-                tipo_licenca.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_novato));
-            } else if (licenca.equals("Licença de Artesanato de Aprendiz")) {
-                tipo_licenca.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_aprediz));
-            }else{
-                tipo_licenca.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_mestre));
+            String licenca = trabalhoProducao.getTipo_licenca();
+            if (licenca != null) {
+                if (licenca.equals("Licença de Artesanato de Novato")){
+                    tipo_licenca.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_novato));
+                } else if (licenca.equals("Licença de Artesanato de Aprendiz")) {
+                    tipo_licenca.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_aprediz));
+                }else{
+                    tipo_licenca.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_mestre));
+                }
             }
         }
 
