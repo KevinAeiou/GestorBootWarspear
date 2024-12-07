@@ -7,8 +7,7 @@ import java.io.Serializable;
 public class TrabalhoProducao extends Trabalho implements Serializable {
     private String id;
     private String idTrabalho;
-    private String idPersonagem;
-    private String licenca;
+    private String tipo_licenca;
     private Integer estado;
     private Boolean recorrencia;
 
@@ -24,12 +23,12 @@ public class TrabalhoProducao extends Trabalho implements Serializable {
         return estado;
     }
 
-    public String getLicenca() {
-        return licenca;
+    public String getTipo_licenca() {
+        return tipo_licenca;
     }
 
-    public void setLicenca(String licenca) {
-        this.licenca = licenca;
+    public void setTipo_licenca(String tipo_licenca) {
+        this.tipo_licenca = tipo_licenca;
     }
 
     public void setEstado(Integer estado) {
@@ -51,14 +50,6 @@ public class TrabalhoProducao extends Trabalho implements Serializable {
     @Override
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getIdPersonagem() {
-        return idPersonagem;
-    }
-
-    public void setIdPersonagem(String idPersonagem) {
-        this.idPersonagem = idPersonagem;
     }
 
     public void setIdTrabalho(String idTrabalho) {
