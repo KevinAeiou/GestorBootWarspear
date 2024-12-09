@@ -134,7 +134,6 @@ public class TrabalhoRepository {
         ArrayList<Trabalho> trabalhos = new ArrayList<>();
         while(cursor.moveToNext()) {
             Trabalho trabalho = new Trabalho(
-                    cursor.getString(0), //id
                     cursor.getString(1), //nome
                     cursor.getString(2), //nomeProducao
                     cursor.getString(5), //profissao
@@ -143,6 +142,7 @@ public class TrabalhoRepository {
                     cursor.getInt(4), //nivel
                     cursor.getInt(3) //experiencia
             );
+            trabalho.setId(cursor.getString(0));
             trabalhos.add(trabalho);
         }
         cursor.close();

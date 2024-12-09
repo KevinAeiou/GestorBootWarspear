@@ -1,5 +1,6 @@
 package com.kevin.ceep.model;
 
+import static com.kevin.ceep.utilitario.Utilitario.geraIdAleatorio;
 import static com.kevin.ceep.utilitario.Utilitario.limpaString;
 
 import java.io.Serializable;
@@ -9,8 +10,6 @@ import java.util.List;
 public class Trabalho implements Serializable {
 
     private String id;
-
-
     private String nome;
     private String nomeProducao;
     private String profissao;
@@ -20,8 +19,8 @@ public class Trabalho implements Serializable {
     private Integer experiencia;
     public Trabalho(){}
 
-    public Trabalho(String id, String nome, String nomeProducao, String profissao, String raridade, String trabalhoNecessario, Integer nivel, Integer experiencia) {
-        this.id = id;
+    public Trabalho(String nome, String nomeProducao, String profissao, String raridade, String trabalhoNecessario, Integer nivel, Integer experiencia) {
+        this.id = geraIdAleatorio();
         this.nome = nome;
         this.nomeProducao = nomeProducao;
         this.profissao = profissao;

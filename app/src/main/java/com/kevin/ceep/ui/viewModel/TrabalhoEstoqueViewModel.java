@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.kevin.ceep.model.TrabalhoEstoque;
-import com.kevin.ceep.model.TrabalhoProducao;
 import com.kevin.ceep.repository.Resource;
 import com.kevin.ceep.repository.TrabalhoEstoqueRepository;
 
@@ -28,15 +27,14 @@ public class TrabalhoEstoqueViewModel extends ViewModel {
         return repository.retornaTrabalhoEspecificoEstoque(trabalhosEstoque, nomeTrabalho);
     }
 
-    public LiveData<Resource<Void>> salvaNovoTrabalhoEstoque(TrabalhoEstoque trabalhoEstoqueEncontrado) {
-        return repository.salvaNovoTrabalhoEstoque(trabalhoEstoqueEncontrado);
+    public LiveData<Resource<Void>> adicionaTrabalhoEstoque(TrabalhoEstoque trabalhoEstoqueEncontrado) {
+        return repository.adicionaTrabalhoEstoque(trabalhoEstoqueEncontrado);
     }
-
-    public TrabalhoEstoque defineNovoTrabalhoEstoque(TrabalhoProducao trabalhoModificado) {
-        return repository.defineNovoTrabalhoEstoque(trabalhoModificado);
-    }
-
     public LiveData<Resource<Void>> deletaTrabalhoEstoque(TrabalhoEstoque trabalhoRemovido) {
-        return repository.deletaTrabalhoEstoque(trabalhoRemovido);
+        return repository.removeTrabalhoEstoque(trabalhoRemovido);
+    }
+
+    public LiveData<Resource<Void>> sincronizaEstoque() {
+        return repository.sincronizaEstoque();
     }
 }

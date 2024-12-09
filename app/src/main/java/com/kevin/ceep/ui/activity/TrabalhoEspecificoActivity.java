@@ -197,9 +197,9 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                                 } else {
                                     Trabalho trabalhoEncontrado = trabalhoViewModel.retornaTrabalhoPorChaveNome(todosTrabalhos, trabalhoModificado);
                                     if (trabalhoEncontrado != null && trabalhoEncontrado.getNivel() != 3 && trabalhoEncontrado.getNivel() != 5 && trabalhoEncontrado.getNivel() != 10) {
-                                        TrabalhoEstoque novoTrabalhoEstoque = trabalhoEstoqueViewModel.defineNovoTrabalhoEstoque(trabalhoModificado);
-                                        novoTrabalhoEstoque.setTrabalhoId(trabalhoEncontrado.getId());
-                                        trabalhoEstoqueViewModel.salvaNovoTrabalhoEstoque(novoTrabalhoEstoque).observe(this, resultaSalvaTrabalhoEstoque -> {
+                                        TrabalhoEstoque novoTrabalhoEstoque = new TrabalhoEstoque(1, trabalhoEncontrado.getId());
+
+                                        trabalhoEstoqueViewModel.adicionaTrabalhoEstoque(novoTrabalhoEstoque).observe(this, resultaSalvaTrabalhoEstoque -> {
                                             if (resultaSalvaTrabalhoEstoque.getErro() != null){
                                                 Snackbar.make(binding.getRoot(), "Erro: "+resultaSalvaTrabalhoEstoque.getErro(), Snackbar.LENGTH_LONG).show();
                                                 confirmacao.setValue(false);
@@ -314,7 +314,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         if (trabalhoProducaoRecebido != null) {
             TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(new TrabalhoProducaoRepository(getApplicationContext(), personagemId));
             trabalhoProducaoViewModel = new ViewModelProvider(this, trabalhoProducaoViewModelFactory).get(TrabalhoProducaoViewModel.class);
-            TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository(personagemId));
+            TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository(getApplicationContext(), personagemId));
             trabalhoEstoqueViewModel = new ViewModelProvider(this, trabalhoEstoqueViewModelFactory).get(TrabalhoEstoqueViewModel.class);
             ProfissaoViewModelFactory profissaoViewModelFactory = new ProfissaoViewModelFactory(new ProfissaoRepository(personagemId));
             profissaoViewModel = new ViewModelProvider(this, profissaoViewModelFactory).get(ProfissaoViewModel.class);
@@ -581,8 +581,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     @NonNull
     private Trabalho defineTrabalhoModificado(String trabalhoNecessario) {
-        return new Trabalho(
-                trabalhoRecebido.getId(),
+        Trabalho novoTrabalho = new Trabalho(
                 nome,
                 nomeProducao,
                 profissao,
@@ -590,6 +589,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 trabalhoNecessario,
                 Integer.parseInt(nivel),
                 Integer.parseInt(experiencia));
+        novoTrabalho.setId(trabalhoRecebido.getId());
+        return novoTrabalho;
     }
     private boolean verificaTrabalhoModificado() {
         return verificaCampoModificado(nome, trabalhoRecebido.getNome()) ||
@@ -655,7 +656,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private Trabalho defineNovoTrabalho(String trabalhoNecessario) {
         return new Trabalho(
-                null,
                 nome,
                 nomeProducao,
                 profissao,
