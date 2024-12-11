@@ -2,7 +2,6 @@ package com.kevin.ceep.repository;
 
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_TRABALHO;
 import static com.kevin.ceep.utilitario.Utilitario.comparaString;
-import static com.kevin.ceep.utilitario.Utilitario.geraIdAleatorio;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -20,7 +19,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.db.DbHelper;
-import com.kevin.ceep.db.contracts.TrabalhoDbContract;
+import com.kevin.ceep.db.contracts.TrabalhoDbContract.TrabalhoEntry;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoProducao;
 
@@ -44,16 +43,16 @@ public class TrabalhoRepository {
             if (task.isSuccessful()) {
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
                 ContentValues values = new ContentValues();
-                values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_NOME, trabalhoModificado.getNome());
-                values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_NOME_PRODUCAO, trabalhoModificado.getNomeProducao());
-                values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_EXPERIENCIA, trabalhoModificado.getExperiencia());
-                values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_NIVEL, trabalhoModificado.getNivel());
-                values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_PROFISSAO, trabalhoModificado.getProfissao());
-                values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_RARIDADE, trabalhoModificado.getRaridade());
-                values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_TRABALHO_NECESSARIO, trabalhoModificado.getTrabalhoNecessario());
-                String selection = TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_ID + " LIKE ?";
+                values.put(TrabalhoEntry.COLUMN_NAME_NOME, trabalhoModificado.getNome());
+                values.put(TrabalhoEntry.COLUMN_NAME_NOME_PRODUCAO, trabalhoModificado.getNomeProducao());
+                values.put(TrabalhoEntry.COLUMN_NAME_EXPERIENCIA, trabalhoModificado.getExperiencia());
+                values.put(TrabalhoEntry.COLUMN_NAME_NIVEL, trabalhoModificado.getNivel());
+                values.put(TrabalhoEntry.COLUMN_NAME_PROFISSAO, trabalhoModificado.getProfissao());
+                values.put(TrabalhoEntry.COLUMN_NAME_RARIDADE, trabalhoModificado.getRaridade());
+                values.put(TrabalhoEntry.COLUMN_NAME_TRABALHO_NECESSARIO, trabalhoModificado.getTrabalhoNecessario());
+                String selection = TrabalhoEntry.COLUMN_NAME_ID + " LIKE ?";
                 String[] selectionArgs = {trabalhoModificado.getId()};
-                long newRowId = db.update(TrabalhoDbContract.TrabalhoEntry.TABLE_NAME, values, selection, selectionArgs);
+                long newRowId = db.update(TrabalhoEntry.TABLE_NAME, values, selection, selectionArgs);
                 if (newRowId == -1) {
                     liveData.setValue(new Resource<>(null, "Erro ao adicionar novo trabalho a lista"));
                 } else {
@@ -66,23 +65,21 @@ public class TrabalhoRepository {
         return liveData;
     }
 
-    public LiveData<Resource<Void>> adicionaTrabalho(Trabalho novoTrabalho) {
+    public LiveData<Resource<Void>> adicionaTrabalho(Trabalho trabalho) {
         MutableLiveData<Resource<Void>> liveData = new  MutableLiveData<>();
-        String novoId = geraIdAleatorio();
-        novoTrabalho.setId(novoId);
-        minhaReferencia.child(novoTrabalho.getId()).setValue(novoTrabalho).addOnCompleteListener(task -> {
+        minhaReferencia.child(trabalho.getId()).setValue(trabalho).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
                 ContentValues values = new ContentValues();
-                values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_ID, novoTrabalho.getId());
-                values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_NOME, novoTrabalho.getNome());
-                values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_NOME_PRODUCAO, novoTrabalho.getNomeProducao());
-                values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_EXPERIENCIA, novoTrabalho.getExperiencia());
-                values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_NIVEL, novoTrabalho.getNivel());
-                values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_PROFISSAO, novoTrabalho.getProfissao());
-                values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_RARIDADE, novoTrabalho.getRaridade());
-                values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_TRABALHO_NECESSARIO, novoTrabalho.getTrabalhoNecessario());
-                long newRowId = db.insert(TrabalhoDbContract.TrabalhoEntry.TABLE_NAME, null, values);
+                values.put(TrabalhoEntry.COLUMN_NAME_ID, trabalho.getId());
+                values.put(TrabalhoEntry.COLUMN_NAME_NOME, trabalho.getNome());
+                values.put(TrabalhoEntry.COLUMN_NAME_NOME_PRODUCAO, trabalho.getNomeProducao());
+                values.put(TrabalhoEntry.COLUMN_NAME_EXPERIENCIA, trabalho.getExperiencia());
+                values.put(TrabalhoEntry.COLUMN_NAME_NIVEL, trabalho.getNivel());
+                values.put(TrabalhoEntry.COLUMN_NAME_PROFISSAO, trabalho.getProfissao());
+                values.put(TrabalhoEntry.COLUMN_NAME_RARIDADE, trabalho.getRaridade());
+                values.put(TrabalhoEntry.COLUMN_NAME_TRABALHO_NECESSARIO, trabalho.getTrabalhoNecessario());
+                long newRowId = db.insert(TrabalhoEntry.TABLE_NAME, null, values);
                 if (newRowId == -1) {
                     liveData.setValue(new Resource<>(null, "Erro ao adicionar novo trabalho a lista"));
                 } else {
@@ -100,9 +97,9 @@ public class TrabalhoRepository {
         minhaReferencia.child(trabalhoRecebido.getId()).removeValue().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
-                String selection = TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_ID + " LIKE ?";
+                String selection = TrabalhoEntry.COLUMN_NAME_ID + " LIKE ?";
                 String[] selectionArgs = {trabalhoRecebido.getId()};
-                db.delete(TrabalhoDbContract.TrabalhoEntry.TABLE_NAME, selection, selectionArgs);
+                db.delete(TrabalhoEntry.TABLE_NAME, selection, selectionArgs);
                 liveData.setValue(new Resource<>(null, null));
             } else if (task.isCanceled()) {
                 liveData.setValue(new Resource<>(null, Objects.requireNonNull(task.getException()).toString()));
@@ -123,7 +120,7 @@ public class TrabalhoRepository {
     public LiveData<Resource<ArrayList<Trabalho>>> pegaTodosTrabalhos() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.query(
-                TrabalhoDbContract.TrabalhoEntry.TABLE_NAME,
+                TrabalhoEntry.TABLE_NAME,
                 null,
                 null,
                 null,
@@ -165,10 +162,10 @@ public class TrabalhoRepository {
                 }
                 for (Trabalho trabalho : trabalhos) {
                     SQLiteDatabase db = dbHelper.getReadableDatabase();
-                    String selection = TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_ID + " LIKE ?";
+                    String selection = TrabalhoEntry.COLUMN_NAME_ID + " LIKE ?";
                     String[] selectionArgs = {trabalho.getId()};
                     Cursor cursor = db.query(
-                            TrabalhoDbContract.TrabalhoEntry.TABLE_NAME,
+                            TrabalhoEntry.TABLE_NAME,
                             null,
                             selection,
                             selectionArgs,
@@ -183,15 +180,15 @@ public class TrabalhoRepository {
                     if (contadorLinhas == 0) {
                         SQLiteDatabase db2 = dbHelper.getWritableDatabase();
                         ContentValues values = new ContentValues();
-                        values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_ID, trabalho.getId());
-                        values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_NOME, trabalho.getNome());
-                        values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_NOME_PRODUCAO, trabalho.getNomeProducao());
-                        values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_EXPERIENCIA, trabalho.getExperiencia());
-                        values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_NIVEL, trabalho.getNivel());
-                        values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_PROFISSAO, trabalho.getProfissao());
-                        values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_RARIDADE, trabalho.getRaridade());
-                        values.put(TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_TRABALHO_NECESSARIO, trabalho.getTrabalhoNecessario());
-                        long newRowId = db2.insert(TrabalhoDbContract.TrabalhoEntry.TABLE_NAME, null, values);
+                        values.put(TrabalhoEntry.COLUMN_NAME_ID, trabalho.getId());
+                        values.put(TrabalhoEntry.COLUMN_NAME_NOME, trabalho.getNome());
+                        values.put(TrabalhoEntry.COLUMN_NAME_NOME_PRODUCAO, trabalho.getNomeProducao());
+                        values.put(TrabalhoEntry.COLUMN_NAME_EXPERIENCIA, trabalho.getExperiencia());
+                        values.put(TrabalhoEntry.COLUMN_NAME_NIVEL, trabalho.getNivel());
+                        values.put(TrabalhoEntry.COLUMN_NAME_PROFISSAO, trabalho.getProfissao());
+                        values.put(TrabalhoEntry.COLUMN_NAME_RARIDADE, trabalho.getRaridade());
+                        values.put(TrabalhoEntry.COLUMN_NAME_TRABALHO_NECESSARIO, trabalho.getTrabalhoNecessario());
+                        long newRowId = db2.insert(TrabalhoEntry.TABLE_NAME, null, values);
                         if (newRowId == -1) {
                             liveData.setValue(new Resource<>(null, "Erro ao adicionar "+trabalho.getNome()+" ao banco"));
                         } else {
