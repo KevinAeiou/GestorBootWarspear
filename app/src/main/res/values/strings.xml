@@ -58,11 +58,11 @@
         <item>Licença de Artesanato de Novato</item>
     </string-array>
     <string-array name="profissoes">
-        <item>Arma de longo alcance</item>
+        <item>Armas de Longo Alcance</item>
         <item>Arma corpo a corpo</item>
-        <item>Armadura de tecido</item>
-        <item>Armadura leve</item>
-        <item>Armadura pesada</item>
+        <item>Armadura de Tecido</item>
+        <item>Armaduras Leves</item>
+        <item>Armadura Pesada</item>
         <item>Anéis</item>
         <item>Amuletos</item>
         <item>Braceletes</item>
