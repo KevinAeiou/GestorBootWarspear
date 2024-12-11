@@ -17,9 +17,9 @@ public class TrabalhoViewModel extends ViewModel {
         this.trabalhoRepository = trabalhoRepository;
     }
 
-    public LiveData<Resource<Void>> salvaNovoTrabalho(Trabalho novoTrabalho) {
+    public LiveData<Resource<Void>> adicionaTrabalho(Trabalho novoTrabalho) {
         if (novoTrabalho.getId() == null) {
-            return trabalhoRepository.salvaNovoTrabalho(novoTrabalho);
+            return trabalhoRepository.adicionaTrabalho(novoTrabalho);
         } else {
             return trabalhoRepository.modificaTrabalho(novoTrabalho);
         }

@@ -74,7 +74,7 @@ public class TrabalhoRepository {
         return liveData;
     }
 
-    public LiveData<Resource<Void>> salvaNovoTrabalho(Trabalho novoTrabalho) {
+    public LiveData<Resource<Void>> adicionaTrabalho(Trabalho novoTrabalho) {
         MutableLiveData<Resource<Void>> liveData = new  MutableLiveData<>();
         String novoId = geraIdAleatorio();
         novoTrabalho.setId(novoId);

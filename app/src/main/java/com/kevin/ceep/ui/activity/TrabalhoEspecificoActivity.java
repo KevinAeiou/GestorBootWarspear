@@ -119,13 +119,13 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private void verificaNovoTrabalho() {
         if (verificaCamposNovoTrabalho()) {
             Trabalho novoTrabalho = defineNovoTrabalho(trabalhoNecessario);
-            trabalhoViewModel.salvaNovoTrabalho(novoTrabalho).observe(this, resultadoSalvaNovoTrabalho -> {
+            trabalhoViewModel.adicionaTrabalho(novoTrabalho).observe(this, resultadoAdicionaTrabalho -> {
                 indicadorProgresso.setVisibility(View.GONE);
-                if (resultadoSalvaNovoTrabalho.getErro() == null) {
-                    Snackbar.make(binding.getRoot(), novoTrabalho.getNome()+" cadastrado!", Snackbar.LENGTH_LONG).show();
+                if (resultadoAdicionaTrabalho.getErro() == null) {
+                    Snackbar.make(binding.getRoot(), novoTrabalho.getNome()+" adicionado!", Snackbar.LENGTH_LONG).show();
                     limpaCampos();
                 } else {
-                    Snackbar.make(binding.getRoot(), "Erro: "+resultadoSalvaNovoTrabalho.getErro(), Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(binding.getRoot(), "Erro: "+resultadoAdicionaTrabalho.getErro(), Snackbar.LENGTH_LONG).show();
                 }
             });
         } else {
@@ -142,7 +142,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private void verificaModificacaoTrabalho() {
         if (verificaTrabalhoModificado()) {
             Trabalho trabalhoModificado = defineTrabalhoModificado(trabalhoNecessario);
-            trabalhoViewModel.salvaNovoTrabalho(trabalhoModificado).observe(this, resultadoModificaTrabalho -> {
+            trabalhoViewModel.adicionaTrabalho(trabalhoModificado).observe(this, resultadoModificaTrabalho -> {
                 indicadorProgresso.setVisibility(View.GONE);
                 if (resultadoModificaTrabalho.getErro() == null) {
                     finish();
