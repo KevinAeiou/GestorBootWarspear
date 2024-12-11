@@ -118,11 +118,11 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private void verificaNovoTrabalho() {
         if (verificaCamposNovoTrabalho()) {
-            Trabalho novoTrabalho = defineNovoTrabalho(trabalhoNecessario);
-            trabalhoViewModel.adicionaTrabalho(novoTrabalho).observe(this, resultadoAdicionaTrabalho -> {
+            Trabalho trabalho = defineNovoTrabalho();
+            trabalhoViewModel.adicionaTrabalho(trabalho).observe(this, resultadoAdicionaTrabalho -> {
                 indicadorProgresso.setVisibility(View.GONE);
                 if (resultadoAdicionaTrabalho.getErro() == null) {
-                    Snackbar.make(binding.getRoot(), novoTrabalho.getNome()+" adicionado!", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(binding.getRoot(), trabalho.getNome()+" adicionado!", Snackbar.LENGTH_LONG).show();
                     limpaCampos();
                 } else {
                     Snackbar.make(binding.getRoot(), "Erro: "+resultadoAdicionaTrabalho.getErro(), Snackbar.LENGTH_LONG).show();
@@ -141,8 +141,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private void verificaModificacaoTrabalho() {
         if (verificaTrabalhoModificado()) {
-            Trabalho trabalhoModificado = defineTrabalhoModificado(trabalhoNecessario);
-            trabalhoViewModel.adicionaTrabalho(trabalhoModificado).observe(this, resultadoModificaTrabalho -> {
+            Trabalho trabalho = defineTrabalhoModificado();
+            trabalhoViewModel.modificaTrabalho(trabalho).observe(this, resultadoModificaTrabalho -> {
                 indicadorProgresso.setVisibility(View.GONE);
                 if (resultadoModificaTrabalho.getErro() == null) {
                     finish();
@@ -580,8 +580,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     }
 
     @NonNull
-    private Trabalho defineTrabalhoModificado(String trabalhoNecessario) {
-        Trabalho novoTrabalho = new Trabalho(
+    private Trabalho defineTrabalhoModificado() {
+        Trabalho trabalho = new Trabalho(
                 nome,
                 nomeProducao,
                 profissao,
@@ -589,8 +589,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 trabalhoNecessario,
                 Integer.parseInt(nivel),
                 Integer.parseInt(experiencia));
-        novoTrabalho.setId(trabalhoRecebido.getId());
-        return novoTrabalho;
+        trabalho.setId(trabalhoRecebido.getId());
+        return trabalho;
     }
     private boolean verificaTrabalhoModificado() {
         return verificaCampoModificado(nome, trabalhoRecebido.getNome()) ||
@@ -613,17 +613,16 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     }
 
     private boolean verificaCampoModificado(String campo, String valorRecebido) {
-        Snackbar.make(binding.getRoot(), "Campo modificado? "+!comparaString(campo, valorRecebido), Snackbar.LENGTH_LONG).show();
         return !comparaString(campo, valorRecebido);
     }
 
     private boolean verificaCamposNovoTrabalho() {
-        return verificaValorCampo(nome, txtInputNome, 0)
-                & verificaValorCampo(nomeProducao, txtInputNomeProducao, 0)
-                & verificaValorCampo(profissao, txtInputProfissao, 1)
-                & verificaValorCampo(experiencia,txtInputExperiencia,1)
-                & verificaValorCampo(nivel, txtInputNivel, 1)
-                & verificaValorCampo(raridade, txtInputRaridade, 1);
+        return verificaValorCampo(nome, txtInputNome, 0) &
+            verificaValorCampo(nomeProducao, txtInputNomeProducao, 0) &
+            verificaValorCampo(profissao, txtInputProfissao, 1) &
+            verificaValorCampo(experiencia,txtInputExperiencia,1) &
+            verificaValorCampo(nivel, txtInputNivel, 1) &
+            verificaValorCampo(raridade, txtInputRaridade, 1);
     }
 
     private boolean verificaTrabalhoProducaoModificado() {
@@ -654,7 +653,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
         return true;
     }
 
-    private Trabalho defineNovoTrabalho(String trabalhoNecessario) {
+    private Trabalho defineNovoTrabalho() {
         return new Trabalho(
                 nome,
                 nomeProducao,
