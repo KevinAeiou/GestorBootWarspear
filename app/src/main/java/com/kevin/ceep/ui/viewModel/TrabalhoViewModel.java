@@ -17,12 +17,11 @@ public class TrabalhoViewModel extends ViewModel {
         this.trabalhoRepository = trabalhoRepository;
     }
 
-    public LiveData<Resource<Void>> adicionaTrabalho(Trabalho novoTrabalho) {
-        if (novoTrabalho.getId() == null) {
-            return trabalhoRepository.adicionaTrabalho(novoTrabalho);
-        } else {
-            return trabalhoRepository.modificaTrabalho(novoTrabalho);
-        }
+    public LiveData<Resource<Void>> adicionaTrabalho(Trabalho trabalho) {
+        return trabalhoRepository.adicionaTrabalho(trabalho);
+    }
+    public LiveData<Resource<Void>> modificaTrabalho(Trabalho trabalho) {
+        return trabalhoRepository.modificaTrabalho(trabalho);
     }
     public LiveData<Resource<Void>> excluiTrabalhoEspecificoServidor(Trabalho trabalhoRecebido) {
         return trabalhoRepository.removeTrabalho(trabalhoRecebido);
