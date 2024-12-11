@@ -19,4 +19,15 @@ public class PersonagemViewModel extends ViewModel {
     public LiveData<Resource<ArrayList<Personagem>>> pegaTodosPersonagens() {
         return personagemRepository.pegaTodosPersonagens();
     }
+
+    public LiveData<Resource<Void>> sincronizaPersonagens() {
+        return personagemRepository.sincronizaPersonagens();
+    }
+    public LiveData<Resource<Void>> modificaPersonagem(Personagem personagemModificado) {
+        return personagemRepository.modificaPersonagem(personagemModificado);
+    }
+
+    public LiveData<Resource<Void>> adicionaPersonagem(Personagem novoPersonagem) {
+        return personagemRepository.adicionaPersonagem(novoPersonagem);
+    }
 }

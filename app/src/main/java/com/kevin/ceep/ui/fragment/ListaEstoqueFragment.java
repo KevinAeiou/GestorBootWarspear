@@ -69,7 +69,7 @@ public class ListaEstoqueFragment extends Fragment {
             if (argumento.containsKey(CHAVE_PERSONAGEM)){
                 personagemId = argumento.getString(CHAVE_PERSONAGEM);
                 if (personagemId != null) {
-                    TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository(personagemId));
+                    TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository(getContext(), personagemId));
                     trabalhoEstoqueViewModel = new ViewModelProvider(this, trabalhoEstoqueViewModelFactory).get(TrabalhoEstoqueViewModel.class);
                 }
             }
@@ -143,6 +143,11 @@ public class ListaEstoqueFragment extends Fragment {
                 if (listaTrabalhosEstoqueFiltrada.isEmpty()) {
                     iconeListaVazia.setVisibility(View.VISIBLE);
                     txtListaVazia.setVisibility(View.VISIBLE);
+                    trabalhoEstoqueViewModel.sincronizaEstoque().observe(getViewLifecycleOwner(), resultadoSincronizaEstoque -> {
+                        if (resultadoSincronizaEstoque.getErro() != null) {
+                            Snackbar.make(binding.getRoot(), "Erro: "+resultadoSincronizaEstoque.getErro(), Snackbar.LENGTH_LONG).show();
+                        }
+                    });
                 } else {
                     iconeListaVazia.setVisibility(View.GONE);
                     txtListaVazia.setVisibility(View.GONE);

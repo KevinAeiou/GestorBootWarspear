@@ -158,7 +158,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     private void verificaModificacaoTrabalhoProducao() {
         if (verificaTrabalhoProducaoModificado()) {
             TrabalhoProducao trabalhoModificado = defineTrabalhoProducaoModificado();
-            trabalhoProducaoViewModel.modificaTrabalhoProducaoServidor(trabalhoModificado).observe(this, resultado -> {
+            trabalhoProducaoViewModel.modificaTrabalhoProducao(trabalhoModificado).observe(this, resultado -> {
                 if (resultado.getErro() == null) {
                     if (verificaEstadoModificado()) {
                         Integer estado = trabalhoModificado.getEstado();
@@ -197,9 +197,9 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                                 } else {
                                     Trabalho trabalhoEncontrado = trabalhoViewModel.retornaTrabalhoPorChaveNome(todosTrabalhos, trabalhoModificado);
                                     if (trabalhoEncontrado != null && trabalhoEncontrado.getNivel() != 3 && trabalhoEncontrado.getNivel() != 5 && trabalhoEncontrado.getNivel() != 10) {
-                                        TrabalhoEstoque novoTrabalhoEstoque = trabalhoEstoqueViewModel.defineNovoTrabalhoEstoque(trabalhoModificado);
-                                        novoTrabalhoEstoque.setTrabalhoId(trabalhoEncontrado.getId());
-                                        trabalhoEstoqueViewModel.salvaNovoTrabalhoEstoque(novoTrabalhoEstoque).observe(this, resultaSalvaTrabalhoEstoque -> {
+                                        TrabalhoEstoque novoTrabalhoEstoque = new TrabalhoEstoque(1, trabalhoEncontrado.getId());
+
+                                        trabalhoEstoqueViewModel.adicionaTrabalhoEstoque(novoTrabalhoEstoque).observe(this, resultaSalvaTrabalhoEstoque -> {
                                             if (resultaSalvaTrabalhoEstoque.getErro() != null){
                                                 Snackbar.make(binding.getRoot(), "Erro: "+resultaSalvaTrabalhoEstoque.getErro(), Snackbar.LENGTH_LONG).show();
                                                 confirmacao.setValue(false);
@@ -280,7 +280,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
         estadosTrabalho = getResources().getStringArray(R.array.estados);
 
-        TrabalhoViewModelFactory trabalhoViewModelFactory = new TrabalhoViewModelFactory(new TrabalhoRepository());
+        TrabalhoViewModelFactory trabalhoViewModelFactory = new TrabalhoViewModelFactory(new TrabalhoRepository(getApplicationContext()));
         trabalhoViewModel = new ViewModelProvider(this, trabalhoViewModelFactory).get(TrabalhoViewModel.class);
     }
     private void recebeDadosIntent() {
@@ -312,9 +312,9 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 .getSerializableExtra(CHAVE_NOME_TRABALHO);
         String personagemId = (String) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
         if (trabalhoProducaoRecebido != null) {
-            TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(new TrabalhoProducaoRepository(personagemId));
+            TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(new TrabalhoProducaoRepository(getApplicationContext(), personagemId));
             trabalhoProducaoViewModel = new ViewModelProvider(this, trabalhoProducaoViewModelFactory).get(TrabalhoProducaoViewModel.class);
-            TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository(personagemId));
+            TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository(getApplicationContext(), personagemId));
             trabalhoEstoqueViewModel = new ViewModelProvider(this, trabalhoEstoqueViewModelFactory).get(TrabalhoEstoqueViewModel.class);
             ProfissaoViewModelFactory profissaoViewModelFactory = new ProfissaoViewModelFactory(new ProfissaoRepository(personagemId));
             profissaoViewModel = new ViewModelProvider(this, profissaoViewModelFactory).get(ProfissaoViewModel.class);
@@ -570,7 +570,9 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
     }
     @NonNull
     private TrabalhoProducao defineTrabalhoProducaoModificado() {
-        TrabalhoProducao trabalhoModificado = trabalhoProducaoRecebido;
+        TrabalhoProducao trabalhoModificado = new TrabalhoProducao();
+        trabalhoModificado.setId(trabalhoProducaoRecebido.getId());
+        trabalhoModificado.setIdTrabalho(trabalhoProducaoRecebido.getIdTrabalho());
         trabalhoModificado.setRecorrencia(checkBoxRecorrenciaTrabalho.isChecked());
         trabalhoModificado.setTipo_licenca(autoCompleteLicenca.getText().toString());
         trabalhoModificado.setEstado(adapterEstado.getPosition(autoCompleteEstado.getText().toString()));
@@ -579,8 +581,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     @NonNull
     private Trabalho defineTrabalhoModificado(String trabalhoNecessario) {
-        return new Trabalho(
-                trabalhoRecebido.getId(),
+        Trabalho novoTrabalho = new Trabalho(
                 nome,
                 nomeProducao,
                 profissao,
@@ -588,6 +589,8 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 trabalhoNecessario,
                 Integer.parseInt(nivel),
                 Integer.parseInt(experiencia));
+        novoTrabalho.setId(trabalhoRecebido.getId());
+        return novoTrabalho;
     }
     private boolean verificaTrabalhoModificado() {
         return verificaCampoModificado(nome, trabalhoRecebido.getNome()) ||
@@ -653,7 +656,6 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private Trabalho defineNovoTrabalho(String trabalhoNecessario) {
         return new Trabalho(
-                null,
                 nome,
                 nomeProducao,
                 profissao,

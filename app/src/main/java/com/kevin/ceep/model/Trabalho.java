@@ -1,5 +1,6 @@
 package com.kevin.ceep.model;
 
+import static com.kevin.ceep.utilitario.Utilitario.geraIdAleatorio;
 import static com.kevin.ceep.utilitario.Utilitario.limpaString;
 
 import java.io.Serializable;
@@ -18,8 +19,8 @@ public class Trabalho implements Serializable {
     private Integer experiencia;
     public Trabalho(){}
 
-    public Trabalho(String id, String nome, String nomeProducao, String profissao, String raridade, String trabalhoNecessario, Integer nivel, Integer experiencia) {
-        this.id = id;
+    public Trabalho(String nome, String nomeProducao, String profissao, String raridade, String trabalhoNecessario, Integer nivel, Integer experiencia) {
+        this.id = geraIdAleatorio();
         this.nome = nome;
         this.nomeProducao = nomeProducao;
         this.profissao = profissao;
@@ -67,7 +68,33 @@ public class Trabalho implements Serializable {
     public String getTrabalhoNecessario() {
         return trabalhoNecessario;
     }
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
+    public void setNomeProducao(String nomeProducao) {
+        this.nomeProducao = nomeProducao;
+    }
+
+    public void setRaridade(String raridade) {
+        this.raridade = raridade;
+    }
+
+    public void setTrabalhoNecessario(String trabalhoNecessario) {
+        this.trabalhoNecessario = trabalhoNecessario;
+    }
+
+    public boolean possueTrabalhoNecessarioValido() {
+        return this.trabalhoNecessario != null && !this.trabalhoNecessario.isEmpty();
+    }
+
+    public void setNivel(Integer nivel) {
+        this.nivel = nivel;
+    }
+
+    public void setExperiencia(Integer experiencia) {
+        this.experiencia = experiencia;
+    }
     public boolean ehProducaoDeRecursos() {
         ArrayList<String> listaProducaoRecursos = new ArrayList<>(List.of(
                 "melhorarlicencacomum","licençadeproducaodoaprendiz","grandecolecaoderecursoscomuns",

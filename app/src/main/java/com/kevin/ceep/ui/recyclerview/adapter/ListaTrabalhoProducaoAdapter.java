@@ -122,12 +122,14 @@ public class ListaTrabalhoProducaoAdapter extends RecyclerView.Adapter<ListaTrab
 
         private void configuraCorLicencaTrabalhoProducao(TrabalhoProducao trabalhoProducao) {
             String licenca = trabalhoProducao.getTipo_licenca();
-            if (licenca.equals("Licença de produção do iniciante")){
-                tipo_licenca.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_iniciante));
-            } else if (licenca.equals("Licença de produção do aprendiz")) {
-                tipo_licenca.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_aprediz));
-            }else{
-                tipo_licenca.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_mestre));
+            if (licenca != null) {
+                if (licenca.equals("Licença de Artesanato de Novato")){
+                    tipo_licenca.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_novato));
+                } else if (licenca.equals("Licença de Artesanato de Aprendiz")) {
+                    tipo_licenca.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_aprediz));
+                }else{
+                    tipo_licenca.setTextColor(ContextCompat.getColor(context,R.color.cor_texto_licenca_mestre));
+                }
             }
         }
 

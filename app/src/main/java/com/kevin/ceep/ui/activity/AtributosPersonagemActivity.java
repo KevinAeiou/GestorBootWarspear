@@ -1,12 +1,10 @@
 package com.kevin.ceep.ui.activity;
 
-import static com.kevin.ceep.utilitario.Utilitario.geraIdAleatorio;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_LISTA_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_PERSONAGEM;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_REQUISICAO;
-import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CHAVE_USUARIOS;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_TRABALHO;
 import static com.kevin.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_INSERE_TRABALHO;
+import static com.kevin.ceep.utilitario.Utilitario.geraIdAleatorio;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,30 +15,29 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.ActivityAtributosPersonagemBinding;
 import com.kevin.ceep.model.Personagem;
+import com.kevin.ceep.repository.PersonagemRepository;
+import com.kevin.ceep.ui.viewModel.PersonagemViewModel;
+import com.kevin.ceep.ui.viewModel.factory.PersonagemViewModelFactory;
 
 import java.util.Objects;
 
 public class AtributosPersonagemActivity extends AppCompatActivity {
 
-    private FirebaseDatabase database;
-    private DatabaseReference minhareferencia;
     private Personagem personagemRecebido;
     private TextInputLayout personagemNomeTxt, personagemEspacoProducaoTxt, personagemEmailTxt, personagemSenhaTxt;
     private EditText personagemNome, personagemEspacoProducao, personagemEmail, personagemSenha;
     private SwitchCompat personagemSwUso, personagemSwEstado;
-    private String usuarioId;
     private ActivityAtributosPersonagemBinding binding;
     private int codigoRequisicao;
+    private PersonagemViewModel personagemViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +51,7 @@ public class AtributosPersonagemActivity extends AppCompatActivity {
         Intent dadosRecebidos = getIntent();
         if (dadosRecebidos.hasExtra(CHAVE_PERSONAGEM)){
             codigoRequisicao = (int) dadosRecebidos.getSerializableExtra(CHAVE_REQUISICAO);
-            if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO){
-
-            } else if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO) {
+            if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO) {
                 personagemRecebido = (Personagem) dadosRecebidos.getSerializableExtra(CHAVE_PERSONAGEM);
                 if (personagemRecebido != null){
                     preencheCampos();
@@ -79,9 +74,6 @@ public class AtributosPersonagemActivity extends AppCompatActivity {
     }
 
     private void inicializaComponentes() {
-        database = FirebaseDatabase.getInstance();
-        minhareferencia = database.getReference(CHAVE_USUARIOS);
-        usuarioId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         personagemNome = binding.edtNomePersonagem;
         personagemNomeTxt = binding.txtNomePersonagem;
         personagemEspacoProducao = binding.edtEspacoProducaoPersonagem;
@@ -92,6 +84,8 @@ public class AtributosPersonagemActivity extends AppCompatActivity {
         personagemEmailTxt = binding.txtEmailPersonagem;
         personagemSenha = binding.edtSenhaPersonagem;
         personagemSenhaTxt = binding.txtSenhaPersonagem;
+        PersonagemViewModelFactory personagemViewModelFactory = new PersonagemViewModelFactory(new PersonagemRepository(getApplicationContext()));
+        personagemViewModel = new ViewModelProvider(this, personagemViewModelFactory).get(PersonagemViewModel.class);
     }
 
     @Override
@@ -105,19 +99,16 @@ public class AtributosPersonagemActivity extends AppCompatActivity {
         if (item.getItemId()==R.id.itemMenuSalvaTrabalho) {
             if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO) {
                 if (verifcaPersonagemModificado()) {
-                    Snackbar.make(binding.constraintLayoutAtributosPersonagem, "Personagem modificado", Snackbar.LENGTH_LONG).show();
                     MaterialAlertDialogBuilder dialogoDeAlerta = new MaterialAlertDialogBuilder(this);
                     dialogoDeAlerta.setMessage("Deseja confirmar alterações?");
-                    dialogoDeAlerta.setNegativeButton("Não", ((dialogInterface, i) -> {
-                        vaiParaFragmentoPersonagens();
-                    }));
+                    dialogoDeAlerta.setNegativeButton("Não", ((dialogInterface, i) -> finish()));
                     dialogoDeAlerta.setPositiveButton("Sim", (dialogInterface, i) -> {
-                        modificaPersonagemServidor();
-                        vaiParaFragmentoPersonagens();
+                        Personagem personagemModificado = definePersonagemModificado();
+                        modificaPersonagemServidor(personagemModificado);
                     });
                     dialogoDeAlerta.show();
                 } else {
-                    vaiParaFragmentoPersonagens();
+                    finish();
                 }
             } else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO) {
                 if (verificaCampos()){
@@ -131,12 +122,21 @@ public class AtributosPersonagemActivity extends AppCompatActivity {
                             personagemSwUso.isChecked(),
                             Integer.parseInt(personagemEspacoProducao.getText().toString())
                     );
-                    minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM).child(novoId).setValue(novoPersonagem);
-                    vaiParaFragmentoPersonagens();
+                    personagemViewModel.adicionaPersonagem(novoPersonagem).observe(this, resultadoInserePersonagem -> {
+                        if (resultadoInserePersonagem.getErro() == null) {
+                            finish();
+                        } else {
+                            Snackbar.make(getApplicationContext(), Objects.requireNonNull(getCurrentFocus()), "Erro: "+resultadoInserePersonagem.getErro(), Snackbar.LENGTH_LONG).show();
+                        }
+                    });
                 }
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private Personagem definePersonagemModificado() {
+        return new Personagem(personagemRecebido.getId(), personagemNome.getText().toString(), personagemEmail.getText().toString(), personagemSenha.getText().toString(), personagemSwEstado.isChecked(), personagemSwUso.isChecked(), Integer.parseInt(personagemEspacoProducao.getText().toString()));
     }
 
     private boolean verificaCampos() {
@@ -168,62 +168,14 @@ public class AtributosPersonagemActivity extends AppCompatActivity {
         return confirmacao;
     }
 
-    @Override
-    public void onBackPressed() {
-        if (codigoRequisicao == CODIGO_REQUISICAO_ALTERA_TRABALHO) {
-            if (verifcaPersonagemModificado()) {
-                Snackbar.make(binding.constraintLayoutAtributosPersonagem, "Personagem modificado", Snackbar.LENGTH_LONG).show();
-                MaterialAlertDialogBuilder dialogoDeAlerta = new MaterialAlertDialogBuilder(this);
-                dialogoDeAlerta.setMessage("Deseja descartar alterações?");
-                dialogoDeAlerta.setNegativeButton("Não", ((dialogInterface, i) -> {
-                    modificaPersonagemServidor();
-                    vaiParaFragmentoPersonagens();
-                    super.onBackPressed();
-                }));
-                dialogoDeAlerta.setPositiveButton("Sim", (dialogInterface, i) -> {
-                    vaiParaFragmentoPersonagens();
-                    super.onBackPressed();
-                });
-                dialogoDeAlerta.show();
+    private void modificaPersonagemServidor(Personagem personagemModificado) {
+        personagemViewModel.modificaPersonagem(personagemModificado).observe(this, resultadoModificaPersonagem -> {
+            if (resultadoModificaPersonagem.getErro() != null) {
+                Snackbar.make(getApplicationContext(), Objects.requireNonNull(getCurrentFocus()), "Erro: "+resultadoModificaPersonagem.getErro(), Snackbar.LENGTH_LONG).show();
             } else {
-                super.onBackPressed();
+                finish();
             }
-        } else if (codigoRequisicao == CODIGO_REQUISICAO_INSERE_TRABALHO) {
-            super.onBackPressed();
-        }
-    }
-
-    private void modificaPersonagemServidor() {
-        if (!(personagemNome.getText().toString().equals(personagemRecebido.getNome()))){
-            minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
-                    .child(personagemRecebido.getId()).child("nome").setValue(personagemNome.getText().toString());
-        }
-        if (!(personagemEspacoProducao.getText().toString().equals(String.valueOf(personagemRecebido.getEspacoProducao())))){
-            minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
-                    .child(personagemRecebido.getId()).child("espacoProducao").setValue(Integer.valueOf(personagemEspacoProducao.getText().toString()));
-        }
-        if (!(personagemEmail.getText().toString().equals(personagemRecebido.getEmail()))){
-            minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
-                    .child(personagemRecebido.getId()).child("email").setValue(personagemEmail.getText().toString());
-        }
-        if (!(personagemSenha.getText().toString().equals(personagemRecebido.getSenha()))){
-            minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
-                    .child(personagemRecebido.getId()).child("senha").setValue(personagemSenha.getText().toString());
-        }
-        if (personagemSwUso.isChecked()!=personagemRecebido.getUso()){
-            minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
-                    .child(personagemRecebido.getId()).child("uso").setValue(personagemSwUso.isChecked());
-        }
-        if (personagemSwEstado.isChecked()!=personagemRecebido.getEstado()){
-            minhareferencia.child(usuarioId).child(CHAVE_LISTA_PERSONAGEM)
-                    .child(personagemRecebido.getId()).child("estado").setValue(personagemSwEstado.isChecked());
-        }
-
-    }
-    private void vaiParaFragmentoPersonagens() {
-        Intent iniciaVaiParaFragmentoPersonagens = new Intent(getApplicationContext(), MainActivity.class);
-        setResult(1,iniciaVaiParaFragmentoPersonagens);
-        AtributosPersonagemActivity.super.onBackPressed();
+        });
     }
 
     private boolean verifcaPersonagemModificado() {

@@ -55,7 +55,7 @@ public class ListaTodosTrabalhosActivity extends AppCompatActivity {
         botaoNovoTrabalho = binding.floatingButtonProfissoesTrabalhos;
         indicadorProgresso = binding.indicadorProgressoProfissoesTrabalhos;
         meuRecycler = binding.recyclerViewProfissoesTrabalhos;
-        TrabalhoViewModelFactory trabalhoViewModelFactory = new TrabalhoViewModelFactory(new TrabalhoRepository());
+        TrabalhoViewModelFactory trabalhoViewModelFactory = new TrabalhoViewModelFactory(new TrabalhoRepository(getApplicationContext()));
         trabalhoViewModel = new ViewModelProvider(this, trabalhoViewModelFactory).get(TrabalhoViewModel.class);
     }
     private void configuraBotaoCadastraNovoTrabalho() {
@@ -112,6 +112,14 @@ public class ListaTodosTrabalhosActivity extends AppCompatActivity {
         trabalhoViewModel.pegaTodosTrabalhos().observe(this, arrayListResource -> {
             if (arrayListResource.getDado() != null) {
                 todosTrabalhos = arrayListResource.getDado();
+                if (todosTrabalhos.isEmpty()) {
+                    trabalhoViewModel.sicronizaTrabalhos().observe(this, resultado -> {
+                        indicadorProgresso.setVisibility(View.GONE);
+                        if (resultado.getErro() != null) {
+                            Snackbar.make(binding.getRoot(), "Erro: "+resultado.getErro(), Snackbar.LENGTH_LONG).show();
+                        }
+                    });
+                }
                 filtraTrabalhosProfissao();
             } else {
                 Snackbar.make(binding.getRoot(), "Erro: "+arrayListResource.getErro(), Snackbar.LENGTH_LONG).show();
