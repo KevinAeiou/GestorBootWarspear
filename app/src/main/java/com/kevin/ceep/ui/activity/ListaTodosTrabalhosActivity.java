@@ -73,9 +73,11 @@ public class ListaTodosTrabalhosActivity extends AppCompatActivity {
         SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshProfissoesTrabalhos);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(false);
+            sincronizaTrabalhos();
             pegaTodosTrabalhos();
         });
     }
+
     private void filtraTrabalhosProfissao() {
         profissoesTrabalhos = new ArrayList<>();
         for (Trabalho trabalho : todosTrabalhos) {
@@ -109,12 +111,21 @@ public class ListaTodosTrabalhosActivity extends AppCompatActivity {
 
     private void pegaTodosTrabalhos() {
         todosTrabalhos = new ArrayList<>();
-        trabalhoViewModel.pegaTodosTrabalhos().observe(this, arrayListResource -> {
-            if (arrayListResource.getDado() != null) {
-                todosTrabalhos = arrayListResource.getDado();
+        trabalhoViewModel.pegaTodosTrabalhos().observe(this, resultadoPegaTodosTrabalhos -> {
+            if (resultadoPegaTodosTrabalhos.getDado() != null) {
+                todosTrabalhos = resultadoPegaTodosTrabalhos.getDado();
                 filtraTrabalhosProfissao();
-            } else {
-                Snackbar.make(binding.getRoot(), "Erro: "+arrayListResource.getErro(), Snackbar.LENGTH_LONG).show();
+            }
+            if (resultadoPegaTodosTrabalhos.getErro() != null) {
+                Snackbar.make(binding.getRoot(), "Erro: "+resultadoPegaTodosTrabalhos.getErro(), Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void sincronizaTrabalhos() {
+        trabalhoViewModel.sincronizaTrabalhos().observe(this, resultadoSincroniza -> {
+            if (resultadoSincroniza.getErro() != null) {
+                Snackbar.make(binding.getRoot(), "Erro: "+resultadoSincroniza.getErro(), Snackbar.LENGTH_LONG).show();
             }
         });
     }
@@ -133,6 +144,7 @@ public class ListaTodosTrabalhosActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        sincronizaTrabalhos();
         pegaTodosTrabalhos();
     }
 
