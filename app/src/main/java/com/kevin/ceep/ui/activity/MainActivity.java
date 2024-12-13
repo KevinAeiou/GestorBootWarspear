@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String idPersonagemRecebido;
     private NavigationView navigationView;
     private Personagem personagemSelecionado;
+    private PersonagemViewModel personagemViewModel;
     private TextView txtCabecalhoNome, txtCabecalhoEstado, txtCabecalhoUso, txtCabecalhoEspacoProducao;
     private int itemNavegacao, posicaoPersonagemSelecionado;
 
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onResume() {
+        sincronizaPersonagens();
         pegaTodosPersonagens();
         if (!personagens.isEmpty()) {
             personagemSelecionado = personagens.get(posicaoPersonagemSelecionado);
@@ -123,6 +125,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         txtCabecalhoEspacoProducao = cabecalho.findViewById(R.id.txtCabecalhoEspacoProducaoPersonagem);
         personagemSelecionado = null;
         posicaoPersonagemSelecionado = 0;
+        PersonagemViewModelFactory personagemViewModelFactory = new PersonagemViewModelFactory(new PersonagemRepository(getApplicationContext()));
+        personagemViewModel = new ViewModelProvider(this, personagemViewModelFactory).get(PersonagemViewModel.class);
     }
 
     private void atualizaPersonagemSelecionado() {
@@ -239,24 +243,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
     private void pegaTodosPersonagens() {
         personagens = new ArrayList<>();
-        PersonagemViewModelFactory personagemViewModelFactory = new PersonagemViewModelFactory(new PersonagemRepository(getApplicationContext()));
-        PersonagemViewModel personagemViewModel = new ViewModelProvider(this, personagemViewModelFactory).get(PersonagemViewModel.class);
         personagemViewModel.pegaTodosPersonagens().observe(this, resultadoPersonagens -> {
             if (resultadoPersonagens.getDado() != null) {
                 personagens = resultadoPersonagens.getDado();
-                if (personagens.isEmpty()) {
-                    personagemViewModel.sincronizaPersonagens().observe(this, resultadoSincroniza -> {
-                        if (resultadoSincroniza.getErro() == null) {
-                            pegaTodosPersonagens();
-                        } else {
-                            Snackbar.make(getApplicationContext(), Objects.requireNonNull(getCurrentFocus()), "Erro: "+resultadoSincroniza.getErro(), Snackbar.LENGTH_LONG).show();
-                        }
-                    });
-                }
                 configuraSubMenuPersonagem();
             }
             if (resultadoPersonagens.getErro() != null) {
                 Snackbar.make(getApplicationContext(), Objects.requireNonNull(getCurrentFocus()), "Erro: "+resultadoPersonagens.getErro(), Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void sincronizaPersonagens() {
+        personagemViewModel.sincronizaPersonagens().observe(this, resultadoSincroniza -> {
+            if (resultadoSincroniza.getErro() != null) {
+                Snackbar.make(getApplicationContext(), Objects.requireNonNull(getCurrentFocus()), "Erro: "+resultadoSincroniza.getErro(), Snackbar.LENGTH_LONG).show();
             }
         });
     }

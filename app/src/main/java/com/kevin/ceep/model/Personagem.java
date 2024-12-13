@@ -51,4 +51,7 @@ public class Personagem implements Serializable {
     public int getEspacoProducao() {
         return espacoProducao;
     }
+    public void setId(String id) {
+        this.id = id;
+    }
 }
