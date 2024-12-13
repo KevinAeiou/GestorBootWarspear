@@ -141,6 +141,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
 
     private void verificaModificacaoTrabalho() {
         if (verificaTrabalhoModificado()) {
+            Log.d("verificaTrabalhoModificado", "Trabalho modificado");
             Trabalho trabalho = defineTrabalhoModificado();
             trabalhoViewModel.modificaTrabalho(trabalho).observe(this, resultadoModificaTrabalho -> {
                 indicadorProgresso.setVisibility(View.GONE);
@@ -151,6 +152,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 }
             });
         } else {
+            Log.d("verificaTrabalhoModificado", "Trabalho não modificado");
             finish();
         }
     }
@@ -603,13 +605,16 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                 verificaCampoModificado(raridade, trabalhoRecebido.getRaridade());
     }
 
-    private boolean verificaCampoTrabalhoNecessario(String trabalhoNecessario1, String trabalhoNecessarioRecebido) {
-        if (trabalhoNecessario1.isEmpty() && trabalhoNecessarioRecebido == null) {
+    private boolean verificaCampoTrabalhoNecessario(String trabalhoNecessario, String trabalhoNecessarioRecebido) {
+        if (trabalhoNecessario.isEmpty()) {
+            if (trabalhoNecessarioRecebido == null) {
+                return false;
+            }
             return false;
         } else if (trabalhoNecessarioRecebido == null) {
             return true;
         }
-        return stringContemString(trabalhoNecessario1, trabalhoNecessarioRecebido);
+        return !stringContemString(trabalhoNecessarioRecebido, trabalhoNecessario);
     }
 
     private boolean verificaCampoModificado(String campo, String valorRecebido) {
