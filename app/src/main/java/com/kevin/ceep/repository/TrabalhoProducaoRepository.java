@@ -15,7 +15,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -142,7 +141,6 @@ public class TrabalhoProducaoRepository {
             trabalhoProducao.setRecorrencia(cursor.getInt(9) == 1);
             trabalhoProducao.setTipo_licenca(cursor.getString(10));
             trabalhoProducao.setEstado(cursor.getInt(11));
-            Log.d("pegaTodosTrabalhosProducao", "Licenca: "+ trabalhoProducao.getTipo_licenca());
             trabalhosProducao.add(trabalhoProducao);
         }
         cursor.close();
@@ -151,15 +149,19 @@ public class TrabalhoProducaoRepository {
     }
 
     public LiveData<Resource<Void>> sincronizaTrabalhosProducao() {
+        ArrayList<TrabalhoProducao> trabalhosProducaoServidor = new ArrayList<>();
         MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
         minhaReferenciaListaDeDesejos.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                trabalhosProducaoServidor.clear();
+                SQLiteDatabase db2 = dbHelper.getWritableDatabase();
                 for (DataSnapshot dn:snapshot.getChildren()) {
                     TrabalhoProducao trabalhoProducao = dn.getValue(TrabalhoProducao.class);
+                    trabalhosProducaoServidor.add(trabalhoProducao);
                     SQLiteDatabase db = dbHelper.getReadableDatabase();
                     String selection = COLUMN_NAME_ID + " LIKE ?";
-                    String[] selectionArgs = {trabalhoProducao.getId()};
+                    String[] selectionArgs = {Objects.requireNonNull(trabalhoProducao).getId()};
                     Cursor cursor = db.query(
                             TABLE_NAME,
                             null,
@@ -173,29 +175,65 @@ public class TrabalhoProducaoRepository {
                     while(cursor.moveToNext()) {
                         contadorLinhas += 1;
                     }
+                    ContentValues values = new ContentValues();
                     if (contadorLinhas == 0) {
-                        SQLiteDatabase db2 = dbHelper.getWritableDatabase();
-                        ContentValues values = new ContentValues();
                         values.put(COLUMN_NAME_ID, trabalhoProducao.getId());
                         values.put(COLUMN_NAME_ID_PERSONAGEM, idPersonagem);
                         values.put(COLUMN_NAME_ID_TRABALHO, trabalhoProducao.getIdTrabalho());
                         values.put(COLUMN_NAME_ESTADO, trabalhoProducao.getEstado());
                         values.put(COLUMN_NAME_LICENCA, trabalhoProducao.getTipo_licenca());
                         values.put(COLUMN_NAME_RECORRENCIA, trabalhoProducao.getRecorrencia());
-                        long newRowId = db2.insert(TABLE_NAME, null, values);
-                        if (newRowId == -1) {
-                            liveData.setValue(new Resource<>(null, "Erro ao adicionar novo trabalho a lista"));
-                        } else {
-                            liveData.setValue(new Resource<>(null, null));
-                        }
+                        db2.insert(TABLE_NAME, null, values);
+                    } else if (contadorLinhas == 1) {
+                        values.put(COLUMN_NAME_ID, trabalhoProducao.getId());
+                        values.put(COLUMN_NAME_ID_PERSONAGEM, idPersonagem);
+                        values.put(COLUMN_NAME_ID_TRABALHO, trabalhoProducao.getIdTrabalho());
+                        values.put(COLUMN_NAME_ESTADO, trabalhoProducao.getEstado());
+                        values.put(COLUMN_NAME_LICENCA, trabalhoProducao.getTipo_licenca());
+                        values.put(COLUMN_NAME_RECORRENCIA, trabalhoProducao.getRecorrencia());
+                        selection = COLUMN_NAME_ID + " LIKE ?";
+                        selectionArgs = new String[]{trabalhoProducao.getId()};
+                        db2.update(TABLE_NAME, values, selection, selectionArgs);
                     }
                     cursor.close();
                 }
+                SQLiteDatabase db = dbHelper.getReadableDatabase();
+                Cursor cursor = db.query(
+                        TABLE_NAME,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                );
+                ArrayList<TrabalhoProducao> trabalhosProducaoBanco = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    TrabalhoProducao trabalhoProducao = new TrabalhoProducao();
+                    trabalhoProducao.setId(cursor.getString(0));
+                    trabalhosProducaoBanco.add(trabalhoProducao);
+                }
+                cursor.close();
+                ArrayList<TrabalhoProducao> novaLista = new ArrayList<>();
+                for (TrabalhoProducao trabalhoBanco : trabalhosProducaoBanco) {
+                    for (TrabalhoProducao trabalhosServidor : trabalhosProducaoServidor) {
+                        if (trabalhoBanco.getId().equals(trabalhosServidor.getId())) {
+                            novaLista.add(trabalhoBanco);
+                        }
+                    }
+                }
+                trabalhosProducaoBanco.removeAll(novaLista);
+                for (TrabalhoProducao trabalhoProducao : trabalhosProducaoBanco) {
+                    String selection = COLUMN_NAME_ID + " LIKE ?";
+                    String[] selectionArgs = {trabalhoProducao.getId()};
+                    db.delete(TABLE_NAME, selection, selectionArgs);
+                }
+                liveData.setValue(new Resource<>(null, null));
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                liveData.setValue(new Resource<>(null, error.getMessage()));
             }
         });
         return liveData;

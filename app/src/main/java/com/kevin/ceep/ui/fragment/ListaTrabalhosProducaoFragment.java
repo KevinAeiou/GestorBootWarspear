@@ -187,6 +187,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
     private void configuraSwipeRefreshLayout() {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             if (personagemId != null){
+                sincronizaTrabalhos();
                 pegaTodosTrabalhos();
             }
         });
@@ -258,16 +259,6 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
                 trabalhos = resultadoTodosTrabalhos.getDado();
                 indicadorProgresso.setVisibility(View.GONE);
                 swipeRefreshLayout.setRefreshing(false);
-                if (trabalhos.isEmpty()) {
-                    trabalhoProducaoViewModel.sicronizaTrabalhosProducao().observe(getViewLifecycleOwner(), resultadoSincronizaTrabalhosProducao -> {
-                        if (resultadoSincronizaTrabalhosProducao.getDado() == null) {
-                            pegaTodosTrabalhos();
-                        }
-                        if (resultadoSincronizaTrabalhosProducao.getErro() != null) {
-                            Snackbar.make(binding.getRoot(), "Erro: "+resultadoSincronizaTrabalhosProducao.getErro(), Snackbar.LENGTH_LONG).show();
-                        }
-                    });
-                }
                 atualizaListaTrabalho();
             }
             if (resultadoTodosTrabalhos.getErro() != null) {
@@ -276,10 +267,19 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         });
     }
 
+    private void sincronizaTrabalhos() {
+        trabalhoProducaoViewModel.sicronizaTrabalhosProducao().observe(getViewLifecycleOwner(), resultadoSincronizaTrabalhosProducao -> {
+            if (resultadoSincronizaTrabalhosProducao.getErro() != null) {
+                Snackbar.make(binding.getRoot(), "Erro: "+resultadoSincronizaTrabalhosProducao.getErro(), Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         if (personagemId != null){
+            sincronizaTrabalhos();
             pegaTodosTrabalhos();
         }
     }
