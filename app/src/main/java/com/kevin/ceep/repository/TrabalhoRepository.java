@@ -8,6 +8,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -23,6 +24,7 @@ import com.kevin.ceep.db.contracts.TrabalhoDbContract.TrabalhoEntry;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoProducao;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Objects;
@@ -147,20 +149,21 @@ public class TrabalhoRepository {
             trabalhos.sort(Comparator.comparing(Trabalho::getProfissao).thenComparing(Trabalho::getRaridade).thenComparing(Trabalho::getNivel).thenComparing(Trabalho::getNome));
         }
         trabalhosEncontrados.setValue(new Resource<>(trabalhos, null));
+        sincronizaTrabalhos(trabalhos);
         return trabalhosEncontrados;
     }
 
-    public LiveData<Resource<Void>> sincronizaTrabalhos() {
-        ArrayList<Trabalho> trabalhos = new ArrayList<>();
+    public LiveData<Resource<Void>> sincronizaTrabalhos(ArrayList<Trabalho> trabalhosBanco) {
+        ArrayList<Trabalho> trabalhosServidor = new ArrayList<>();
         MutableLiveData<Resource<Void>> liveData = new  MutableLiveData<>();
         minhaReferencia.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                trabalhosServidor.clear();
+                Log.d("onDataChange", "Lista de trabalhos foi modificada!");
                 for (DataSnapshot dn:snapshot.getChildren()){
                     Trabalho trabalho = dn.getValue(Trabalho.class);
-                    trabalhos.add(trabalho);
-                }
-                for (Trabalho trabalho : trabalhos) {
+                    trabalhosServidor.add(trabalho);
                     SQLiteDatabase db = dbHelper.getReadableDatabase();
                     String selection = TrabalhoEntry.COLUMN_NAME_ID + " LIKE ?";
                     String[] selectionArgs = {trabalho.getId()};
@@ -178,6 +181,7 @@ public class TrabalhoRepository {
                         contadorLinhas += 1;
                     }
                     if (contadorLinhas == 0) {
+                        Log.d("onDataChange", trabalho.getNome()+" não encontrado no banco!");
                         SQLiteDatabase db2 = dbHelper.getWritableDatabase();
                         ContentValues values = new ContentValues();
                         values.put(TrabalhoEntry.COLUMN_NAME_ID, trabalho.getId());
@@ -194,8 +198,46 @@ public class TrabalhoRepository {
                         } else {
                             liveData.setValue(new Resource<>(null, null));
                         }
+                    } else if (contadorLinhas == 1) {
+                        SQLiteDatabase db2 = dbHelper.getWritableDatabase();
+                        ContentValues values = new ContentValues();
+                        values.put(TrabalhoEntry.COLUMN_NAME_NOME, trabalho.getNome());
+                        values.put(TrabalhoEntry.COLUMN_NAME_NOME_PRODUCAO, trabalho.getNomeProducao());
+                        values.put(TrabalhoEntry.COLUMN_NAME_EXPERIENCIA, trabalho.getExperiencia());
+                        values.put(TrabalhoEntry.COLUMN_NAME_NIVEL, trabalho.getNivel());
+                        values.put(TrabalhoEntry.COLUMN_NAME_PROFISSAO, trabalho.getProfissao());
+                        values.put(TrabalhoEntry.COLUMN_NAME_RARIDADE, trabalho.getRaridade());
+                        values.put(TrabalhoEntry.COLUMN_NAME_TRABALHO_NECESSARIO, trabalho.getTrabalhoNecessario());
+                        String selection2 = TrabalhoEntry.COLUMN_NAME_ID + " LIKE ?";
+                        String[] selectionArgs2 = {trabalho.getId()};
+                        long newRowId = db2.update(TrabalhoEntry.TABLE_NAME, values, selection2, selectionArgs2);
+                        if (newRowId == -1) {
+                            liveData.setValue(new Resource<>(null, "Erro ao modificar trabalho a lista"));
+                        } else {
+                            liveData.setValue(new Resource<>(null, null));
+                            Log.d("onDataChange", trabalho.getNome()+" foi modificado no banco!");
+                        }
                     }
                     cursor.close();
+                }
+                Log.d("trabalhosSobrando", "tamanho lista banco " +trabalhosBanco.size());
+                Log.d("trabalhosSobrando", "tamanho lista servidor " +trabalhosServidor.size());
+                ArrayList<Trabalho> novaLista = new ArrayList<>();
+                for (Trabalho trabalhoBanco : trabalhosBanco) {
+                    for (Trabalho trabalhoServidor : trabalhosServidor) {
+                        if (trabalhoServidor.getId().equals(trabalhoBanco.getId())) {
+                            novaLista.add(trabalhoBanco);
+                        }
+                    }
+                }
+                trabalhosBanco.removeAll(novaLista);
+                Log.d("trabalhosSobrando", "tamanho lista banco " +trabalhosBanco.size());
+                for (Trabalho trabalhoBanco : trabalhosBanco) {
+                    Log.d("trabalhosSobrando", trabalhoBanco.getNome() + " sobrando!");
+                    SQLiteDatabase db = dbHelper.getWritableDatabase();
+                    String selection = TrabalhoEntry.COLUMN_NAME_ID + " LIKE ?";
+                    String[] selectionArgs = {trabalhoBanco.getId()};
+                    db.delete(TrabalhoEntry.TABLE_NAME, selection, selectionArgs);
                 }
             }
 
