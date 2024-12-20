@@ -128,7 +128,7 @@ public class ListaEstoqueFragment extends Fragment {
     private void configuraSwipeRefreshLayout() {
         swipeRefreshLayout.setOnRefreshListener(()->{
             if (personagemId != null){
-                pegaTodosTrabalhosEstoque();
+                sincronizaTrabalhosEstoque();
             }
         });
     }
@@ -143,11 +143,7 @@ public class ListaEstoqueFragment extends Fragment {
                 if (listaTrabalhosEstoqueFiltrada.isEmpty()) {
                     iconeListaVazia.setVisibility(View.VISIBLE);
                     txtListaVazia.setVisibility(View.VISIBLE);
-                    trabalhoEstoqueViewModel.sincronizaEstoque().observe(getViewLifecycleOwner(), resultadoSincronizaEstoque -> {
-                        if (resultadoSincronizaEstoque.getErro() != null) {
-                            Snackbar.make(binding.getRoot(), "Erro: "+resultadoSincronizaEstoque.getErro(), Snackbar.LENGTH_LONG).show();
-                        }
-                    });
+                    txtListaVazia.setVisibility(View.VISIBLE);
                 } else {
                     iconeListaVazia.setVisibility(View.GONE);
                     txtListaVazia.setVisibility(View.GONE);
@@ -159,6 +155,15 @@ public class ListaEstoqueFragment extends Fragment {
             if (resultadoPegaTodosTrabalhos.getErro() != null) {
                 Snackbar.make(binding.getRoot(), "Erro: "+resultadoPegaTodosTrabalhos.getErro(), Snackbar.LENGTH_LONG).show();
             }
+        });
+    }
+
+    private void sincronizaTrabalhosEstoque() {
+        trabalhoEstoqueViewModel.sincronizaEstoque().observe(getViewLifecycleOwner(), resultadoSincronizaEstoque -> {
+            if (resultadoSincronizaEstoque.getErro() != null) {
+                Snackbar.make(binding.getRoot(), "Erro: "+resultadoSincronizaEstoque.getErro(), Snackbar.LENGTH_LONG).show();
+            }
+            pegaTodosTrabalhosEstoque();
         });
     }
 
@@ -257,7 +262,7 @@ public class ListaEstoqueFragment extends Fragment {
                 break;
         }
         trabalhoEstoqueModificado.setQuantidade(novaQuantidade);
-        trabalhoEstoqueViewModel.modificaQuantidadeTrabalhoEspecificoNoEstoque(trabalhoEstoqueModificado).observe(this, resultadoModificaQuantidade -> {
+        trabalhoEstoqueViewModel.modificaTrabalhoEstoque(trabalhoEstoqueModificado).observe(this, resultadoModificaQuantidade -> {
             if (resultadoModificaQuantidade.getErro() != null) {
                 Snackbar.make(binding.getRoot(),resultadoModificaQuantidade.getErro(),Snackbar.LENGTH_SHORT).show();
             } else {
@@ -304,7 +309,7 @@ public class ListaEstoqueFragment extends Fragment {
     }
 
     private void removeTrabalhoDoBanco(TrabalhoEstoque trabalhoremovido) {
-        trabalhoEstoqueViewModel.deletaTrabalhoEstoque(trabalhoremovido).observe(this, resultadoRemoveTrabalho -> {
+        trabalhoEstoqueViewModel.removeTrabalhoEstoque(trabalhoremovido).observe(this, resultadoRemoveTrabalho -> {
             if (resultadoRemoveTrabalho.getErro() != null) {
                 Snackbar.make(binding.getRoot(), "Erro: "+resultadoRemoveTrabalho.getErro(), Snackbar.LENGTH_LONG).show();
             }
@@ -315,7 +320,7 @@ public class ListaEstoqueFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (personagemId != null){
-            pegaTodosTrabalhosEstoque();
+            sincronizaTrabalhosEstoque();
         }
     }
 
