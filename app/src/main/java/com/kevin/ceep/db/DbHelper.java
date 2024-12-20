@@ -3,7 +3,6 @@ package com.kevin.ceep.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
 import com.kevin.ceep.db.contracts.EstoqueDbContract.EstoqueEntry;
 import com.kevin.ceep.db.contracts.PersoagemDbContract.PersonagemEntry;
 import com.kevin.ceep.db.contracts.TrabalhoDbContract.TrabalhoEntry;
@@ -12,6 +11,14 @@ import com.kevin.ceep.db.contracts.TrabalhoProducaoContract.TrabalhoProducaoEntr
 public class DbHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 5;
     public static final String DATABASE_NAME = "autoProducao.db";
+    private static DbHelper minhaInstancia = null;
+
+    public static DbHelper getInstance(Context context) {
+        if (minhaInstancia == null) {
+            minhaInstancia = new DbHelper(context.getApplicationContext());
+        }
+        return minhaInstancia;
+    }
 
     public DbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
