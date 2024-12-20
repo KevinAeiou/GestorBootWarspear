@@ -188,7 +188,6 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             if (personagemId != null){
                 sincronizaTrabalhos();
-                pegaTodosTrabalhos();
             }
         });
     }
@@ -272,6 +271,7 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
             if (resultadoSincronizaTrabalhosProducao.getErro() != null) {
                 Snackbar.make(binding.getRoot(), "Erro: "+resultadoSincronizaTrabalhosProducao.getErro(), Snackbar.LENGTH_LONG).show();
             }
+            pegaTodosTrabalhos();
         });
     }
 
@@ -280,7 +280,6 @@ public class ListaTrabalhosProducaoFragment extends Fragment {
         super.onResume();
         if (personagemId != null){
             sincronizaTrabalhos();
-            pegaTodosTrabalhos();
         }
     }
 
