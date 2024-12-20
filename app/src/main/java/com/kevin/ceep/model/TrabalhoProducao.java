@@ -5,7 +5,6 @@ import static com.kevin.ceep.utilitario.Utilitario.geraIdAleatorio;
 import java.io.Serializable;
 
 public class TrabalhoProducao extends Trabalho implements Serializable {
-    private String id;
     private String idTrabalho;
     private String tipo_licenca;
     private Integer estado;
@@ -13,7 +12,6 @@ public class TrabalhoProducao extends Trabalho implements Serializable {
 
     public TrabalhoProducao() {
         super();
-        this.id = geraIdAleatorio();
     }
     public Boolean getRecorrencia() {
         return recorrencia;
@@ -41,15 +39,6 @@ public class TrabalhoProducao extends Trabalho implements Serializable {
 
     public String getIdTrabalho() {
         return idTrabalho;
-    }
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
     }
 
     public void setIdTrabalho(String idTrabalho) {
