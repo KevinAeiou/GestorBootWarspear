@@ -5,11 +5,8 @@ import java.io.Serializable;
 public class TrabalhoEstoque extends Trabalho implements Serializable {
     private Integer quantidade;
     private String trabalhoId;
-    private TrabalhoEstoque(){}
-    public TrabalhoEstoque(Integer quantidade, String trabalhoId) {
+    public TrabalhoEstoque() {
         super();
-        this.quantidade = quantidade;
-        this.trabalhoId = trabalhoId;
     }
     public Integer getQuantidade() {
         return quantidade;
