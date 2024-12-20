@@ -15,7 +15,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -34,7 +33,7 @@ import java.util.Objects;
 
 public class TrabalhoProducaoRepository {
     private final DatabaseReference minhaReferenciaListaDeDesejos;
-    private final DbHelper dbHelper;
+    private final SQLiteDatabase dbLeitura, dbModificacao;
     private final String idPersonagem;
     private final MutableLiveData<Resource<ArrayList<TrabalhoProducao>>> trabalhosProducaoEncontrados;
 
@@ -43,7 +42,9 @@ public class TrabalhoProducaoRepository {
         this.minhaReferenciaListaDeDesejos = FirebaseDatabase.getInstance().getReference(CHAVE_USUARIOS)
                 .child(usuarioID).child(CHAVE_LISTA_PERSONAGEM)
                 .child(personagemID).child(CHAVE_LISTA_DESEJO);
-        this.dbHelper = new DbHelper(context);
+        DbHelper dbHelper = DbHelper.getInstance(context);
+        this.dbLeitura = dbHelper.getReadableDatabase();
+        this.dbModificacao = dbHelper.getWritableDatabase();
         this.idPersonagem = personagemID;
         this.trabalhosProducaoEncontrados = new MutableLiveData<>();
     }
@@ -52,14 +53,13 @@ public class TrabalhoProducaoRepository {
         MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
         minhaReferenciaListaDeDesejos.child(trabalhoModificado.getId()).setValue(trabalhoModificado).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        SQLiteDatabase db = dbHelper.getWritableDatabase();
                         ContentValues values = new ContentValues();
                         values.put(COLUMN_NAME_LICENCA, trabalhoModificado.getTipo_licenca());
                         values.put(COLUMN_NAME_ESTADO, trabalhoModificado.getEstado());
                         values.put(COLUMN_NAME_RECORRENCIA, trabalhoModificado.getRecorrencia());
                         String selection = COLUMN_NAME_ID + " LIKE ?";
                         String[] selectionArgs = {trabalhoModificado.getId()};
-                        long newRowId = db.update(TABLE_NAME, values, selection, selectionArgs);
+                        long newRowId = dbModificacao.update(TABLE_NAME, values, selection, selectionArgs);
                         if (newRowId == -1) {
                             liveData.setValue(new Resource<>(null, "Erro ao modificar trabalho produção"));
                         } else {
@@ -77,7 +77,6 @@ public class TrabalhoProducaoRepository {
         minhaReferenciaListaDeDesejos.child(novoTrabalho.getId())
                 .setValue(novoTrabalho).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        SQLiteDatabase db = dbHelper.getWritableDatabase();
                         ContentValues values = new ContentValues();
                         values.put(COLUMN_NAME_ID, novoTrabalho.getId());
                         values.put(COLUMN_NAME_ID_PERSONAGEM, idPersonagem);
@@ -85,7 +84,7 @@ public class TrabalhoProducaoRepository {
                         values.put(COLUMN_NAME_ESTADO, novoTrabalho.getEstado());
                         values.put(COLUMN_NAME_LICENCA, novoTrabalho.getTipo_licenca());
                         values.put(COLUMN_NAME_RECORRENCIA, novoTrabalho.getRecorrencia());
-                        long newRowId = db.insert(TABLE_NAME, null, values);
+                        long newRowId = dbModificacao.insert(TABLE_NAME, null, values);
                         if (newRowId == -1) {
                             liveData.setValue(new Resource<>(null, "Erro ao adicionar novo trabalho a lista"));
                         } else {
@@ -101,10 +100,9 @@ public class TrabalhoProducaoRepository {
         MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
         minhaReferenciaListaDeDesejos.child(trabalhoProducao.getId()).removeValue().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                SQLiteDatabase db = dbHelper.getWritableDatabase();
                 String selection = COLUMN_NAME_ID + " LIKE ?";
                 String[] selectionArgs = {trabalhoProducao.getId()};
-                db.delete(TABLE_NAME, selection, selectionArgs);
+                dbModificacao.delete(TABLE_NAME, selection, selectionArgs);
                 liveData.setValue(new Resource<>(null, null));
             } else if (task.isCanceled()) {
                 liveData.setValue(new Resource<>(null, Objects.requireNonNull(task.getException()).getMessage()));
@@ -114,7 +112,6 @@ public class TrabalhoProducaoRepository {
     }
 
     public LiveData<Resource<ArrayList<TrabalhoProducao>>> pegaTodosTrabalhosProducao() {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
         String sql = "SELECT Lista_desejo.id, trabalhos.id, trabalhos.nome, trabalhos.nomeProducao, trabalhos.experiencia, trabalhos.nivel, trabalhos.profissao, trabalhos.raridade, trabalhos.trabalhoNecessario, Lista_desejo.recorrencia, Lista_desejo.tipo_licenca, Lista_desejo.estado\n" +
                 "FROM Lista_desejo\n" +
                 "INNER JOIN trabalhos\n" +
@@ -122,7 +119,7 @@ public class TrabalhoProducaoRepository {
                 "WHERE Lista_desejo.idPersonagem == ?" +
                 "ORDER BY trabalhos.profissao, Lista_desejo.estado, trabalhos.raridade, trabalhos.nivel;";
         String[] selectionArgs = {idPersonagem};
-        Cursor cursor = db.rawQuery(
+        Cursor cursor = dbLeitura.rawQuery(
                 sql,
                 selectionArgs
         );
@@ -155,14 +152,12 @@ public class TrabalhoProducaoRepository {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 trabalhosProducaoServidor.clear();
-                SQLiteDatabase db2 = dbHelper.getWritableDatabase();
                 for (DataSnapshot dn:snapshot.getChildren()) {
                     TrabalhoProducao trabalhoProducao = dn.getValue(TrabalhoProducao.class);
                     trabalhosProducaoServidor.add(trabalhoProducao);
-                    SQLiteDatabase db = dbHelper.getReadableDatabase();
                     String selection = COLUMN_NAME_ID + " LIKE ?";
                     String[] selectionArgs = {Objects.requireNonNull(trabalhoProducao).getId()};
-                    Cursor cursor = db.query(
+                    Cursor cursor = dbLeitura.query(
                             TABLE_NAME,
                             null,
                             selection,
@@ -175,6 +170,7 @@ public class TrabalhoProducaoRepository {
                     while(cursor.moveToNext()) {
                         contadorLinhas += 1;
                     }
+                    cursor.close();
                     ContentValues values = new ContentValues();
                     if (contadorLinhas == 0) {
                         values.put(COLUMN_NAME_ID, trabalhoProducao.getId());
@@ -183,7 +179,7 @@ public class TrabalhoProducaoRepository {
                         values.put(COLUMN_NAME_ESTADO, trabalhoProducao.getEstado());
                         values.put(COLUMN_NAME_LICENCA, trabalhoProducao.getTipo_licenca());
                         values.put(COLUMN_NAME_RECORRENCIA, trabalhoProducao.getRecorrencia());
-                        db2.insert(TABLE_NAME, null, values);
+                        dbModificacao.insert(TABLE_NAME, null, values);
                     } else if (contadorLinhas == 1) {
                         values.put(COLUMN_NAME_ID, trabalhoProducao.getId());
                         values.put(COLUMN_NAME_ID_PERSONAGEM, idPersonagem);
@@ -193,12 +189,10 @@ public class TrabalhoProducaoRepository {
                         values.put(COLUMN_NAME_RECORRENCIA, trabalhoProducao.getRecorrencia());
                         selection = COLUMN_NAME_ID + " LIKE ?";
                         selectionArgs = new String[]{trabalhoProducao.getId()};
-                        db2.update(TABLE_NAME, values, selection, selectionArgs);
+                        dbModificacao.update(TABLE_NAME, values, selection, selectionArgs);
                     }
-                    cursor.close();
                 }
-                SQLiteDatabase db = dbHelper.getReadableDatabase();
-                Cursor cursor = db.query(
+                Cursor cursor = dbLeitura.query(
                         TABLE_NAME,
                         null,
                         null,
@@ -226,7 +220,7 @@ public class TrabalhoProducaoRepository {
                 for (TrabalhoProducao trabalhoProducao : trabalhosProducaoBanco) {
                     String selection = COLUMN_NAME_ID + " LIKE ?";
                     String[] selectionArgs = {trabalhoProducao.getId()};
-                    db.delete(TABLE_NAME, selection, selectionArgs);
+                    dbModificacao.delete(TABLE_NAME, selection, selectionArgs);
                 }
                 liveData.setValue(new Resource<>(null, null));
             }
