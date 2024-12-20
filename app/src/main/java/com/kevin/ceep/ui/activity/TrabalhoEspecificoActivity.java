@@ -179,7 +179,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                                                 novaQuantidade = 0;
                                             }
                                             trabalhoEstoqueEncontrado.setQuantidade(novaQuantidade);
-                                            trabalhoEstoqueViewModel.modificaQuantidadeTrabalhoEspecificoNoEstoque(trabalhoEstoqueEncontrado);
+                                            trabalhoEstoqueViewModel.modificaTrabalhoEstoque(trabalhoEstoqueEncontrado);
                                         }
                                     }
                                 }
@@ -190,7 +190,7 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                                 TrabalhoEstoque trabalhoEstoqueEncontrado = trabalhoEstoqueViewModel.retornaTrabalhoEspecificoEstoque(todosTrabalhosEstoque, trabalhoModificado.getNome());
                                 if (trabalhoEstoqueEncontrado != null) {
                                     trabalhoEstoqueEncontrado.setQuantidade(trabalhoEstoqueEncontrado.getQuantidade()+1);
-                                    trabalhoEstoqueViewModel.modificaQuantidadeTrabalhoEspecificoNoEstoque(trabalhoEstoqueEncontrado).observe(this, resultaModificaQuantidade -> {
+                                    trabalhoEstoqueViewModel.modificaTrabalhoEstoque(trabalhoEstoqueEncontrado).observe(this, resultaModificaQuantidade -> {
                                         if (resultaModificaQuantidade.getErro() != null){
                                             Snackbar.make(binding.getRoot(), "Erro: "+resultaModificaQuantidade.getErro(), Snackbar.LENGTH_LONG).show();
                                             confirmacao.setValue(false);
@@ -199,7 +199,9 @@ public class TrabalhoEspecificoActivity extends AppCompatActivity {
                                 } else {
                                     Trabalho trabalhoEncontrado = trabalhoViewModel.retornaTrabalhoPorChaveNome(todosTrabalhos, trabalhoModificado);
                                     if (trabalhoEncontrado != null && trabalhoEncontrado.getNivel() != 3 && trabalhoEncontrado.getNivel() != 5 && trabalhoEncontrado.getNivel() != 10) {
-                                        TrabalhoEstoque novoTrabalhoEstoque = new TrabalhoEstoque(1, trabalhoEncontrado.getId());
+                                        TrabalhoEstoque novoTrabalhoEstoque = new TrabalhoEstoque();
+                                        novoTrabalhoEstoque.setTrabalhoId(trabalhoEncontrado.getId());
+                                        novoTrabalhoEstoque.setQuantidade(1);
 
                                         trabalhoEstoqueViewModel.adicionaTrabalhoEstoque(novoTrabalhoEstoque).observe(this, resultaSalvaTrabalhoEstoque -> {
                                             if (resultaSalvaTrabalhoEstoque.getErro() != null){
