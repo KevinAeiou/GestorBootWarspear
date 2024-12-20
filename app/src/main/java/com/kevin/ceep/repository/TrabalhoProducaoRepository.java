@@ -172,34 +172,27 @@ public class TrabalhoProducaoRepository {
                     }
                     cursor.close();
                     ContentValues values = new ContentValues();
+                    values.put(COLUMN_NAME_ID, trabalhoProducao.getId());
+                    values.put(COLUMN_NAME_ID_PERSONAGEM, idPersonagem);
+                    values.put(COLUMN_NAME_ID_TRABALHO, trabalhoProducao.getIdTrabalho());
+                    values.put(COLUMN_NAME_ESTADO, trabalhoProducao.getEstado());
+                    values.put(COLUMN_NAME_LICENCA, trabalhoProducao.getTipo_licenca());
+                    values.put(COLUMN_NAME_RECORRENCIA, trabalhoProducao.getRecorrencia());
                     if (contadorLinhas == 0) {
-                        values.put(COLUMN_NAME_ID, trabalhoProducao.getId());
-                        values.put(COLUMN_NAME_ID_PERSONAGEM, idPersonagem);
-                        values.put(COLUMN_NAME_ID_TRABALHO, trabalhoProducao.getIdTrabalho());
-                        values.put(COLUMN_NAME_ESTADO, trabalhoProducao.getEstado());
-                        values.put(COLUMN_NAME_LICENCA, trabalhoProducao.getTipo_licenca());
-                        values.put(COLUMN_NAME_RECORRENCIA, trabalhoProducao.getRecorrencia());
                         dbModificacao.insert(TABLE_NAME, null, values);
                     } else if (contadorLinhas == 1) {
-                        values.put(COLUMN_NAME_ID, trabalhoProducao.getId());
-                        values.put(COLUMN_NAME_ID_PERSONAGEM, idPersonagem);
-                        values.put(COLUMN_NAME_ID_TRABALHO, trabalhoProducao.getIdTrabalho());
-                        values.put(COLUMN_NAME_ESTADO, trabalhoProducao.getEstado());
-                        values.put(COLUMN_NAME_LICENCA, trabalhoProducao.getTipo_licenca());
-                        values.put(COLUMN_NAME_RECORRENCIA, trabalhoProducao.getRecorrencia());
                         selection = COLUMN_NAME_ID + " LIKE ?";
                         selectionArgs = new String[]{trabalhoProducao.getId()};
                         dbModificacao.update(TABLE_NAME, values, selection, selectionArgs);
                     }
                 }
-                Cursor cursor = dbLeitura.query(
-                        TABLE_NAME,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
+                String selection = "SELECT " + COLUMN_NAME_ID +
+                        "FROM "+ TABLE_NAME +
+                        "WHERE "+ idPersonagem + " == ?";
+                String[] selectionArgs = {idPersonagem};
+                Cursor cursor = dbLeitura.rawQuery(
+                        selection,
+                        selectionArgs
                 );
                 ArrayList<TrabalhoProducao> trabalhosProducaoBanco = new ArrayList<>();
                 while (cursor.moveToNext()) {
@@ -210,17 +203,17 @@ public class TrabalhoProducaoRepository {
                 cursor.close();
                 ArrayList<TrabalhoProducao> novaLista = new ArrayList<>();
                 for (TrabalhoProducao trabalhoBanco : trabalhosProducaoBanco) {
-                    for (TrabalhoProducao trabalhosServidor : trabalhosProducaoServidor) {
-                        if (trabalhoBanco.getId().equals(trabalhosServidor.getId())) {
+                    for (TrabalhoProducao trabalhoServidor : trabalhosProducaoServidor) {
+                        if (trabalhoBanco.getId().equals(trabalhoServidor.getId())) {
                             novaLista.add(trabalhoBanco);
                         }
                     }
                 }
                 trabalhosProducaoBanco.removeAll(novaLista);
                 for (TrabalhoProducao trabalhoProducao : trabalhosProducaoBanco) {
-                    String selection = COLUMN_NAME_ID + " LIKE ?";
-                    String[] selectionArgs = {trabalhoProducao.getId()};
-                    dbModificacao.delete(TABLE_NAME, selection, selectionArgs);
+                    String selection2 = COLUMN_NAME_ID + " LIKE ?";
+                    String[] selectionArgs2 = {trabalhoProducao.getId()};
+                    dbModificacao.delete(TABLE_NAME, selection2, selectionArgs2);
                 }
                 liveData.setValue(new Resource<>(null, null));
             }
