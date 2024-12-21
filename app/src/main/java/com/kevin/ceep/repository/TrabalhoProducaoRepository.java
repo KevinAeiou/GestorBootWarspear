@@ -72,7 +72,7 @@ public class TrabalhoProducaoRepository {
         return liveData;
     }
 
-    public LiveData<Resource<Void>> adicionaTrabalhoProducao(TrabalhoProducao novoTrabalho) {
+    public LiveData<Resource<Void>> insereTrabalhoProducao(TrabalhoProducao novoTrabalho) {
         MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
         minhaReferenciaListaDeDesejos.child(novoTrabalho.getId())
                 .setValue(novoTrabalho).addOnCompleteListener(task -> {
@@ -187,8 +187,8 @@ public class TrabalhoProducaoRepository {
                     }
                 }
                 String selection = "SELECT " + COLUMN_NAME_ID +
-                        "FROM "+ TABLE_NAME +
-                        "WHERE "+ idPersonagem + " == ?";
+                        " FROM "+ TABLE_NAME +
+                        " WHERE "+ COLUMN_NAME_ID_PERSONAGEM + " == ?";
                 String[] selectionArgs = {idPersonagem};
                 Cursor cursor = dbLeitura.rawQuery(
                         selection,
