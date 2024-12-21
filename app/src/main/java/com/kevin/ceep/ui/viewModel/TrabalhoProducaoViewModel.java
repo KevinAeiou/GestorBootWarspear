@@ -18,8 +18,8 @@ public class TrabalhoProducaoViewModel extends ViewModel {
     public LiveData<Resource<Void>> modificaTrabalhoProducao(TrabalhoProducao trabalhoModificado) {
         return repository.modificaTrabalhoProducao(trabalhoModificado);
     }
-    public LiveData<Resource<Void>> salvaNovoTrabalhoProducao(TrabalhoProducao novoTrabalho) {
-        return repository.adicionaTrabalhoProducao(novoTrabalho);
+    public LiveData<Resource<Void>> insereTrabalhoProducao(TrabalhoProducao novoTrabalho) {
+        return repository.insereTrabalhoProducao(novoTrabalho);
     }
     public LiveData<Resource<Void>> deletaTrabalhoProducao(TrabalhoProducao trabalhoDeletado) {
         return repository.removeTrabalhoProducao(trabalhoDeletado);

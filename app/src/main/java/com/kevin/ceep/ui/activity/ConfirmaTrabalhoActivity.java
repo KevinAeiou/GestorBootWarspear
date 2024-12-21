@@ -88,7 +88,7 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
         contador = 1;
         for (int x = 0; x < quantidadeSelecionada; x ++){
             TrabalhoProducao novoTrabalho = defineNovoModeloTrabalhoProducao();
-            trabalhoProducaoViewModel.salvaNovoTrabalhoProducao(novoTrabalho).observe(this, resposta -> {
+            trabalhoProducaoViewModel.insereTrabalhoProducao(novoTrabalho).observe(this, resposta -> {
                 if (resposta.getErro() == null) {
                     if (contador == quantidadeSelecionada) {
                         finish();
@@ -100,11 +100,10 @@ public class ConfirmaTrabalhoActivity extends AppCompatActivity {
     }
 
     private TrabalhoProducao defineNovoModeloTrabalhoProducao() {
-        String licencaSelecionada = autoCompleteLicenca.getText().toString();
-        CheckBox checkRecorrencia=findViewById(R.id.checkBoxProducaoRecorrenteConfirmaTrabalho);
+        CheckBox checkRecorrencia = findViewById(R.id.checkBoxProducaoRecorrenteConfirmaTrabalho);
         TrabalhoProducao trabalhoProducao = new TrabalhoProducao();
         trabalhoProducao.setIdTrabalho(trabalhoRecebido.getId());
-        trabalhoProducao.setTipo_licenca(licencaSelecionada);
+        trabalhoProducao.setTipo_licenca(autoCompleteLicenca.getText().toString());
         trabalhoProducao.setRecorrencia(checkRecorrencia.isChecked());
         trabalhoProducao.setEstado(0);
         return trabalhoProducao;
