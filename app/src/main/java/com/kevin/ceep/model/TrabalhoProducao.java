@@ -12,6 +12,7 @@ public class TrabalhoProducao extends Trabalho implements Serializable {
 
     public TrabalhoProducao() {
         super();
+        super.setId(geraIdAleatorio());
     }
     public Boolean getRecorrencia() {
         return recorrencia;
