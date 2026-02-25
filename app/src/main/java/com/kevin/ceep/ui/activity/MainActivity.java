@@ -220,8 +220,6 @@ public class MainActivity extends AppCompatActivity {
         personagemSelecionado = null;
         personagens = new ArrayList<>();
         estadoAppViewModel = new ViewModelProvider(this).get(EstadoAppViewModel.class);
-        PersonagemViewModelFactory personagemViewModelFactory = new PersonagemViewModelFactory(PersonagemRepository.getInstance());
-        personagemViewModel = new ViewModelProvider(this, personagemViewModelFactory).get(PersonagemViewModel.class);
     }
 
     private void atualizaCabecalhoPersonagemSelecionado() {
@@ -298,6 +296,16 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         removeOuvintePersonagem();
         binding = null;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            PersonagemViewModelFactory personagemViewModelFactory = new PersonagemViewModelFactory(PersonagemRepository.getInstance());
+            personagemViewModel = new ViewModelProvider(this, personagemViewModelFactory).get(PersonagemViewModel.class);
+        }
     }
 
     private void removeOuvintePersonagem() {
