@@ -102,7 +102,9 @@ public class TrabalhoRepository {
 
     public LiveData<Resource<Void>> insereTrabalho(Trabalho trabalho) {
         MutableLiveData<Resource<Void>> liveData = new  MutableLiveData<>();
-        referenciaTrabalho.child(trabalho.getId()).setValue(trabalho).addOnCompleteListener(backgroundExecutor, task -> {
+        referenciaTrabalho.child(trabalho.getId()).setValue(trabalho).addOnCompleteListener(
+            backgroundExecutor,
+            task -> {
             if (task.isSuccessful()) {
                 ContentValues values = defineNovoTrabalho(trabalho);
                 long newRowId = dbModificacao.insert(TABLE_TRABALHOS, null, values);

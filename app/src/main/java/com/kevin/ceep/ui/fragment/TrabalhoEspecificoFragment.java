@@ -92,6 +92,7 @@ public class TrabalhoEspecificoFragment
     private ArrayList<Trabalho> trabalhosNecessarios = new ArrayList<>();
     private MutableLiveData<Boolean> confirmacao;
     private NavController controlador;
+    private MenuItem itemMenuConfirma;
 
     @Override
     protected FragmentTrabalhoEspecificoBinding inflateBinding(
@@ -159,6 +160,8 @@ public class TrabalhoEspecificoFragment
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.itemMenuConfirma) {
             indicadorProgresso.setVisibility(View.VISIBLE);
+            itemMenuConfirma = menuItem;
+            itemMenuConfirma.setEnabled(false);
             defineTrabalhoNecessario();
             switch (codigoRequisicao) {
                 case CODIGO_REQUISICAO_ALTERA_TRABALHO_PRODUCAO:
@@ -175,19 +178,27 @@ public class TrabalhoEspecificoFragment
         return false;
     }
 
+    private void paraProgresso() {
+        indicadorProgresso.setVisibility(GONE);
+        if (itemMenuConfirma != null) {
+            itemMenuConfirma.setEnabled(true);
+        }
+    }
+
     private void verificaNovoTrabalho() {
         Trabalho trabalho = defineNovoTrabalho();
         if (camposNovoTrabalhoEhValido(trabalho)) {
             if (trabalhoViewModel.trabalhoEspecificoExiste(trabalho)) {
                 mostraMensagem(trabalho.getNome()+" já existe!");
-                indicadorProgresso.setVisibility(GONE);
+                paraProgresso();
                 return;
             }
+            trabalhoViewModel.getInsercaoResultado().removeObservers(getViewLifecycleOwner());
             trabalhoViewModel.getInsercaoResultado().observe(
                     getViewLifecycleOwner(),
                     resultadoInsereTrabalho
             -> {
-                indicadorProgresso.setVisibility(GONE);
+                paraProgresso();
                 if (resultadoInsereTrabalho.getErro() == null) {
                     mostraMensagem(trabalho.getNome()+" inserido!");
                     limpaCampos();
@@ -198,12 +209,14 @@ public class TrabalhoEspecificoFragment
             trabalhoViewModel.insereTrabalho(trabalho);
             return;
         }
-        indicadorProgresso.setVisibility(GONE);
+        paraProgresso();
     }
 
     private void limpaCampos() {
         edtNomeTrabalho.setText("");
         edtNomeProducaoTrabalho.setText("");
+        autoCompleteTrabalhoNecessario1.setAdapter(null);
+        autoCompleteTrabalhoNecessario2.setAdapter(null);
         edtNomeTrabalho.requestFocus();
     }
 
@@ -214,7 +227,7 @@ public class TrabalhoEspecificoFragment
                     getViewLifecycleOwner(),
                     resultadoModificaTrabalho
             -> {
-                indicadorProgresso.setVisibility(GONE);
+                paraProgresso();
                 if (resultadoModificaTrabalho.getErro() == null) {
                     mostraMensagem("Trabalho modificado com sucesso!");
                     voltaParaListaTrabalhos();
@@ -247,6 +260,7 @@ public class TrabalhoEspecificoFragment
                 verficaEstadoTrabalhoProducaoModificado(trabalhoModificado);
                 return;
             }
+            paraProgresso();
             mostraMensagem("Erro: "+resultado.getErro());
         });
         trabalhoProducaoViewModel.modificaTrabalhoProducao(trabalhoModificado);
@@ -301,7 +315,7 @@ public class TrabalhoEspecificoFragment
             if (resultadoProfissoes.getDado() != null) {
                 Profissao profissaoEncontrada = profissaoViewModel.retornaProfissaoModificada(resultadoProfissoes.getDado(), trabalho);
                 if (profissaoEncontrada == null){
-                    indicadorProgresso.setVisibility(GONE);
+                    paraProgresso();
                     mostraMensagem("Profissão não encontrada: "+trabalho.getProfissao());
                     voltaParaListaTrabalhosProducao();
                     return;
@@ -310,7 +324,7 @@ public class TrabalhoEspecificoFragment
                     int novaExperiencia = profissaoEncontrada.getExperiencia()+ trabalho.getExperiencia();
                     profissaoEncontrada.setExperiencia(novaExperiencia);
                     profissaoViewModel.getModificacaoResultado().observe(getViewLifecycleOwner(), resultadoModificaExperiencia -> {
-                        indicadorProgresso.setVisibility(GONE);
+                        paraProgresso();
                         if (resultadoModificaExperiencia.getErro() == null){
                             if (Boolean.TRUE.equals(confirmacao.getValue())) {
                                 mostraMensagem(trabalhoProducaoRecebido.getNome() + " foi modificado com sucesso!");
@@ -327,13 +341,16 @@ public class TrabalhoEspecificoFragment
                 voltaParaListaTrabalhosProducao();
                 return;
             }
+            paraProgresso();
             mostraMensagem("Erro: "+resultadoProfissoes.getErro());
         });
         profissaoViewModel.recuperaProfissoes();
     }
 
     private void modificaEstoque(TrabalhoProducao trabalhoModificado) {
-        trabalhoEstoqueViewModel.getTrabalhoPorId().observe(getViewLifecycleOwner(), resultadoTrabalhoEncontrado -> {
+        trabalhoEstoqueViewModel.getTrabalhoPorId().observe(
+            getViewLifecycleOwner(),
+            resultadoTrabalhoEncontrado -> {
             if (resultadoTrabalhoEncontrado.getErro() == null) {
                 TrabalhoEstoque trabalhoEncontrado = resultadoTrabalhoEncontrado.getDado();
                 if (trabalhoEncontrado == null) {
@@ -341,7 +358,9 @@ public class TrabalhoEspecificoFragment
                         TrabalhoEstoque novoTrabalhoEstoque = new TrabalhoEstoque();
                         novoTrabalhoEstoque.setIdTrabalho(trabalhoModificado.getIdTrabalho());
                         novoTrabalhoEstoque.setQuantidade(1);
-                        trabalhoEstoqueViewModel.getInsercaoResultado().observe(getViewLifecycleOwner(), resultaSalvaTrabalhoEstoque -> {
+                        trabalhoEstoqueViewModel.getInsercaoResultado().observe(
+                            getViewLifecycleOwner(),
+                            resultaSalvaTrabalhoEstoque -> {
                             if (resultaSalvaTrabalhoEstoque.getErro() == null) return;
                             mostraMensagem("Erro: " + resultaSalvaTrabalhoEstoque.getErro());
                             confirmacao.setValue(false);
@@ -351,7 +370,9 @@ public class TrabalhoEspecificoFragment
                     return;
                 }
                 trabalhoEncontrado.setQuantidade(trabalhoEncontrado.getQuantidade()+1);
-                trabalhoEstoqueViewModel.getModificacaoResultado().observe(getViewLifecycleOwner(), resultaModificaQuantidade -> {
+                trabalhoEstoqueViewModel.getModificacaoResultado().observe(
+                    getViewLifecycleOwner(),
+                    resultaModificaQuantidade -> {
                     if (resultaModificaQuantidade.getErro() == null) return;
                     mostraMensagem("Erro: "+resultaModificaQuantidade.getErro());
                     confirmacao.setValue(false);
@@ -532,6 +553,11 @@ public class TrabalhoEspecificoFragment
     }
 
     private void configuraCampoTrabalhoNecessario(String raridadeClicada) {
+        autoCompleteTrabalhoNecessario1.setText("");
+        autoCompleteTrabalhoNecessario2.setText("");
+        autoCompleteTrabalhoNecessario1.setAdapter(null);
+        autoCompleteTrabalhoNecessario2.setAdapter(null);
+
         if (raridadeEhMelhoraroOuRaro(raridadeClicada)) {
             linearLayoutTrabalhoNecessario2.setVisibility(View.VISIBLE);
             configuraDropdownTrabalhoNecessario();
@@ -547,12 +573,15 @@ public class TrabalhoEspecificoFragment
 
     private void configuraDropdownTrabalhoNecessario() {
         ArrayList<String> stringTrabalhosNecessarios = new ArrayList<>();
-        stringTrabalhosNecessarios.add(getString(R.string.stringNadaEncontrado));
         recuperaTrabalhosNecessarios(stringTrabalhosNecessarios);
     }
 
     private void configuraAdapterTrabalhoNecessario(ArrayList<String> stringTrabalhosNecessarios) {
-        ArrayAdapter<String> trabalhoNecessarioAdapter = new ArrayAdapter<>(requireContext(), R.layout.item_dropdrown, stringTrabalhosNecessarios);
+        ArrayAdapter<String> trabalhoNecessarioAdapter = new ArrayAdapter<>(
+            requireContext(),
+            R.layout.item_dropdrown,
+            stringTrabalhosNecessarios
+        );
         trabalhoNecessarioAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         autoCompleteTrabalhoNecessario1.setAdapter(trabalhoNecessarioAdapter);
         autoCompleteTrabalhoNecessario2.setAdapter(trabalhoNecessarioAdapter);
@@ -560,12 +589,18 @@ public class TrabalhoEspecificoFragment
 
     private void recuperaTrabalhosNecessarios(ArrayList<String> stringTrabalhosNecessarios) {
         Trabalho trabalho = defineTrabalhoBusca();
-        trabalhoViewModel.getTrabalhosNecessariosResultado().observe(getViewLifecycleOwner(), resultadoPegaTrabalhosNecessarios -> {
+        trabalhoViewModel.getTrabalhosNecessariosResultado().removeObservers(getViewLifecycleOwner());
+        trabalhoViewModel.getTrabalhosNecessariosResultado().observe(
+            getViewLifecycleOwner(),
+            resultadoPegaTrabalhosNecessarios -> {
             if (resultadoPegaTrabalhosNecessarios.getErro() == null) {
                 trabalhosNecessarios = resultadoPegaTrabalhosNecessarios.getDado();
-                if (trabalhosNecessarios.isEmpty()) return;
+                if (trabalhosNecessarios.isEmpty()) {
+                    stringTrabalhosNecessarios.add(getString(R.string.stringNadaEncontrado));
+                    configuraAdapterTrabalhoNecessario(stringTrabalhosNecessarios);
+                    return;
+                }
                 stringTrabalhosNecessarios.clear();
-                stringTrabalhosNecessarios.add(getString(R.string.stringSelecioneTrabalho));
                 for (Trabalho trabalhoEncontrado : trabalhosNecessarios) {
                     stringTrabalhosNecessarios.add(trabalhoEncontrado.getNome());
                 }
