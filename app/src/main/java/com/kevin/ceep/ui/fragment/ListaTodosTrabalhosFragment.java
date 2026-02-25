@@ -56,7 +56,8 @@ public class ListaTodosTrabalhosFragment
     }
 
     private void configuraComponentesVisuais() {
-        EstadoAppViewModel estadoAppViewModel = new ViewModelProvider(requireActivity()).get(EstadoAppViewModel.class);
+        EstadoAppViewModel estadoAppViewModel = new ViewModelProvider(requireActivity())
+            .get(EstadoAppViewModel.class);
         ComponentesVisuais componentesVisuais = new ComponentesVisuais();
         componentesVisuais.appBar = true;
         estadoAppViewModel.componentes.setValue(componentesVisuais);
@@ -67,15 +68,19 @@ public class ListaTodosTrabalhosFragment
         botaoNovoTrabalho = binding.floatingButtonProfissoesTrabalhos;
         indicadorProgresso = binding.indicadorProgressoProfissoesTrabalhos;
         meuRecycler = binding.recyclerViewProfissoesTrabalhos;
-        TrabalhoViewModelFactory trabalhoViewModelFactory = new TrabalhoViewModelFactory(new TrabalhoRepository(getContext()));
-        trabalhoViewModel = new ViewModelProvider(this, trabalhoViewModelFactory).get(TrabalhoViewModel.class);
+        TrabalhoViewModelFactory trabalhoViewModelFactory = new TrabalhoViewModelFactory(
+            new TrabalhoRepository(getContext())
+        );
+        trabalhoViewModel = new ViewModelProvider(this, trabalhoViewModelFactory)
+            .get(TrabalhoViewModel.class);
     }
     private void configuraBotaoCadastraNovoTrabalho() {
         botaoNovoTrabalho.setOnClickListener(view -> vaiParaCadastraNovoTrabalhoActivity());
     }
 
     private void vaiParaCadastraNovoTrabalhoActivity() {
-        ActionListaTodosTrabalhosFragmentToTrabalhoEspecificoFragment acao = ListaTodosTrabalhosFragmentDirections.actionListaTodosTrabalhosFragmentToTrabalhoEspecificoFragment(null);
+        ActionListaTodosTrabalhosFragmentToTrabalhoEspecificoFragment acao =
+            ListaTodosTrabalhosFragmentDirections.actionListaTodosTrabalhosFragmentToTrabalhoEspecificoFragment(null);
         acao.setCodigoRequisicao(CODIGO_REQUISICAO_INSERE_TRABALHO);
         Navigation.findNavController(binding.getRoot()).navigate(acao);
     }
@@ -95,14 +100,20 @@ public class ListaTodosTrabalhosFragment
             if (profissoesTrabalhos.isEmpty()){
                 ArrayList<Trabalho> listaTrabalhosProfissao = new ArrayList<>();
                 listaTrabalhosProfissao.add(trabalho);
-                ProfissaoTrabalho profissaoTrabalho = new ProfissaoTrabalho(trabalho.getProfissao(), listaTrabalhosProfissao);
+                ProfissaoTrabalho profissaoTrabalho = new ProfissaoTrabalho(
+                    trabalho.getProfissao(),
+                    listaTrabalhosProfissao
+                );
                 profissoesTrabalhos.add(profissaoTrabalho);
                 continue;
             }
             if (profissaoExiste(trabalho)) continue;
             ArrayList<Trabalho> listaTrabalhosProfissao = new ArrayList<>();
             listaTrabalhosProfissao.add(trabalho);
-            ProfissaoTrabalho profissaoTrabalho = new ProfissaoTrabalho(trabalho.getProfissao(), listaTrabalhosProfissao);
+            ProfissaoTrabalho profissaoTrabalho = new ProfissaoTrabalho(
+                trabalho.getProfissao(),
+                listaTrabalhosProfissao
+            );
             profissoesTrabalhos.add(profissaoTrabalho);
         }
         indicadorProgresso.setVisibility(View.GONE);
@@ -121,24 +132,30 @@ public class ListaTodosTrabalhosFragment
 
     private void pegaTodosTrabalhos() {
         todosTrabalhos = new ArrayList<>();
-        trabalhoViewModel.getTrabalhos().observe(getViewLifecycleOwner(), resultadoRecuperaTrabalhos -> {
-            if (resultadoRecuperaTrabalhos.getDado() != null) {
-                todosTrabalhos = resultadoRecuperaTrabalhos.getDado();
-                filtraTrabalhosProfissao();
+        trabalhoViewModel.getTrabalhos().observe(
+            getViewLifecycleOwner(),
+            resultadoRecuperaTrabalhos -> {
+                if (resultadoRecuperaTrabalhos.getDado() != null) {
+                    todosTrabalhos = resultadoRecuperaTrabalhos.getDado();
+                    filtraTrabalhosProfissao();
+                }
+                if (resultadoRecuperaTrabalhos.getErro() != null) {
+                    mostraMensagem("Erro: "+resultadoRecuperaTrabalhos.getErro());
+                }
             }
-            if (resultadoRecuperaTrabalhos.getErro() != null) {
-                mostraMensagem("Erro: "+resultadoRecuperaTrabalhos.getErro());
-            }
-        });
+        );
         trabalhoViewModel.recuperaTrabalhos();
     }
 
     private void sincronizaTrabalhos() {
-        trabalhoViewModel.getSincronizacaoResultado().observe(getViewLifecycleOwner(), resultadoSincroniza -> {
-            if (resultadoSincroniza.getErro() != null) {
-                mostraMensagem("Erro: "+resultadoSincroniza.getErro());
+        trabalhoViewModel.getSincronizacaoResultado().observe(
+            getViewLifecycleOwner(),
+            resultadoSincroniza -> {
+                if (resultadoSincroniza.getErro() != null) {
+                    mostraMensagem("Erro: "+resultadoSincroniza.getErro());
+                }
             }
-        });
+        );
         trabalhoViewModel.sincronizaTrabalhos();
     }
 
@@ -149,7 +166,10 @@ public class ListaTodosTrabalhosFragment
     }
 
     private void configuraAdapter() {
-        listaTodosTrabalhosAdapter = new ListaTodosTrabalhosAdapter(profissoesTrabalhos, getContext());
+        listaTodosTrabalhosAdapter = new ListaTodosTrabalhosAdapter(
+            profissoesTrabalhos,
+            getContext()
+        );
         meuRecycler.setAdapter(listaTodosTrabalhosAdapter);
     }
 
@@ -160,7 +180,10 @@ public class ListaTodosTrabalhosFragment
     }
 
     @Override
-    protected FragmentListaTodosTrabalhosBinding inflateBinding(LayoutInflater inflater, ViewGroup container) {
+    protected FragmentListaTodosTrabalhosBinding inflateBinding(
+        LayoutInflater inflater,
+        ViewGroup container
+    ) {
         return FragmentListaTodosTrabalhosBinding.inflate(
                 inflater,
                 container,
