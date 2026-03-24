@@ -439,7 +439,10 @@ public class TrabalhoEspecificoFragment
         if (trabalhoProducaoRecebido == null) return;
         String idPersonagem = TrabalhoEspecificoFragmentArgs.fromBundle(getArguments()).getIdPersonagem();
         if (idPersonagem == null) return;
-        TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(idPersonagem);
+        TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(
+            getContext(),
+            idPersonagem
+        );
         trabalhoProducaoViewModel = new ViewModelProvider(requireActivity(), trabalhoProducaoViewModelFactory).get(idPersonagem, TrabalhoProducaoViewModel.class);
         TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository(idPersonagem));
         trabalhoEstoqueViewModel = new ViewModelProvider(requireActivity(), trabalhoEstoqueViewModelFactory).get(idPersonagem, TrabalhoEstoqueViewModel.class);
@@ -498,7 +501,8 @@ public class TrabalhoEspecificoFragment
     }
 
     private void configuraBotaoExcluiTrabalhoEspecifico() {
-        TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory("");
+        TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory =
+            new TrabalhoProducaoViewModelFactory(getContext(),"");
         trabalhoProducaoViewModel = new ViewModelProvider(requireActivity(), trabalhoProducaoViewModelFactory).get(TrabalhoProducaoViewModel.class);
         TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository());
         trabalhoEstoqueViewModel = new ViewModelProvider(requireActivity(), trabalhoEstoqueViewModelFactory).get(TrabalhoEstoqueViewModel.class);

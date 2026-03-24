@@ -118,7 +118,10 @@ public class ConfirmaTrabalhoFragment
     }
 
     private void insereTrabalhoProducao(int quantidadeSelecionada) {
-        TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(idPersonagem);
+        TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(
+            getContext(),
+            idPersonagem
+        );
         TrabalhoProducaoViewModel trabalhoProducaoViewModel = new ViewModelProvider(this, trabalhoProducaoViewModelFactory).get(idPersonagem, TrabalhoProducaoViewModel.class);
         TrabalhoProducao novoTrabalho = defineNovoTrabalhoProducao();
         trabalhoProducaoViewModel.getInsercaoResultado().observe(getViewLifecycleOwner(), resposta -> {

@@ -369,7 +369,7 @@ public class ListaTrabalhosProducaoFragment
                 if (personagemSelecionado == null) return;
                 idPersonagem = personagemSelecionado.getId();
                 TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory =
-                    new TrabalhoProducaoViewModelFactory(idPersonagem);
+                    new TrabalhoProducaoViewModelFactory(getContext(), idPersonagem);
                 trabalhoProducaoViewModel = new ViewModelProvider(
                     this,
                     trabalhoProducaoViewModelFactory
@@ -382,6 +382,7 @@ public class ListaTrabalhosProducaoFragment
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void recuperaTrabalhosProducao() {
         trabalhos.clear();
+
         trabalhoProducaoViewModel.getTrabalhosProducao().observe(
             getViewLifecycleOwner(),
             resultadoTrabalhosRecuperados -> {
@@ -393,7 +394,10 @@ public class ListaTrabalhosProducaoFragment
                     atualizaListaTrabalho();
                 }
                 if (resultadoTrabalhosRecuperados.getErro() == null) return;
-                mostraMensagemAncorada(resultadoTrabalhosRecuperados.getErro(), binding.floatingActionButton);
+                mostraMensagemAncorada(
+                    resultadoTrabalhosRecuperados.getErro(),
+                    binding.floatingActionButton
+                );
             }
         );
         trabalhoProducaoViewModel.recuperaTrabalhosProducao();

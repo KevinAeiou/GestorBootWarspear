@@ -3,6 +3,7 @@ package com.kevin.ceep.repository;
 import static com.kevin.ceep.ui.activity.Constantes.CHAVE_LISTA_TRABALHO;
 import static com.kevin.ceep.ui.activity.Constantes.CHAVE_PRODUCAO;
 
+import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -23,7 +24,9 @@ import com.kevin.ceep.model.TrabalhoProducao;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -37,19 +40,28 @@ public class  TrabalhoProducaoRepository {
     private MutableLiveData<Resource<ArrayList<TrabalhoProducao>>> trabalhosEncontrados;
     private final Executor backgroundExecutor = Executors.newFixedThreadPool(2);
     private static volatile TrabalhoProducaoRepository instancia;
+    private static Map<String, String> mapaProfissoes = new HashMap<>();
+    private final ProfissaoRepository profissaoRepository;
 
-    public TrabalhoProducaoRepository(String idPersonagem) {
+
+    public TrabalhoProducaoRepository(Context context, String idPersonagem) {
         this.referenciaProducaoIdPersonagem = FirebaseDatabase.getInstance().getReference(CHAVE_PRODUCAO)
             .child(idPersonagem);
         this.referenciaTrabalhos = FirebaseDatabase.getInstance().getReference(CHAVE_LISTA_TRABALHO);
         this.idPersonagem = idPersonagem;
+        this.profissaoRepository = ProfissaoRepository.getInstance(context);
     }
 
-    public static synchronized TrabalhoProducaoRepository getInstance(String idPersonagem) {
+    public static synchronized TrabalhoProducaoRepository getInstance(
+        Context context,
+        String idPersonagem
+    ) {
         if (instancia == null || !instancia.idPersonagem.equals(idPersonagem)) {
             destroyInstance();
-            instancia = new TrabalhoProducaoRepository(idPersonagem);
+
+            instancia = new TrabalhoProducaoRepository(context, idPersonagem);
         }
+
         return instancia;
     }
 
@@ -171,6 +183,17 @@ public class  TrabalhoProducaoRepository {
 
     public LiveData<Resource<ArrayList<TrabalhoProducao>>> recuperaTrabalhosServidor() {
         trabalhosEncontrados = new MutableLiveData<>();
+
+        backgroundExecutor.execute(() -> {
+            mapaProfissoes = profissaoRepository.recuperaMapaProfissoesLocal();
+
+            buscarTrabalhos();
+        });
+
+        return trabalhosEncontrados;
+    }
+
+    private void buscarTrabalhos() {
         ouvinteProducaoIdPersonagem = new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
@@ -217,14 +240,19 @@ public class  TrabalhoProducaoRepository {
             }
         };
         referenciaProducaoIdPersonagem.addValueEventListener(ouvinteProducaoIdPersonagem);
-        return trabalhosEncontrados;
     }
 
     @NonNull
-    private static TrabalhoProducao defineAtributosTrabalho(TrabalhoProducao trabalhoProducao, Trabalho trabalho) {
+    private static TrabalhoProducao defineAtributosTrabalho(
+        TrabalhoProducao trabalhoProducao,
+        Trabalho trabalho
+    ) {
         trabalhoProducao.setNome(trabalho.getNome());
         trabalhoProducao.setNomeProducao(trabalho.getNomeProducao());
-        trabalhoProducao.setProfissao(trabalho.getProfissao());
+        String nomeProfissao = mapaProfissoes.get(trabalho.getProfissao());
+        trabalhoProducao.setProfissao(
+            nomeProfissao != null ? nomeProfissao : trabalho.getProfissao()
+        );
         trabalhoProducao.setRaridade(trabalho.getRaridade());
         trabalhoProducao.setTrabalhoNecessario(trabalho.getTrabalhoNecessario());
         trabalhoProducao.setNivel(trabalho.getNivel());

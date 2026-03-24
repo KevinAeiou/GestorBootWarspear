@@ -1,14 +1,9 @@
 package com.kevin.ceep.repository;
 
-import static com.kevin.ceep.db.contracts.ProfissaoDbContract.ProfissaoEntry.COLUMN_NAME_ID;
-import static com.kevin.ceep.db.contracts.ProfissaoDbContract.ProfissaoEntry.COLUMN_NAME_NOME;
-import static com.kevin.ceep.db.contracts.ProfissaoDbContract.ProfissaoEntry.TABLE_PROFISSOES;
 import static com.kevin.ceep.repository.TrabalhoProducaoRepository.destroyInstance;
 import static com.kevin.ceep.ui.activity.Constantes.CHAVE_LISTA_PROFISSOES;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -19,25 +14,25 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.kevin.ceep.db.DbHelper;
+import com.kevin.ceep.dao.ProfissaoDao;
 import com.kevin.ceep.model.Profissao;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class ProfissaoRepository {
     private static volatile ProfissaoRepository instancia;
     private final DatabaseReference referenciaListaProfissoes;
-    private final SQLiteDatabase dbModificacao;
     private ValueEventListener ouvinteListaProfissoes;
+    private final ProfissaoDao profissaoDao;
     private final Executor backGroundExecutor = Executors.newFixedThreadPool(2);
 
     public ProfissaoRepository(Context context) {
         FirebaseDatabase meuBanco= FirebaseDatabase.getInstance();
-        DbHelper dbHelper = DbHelper.getInstance(context);
-        this.dbModificacao = dbHelper.getWritableDatabase();
         this.referenciaListaProfissoes = meuBanco.getReference(CHAVE_LISTA_PROFISSOES);
+        this.profissaoDao = new ProfissaoDao(context);
     }
 
     public static synchronized ProfissaoRepository getInstance(Context context) {
@@ -78,6 +73,10 @@ public class ProfissaoRepository {
         return profissoesRecuperadas;
     }
 
+    public Map<String, String> recuperaMapaProfissoesLocal() {
+        return profissaoDao.recuperaMapaProfissoes();
+    }
+
     public LiveData<Resource<Void>> sincronizaProfissoes() {
         ArrayList<Profissao> profissoesServidor = new ArrayList<>();
         MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
@@ -97,26 +96,12 @@ public class ProfissaoRepository {
 
                 backGroundExecutor.execute(() -> {
                     try {
-                        dbModificacao.beginTransaction();
-
-                        dbModificacao.delete(TABLE_PROFISSOES, null, null);
-
-                        for (Profissao profissao : profissoesServidor) {
-                            ContentValues values = new ContentValues();
-                            values.put(COLUMN_NAME_ID, profissao.getId());
-                            values.put(COLUMN_NAME_NOME, profissao.getNome());
-
-                            dbModificacao.insert(TABLE_PROFISSOES, null, values);
-                        }
-
-                        dbModificacao.setTransactionSuccessful();
+                        profissaoDao.substituirTodas(profissoesServidor);
 
                         liveData.postValue(new Resource<>(null, null));
 
                     } catch (Exception e) {
                         liveData.postValue(new Resource<>(null, e.getMessage()));
-                    } finally {
-                        dbModificacao.endTransaction();
                     }
                 });
             }

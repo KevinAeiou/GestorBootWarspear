@@ -83,7 +83,10 @@ public class ListaProfissoesPersonagemFragment
         personagemViewModel.pegaPersonagemSelecionado().observe(getViewLifecycleOwner(), resultadoPegaPersonagem -> {
             if (resultadoPegaPersonagem == null) return;
             atualizarViewModel(resultadoPegaPersonagem.getId());
-            TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(resultadoPegaPersonagem.getId());
+            TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(
+                getContext(),
+                resultadoPegaPersonagem.getId()
+            );
             trabalhoProducaoViewModel = new ViewModelProvider(
                     this,
                     trabalhoProducaoViewModelFactory
