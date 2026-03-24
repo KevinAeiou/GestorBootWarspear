@@ -259,7 +259,7 @@ public class ListaTrabalhosInsereNovoTrabalhoFragment
 
             private int getProfissaoIndex(String idProfissao) {
                 for (int i = 0; i < listaProfissoes.size(); i++) {
-                    if (listaProfissoes.get(i).getId().equals(idProfissao)) {
+                    if (listaProfissoes.get(i).getNome().equals(idProfissao)) {
                         return i;
                     }
                 }
