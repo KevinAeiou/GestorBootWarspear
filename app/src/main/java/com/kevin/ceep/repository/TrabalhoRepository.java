@@ -1,5 +1,6 @@
 package com.kevin.ceep.repository;
 
+import static com.kevin.ceep.db.contracts.ProfissaoDbContract.ProfissaoEntry.TABLE_PROFISSOES;
 import static com.kevin.ceep.db.contracts.TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_EXPERIENCIA;
 import static com.kevin.ceep.db.contracts.TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_ID;
 import static com.kevin.ceep.db.contracts.TrabalhoDbContract.TrabalhoEntry.COLUMN_NAME_NIVEL;
@@ -154,8 +155,17 @@ public class TrabalhoRepository {
     }
     public LiveData<Resource<ArrayList<Trabalho>>> recuperaTrabalhos() {
         Cursor cursor = dbLeitura.query(
-                TABLE_TRABALHOS,
-                null,
+                TABLE_TRABALHOS + " t INNER JOIN " + TABLE_PROFISSOES + " p ON t.profissao = p.id",
+                new String[]{
+                        "t.id",
+                        "t.nome",
+                        "t.nomeProducao",
+                        "t.experiencia",
+                        "t.nivel",
+                        "p.nome as nome_profissao",
+                        "t.raridade",
+                        "t.trabalhoNecessario"
+                },
                 null,
                 null,
                 null,

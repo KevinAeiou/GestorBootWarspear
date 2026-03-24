@@ -7,7 +7,6 @@ import static com.kevin.ceep.ui.activity.Constantes.CHAVE_ID_PERSONAGEM;
 import android.animation.ObjectAnimator;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,8 +25,8 @@ import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.FragmentProfissaoBinding;
 import com.kevin.ceep.model.Profissao;
 import com.kevin.ceep.model.TrabalhoProducao;
-import com.kevin.ceep.ui.viewModel.ProfissaoViewModel;
-import com.kevin.ceep.ui.viewModel.factory.ProfissaoViewModelFactory;
+import com.kevin.ceep.ui.viewModel.ProfissaoPersonagemViewModel;
+import com.kevin.ceep.ui.viewModel.factory.ProfissaoPersonagemViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -37,7 +36,7 @@ public class ProfissaoFragment extends DialogFragment {
     private Profissao profissaoRecebido;
     private TextInputEditText edtExperiencia;
     private SwitchMaterial swtPrioridade;
-    private ProfissaoViewModel profissaoViewModel;
+    private ProfissaoPersonagemViewModel profissaoPersonagemViewModel;
     private String idPersonagem;
     private ArrayList<TrabalhoProducao> producao;
     private CircularProgressIndicator indicadorAtual, indicadorMaximo, indicadorProduzindo, indicadorProduzir;
@@ -78,8 +77,10 @@ public class ProfissaoFragment extends DialogFragment {
         txtExpProduzir = binding.txtExperienciaProduzirProfissaoFragment;
         txtExpProduzindo = binding.txtExperienciaProduzindoProfissaoFragment;
         txtExpRelativa = binding.txtExperienciaRelativaProfissaoFragment;
-        ProfissaoViewModelFactory profissaoViewModelFactory = new ProfissaoViewModelFactory(idPersonagem);
-        profissaoViewModel = new ViewModelProvider(this, profissaoViewModelFactory).get(ProfissaoViewModel.class);
+        ProfissaoPersonagemViewModelFactory profissaoPersonagemViewModelFactory = new ProfissaoPersonagemViewModelFactory(
+            idPersonagem
+        );
+        profissaoPersonagemViewModel = new ViewModelProvider(this, profissaoPersonagemViewModelFactory).get(ProfissaoPersonagemViewModel.class);
 
         txtNomePersonagem.setText(profissaoRecebido.getNome());
         edtExperiencia.setText(String.valueOf(profissaoRecebido.getExperiencia()));
@@ -160,7 +161,7 @@ public class ProfissaoFragment extends DialogFragment {
         profissaoModificada.setNome(profissaoRecebido.getNome());
         profissaoModificada.setExperiencia(Integer.parseInt(experiencia));
         profissaoModificada.setPrioridade(swtPrioridade.isChecked());
-        profissaoViewModel.modificaExperienciaProfissao(profissaoModificada);
+        profissaoPersonagemViewModel.modificaExperienciaProfissao(profissaoModificada);
     }
 
     @Override

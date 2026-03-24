@@ -1,12 +1,15 @@
 package com.kevin.ceep.ui.recyclerview.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,27 +19,27 @@ import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListenerProfis
 
 import java.util.ArrayList;
 
-public class ListaProfissaoAdapter extends RecyclerView.Adapter<
-    ListaProfissaoAdapter.ProfissaoViewHolder
+public class ListaProfissaoPersonagemAdapter extends RecyclerView.Adapter<
+    ListaProfissaoPersonagemAdapter.ProfissaoViewHolder
 > {
+
     private final ArrayList<Profissao> profissoes;
     private final Context context;
-    private static OnItemClickListenerProfissao onItemClickListener;
+    private OnItemClickListenerProfissao onItemClickListener;
 
-    public ListaProfissaoAdapter(ArrayList<Profissao> profissoes, Context context) {
-        this.profissoes = profissoes;
+    public ListaProfissaoPersonagemAdapter(Context context, ArrayList<Profissao> profissao) {
+        this.profissoes = profissao;
         this.context = context;
     }
 
     public void setOnItemClickListener(OnItemClickListenerProfissao onItemClickListener) {
-        ListaProfissaoAdapter.onItemClickListener = onItemClickListener;
+        this.onItemClickListener = onItemClickListener;
     }
-
     @NonNull
     @Override
     public ProfissaoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View viewCriada = LayoutInflater.from(context)
-            .inflate(R.layout.item_profissao, parent, false);
+                .inflate(R.layout.item_profissao_personagem,parent,false);
         return new ProfissaoViewHolder(viewCriada);
     }
 
@@ -52,9 +55,7 @@ public class ListaProfissaoAdapter extends RecyclerView.Adapter<
     }
 
     public void atualiza(ArrayList<Profissao> profissoesAtualizadas) {
-        DiffUtil.DiffResult diffResult= DiffUtil.calculateDiff(
-            new ListaProfissaoAdapter.ItemDiffCallback(profissoes, profissoesAtualizadas)
-        );
+        DiffUtil.DiffResult diffResult= DiffUtil.calculateDiff(new ItemDiffCallback(profissoes, profissoesAtualizadas));
         profissoes.clear();
         profissoes.addAll(profissoesAtualizadas);
         diffResult.dispatchUpdatesTo(this);
@@ -63,30 +64,46 @@ public class ListaProfissaoAdapter extends RecyclerView.Adapter<
     public void limpaLista() {
         atualiza(new ArrayList<>());
     }
+    public class ProfissaoViewHolder extends RecyclerView.ViewHolder {
 
-    public static class ProfissaoViewHolder extends RecyclerView.ViewHolder {
         private final TextView nome_profissao;
+        private final TextView experiencia_profissao;
+        private final TextView nivelProfissao;
+        private final CardView cardProfissao;
         private Profissao profissao;
-
         public ProfissaoViewHolder(@NonNull View itemView) {
             super(itemView);
-
-            nome_profissao = itemView.findViewById(R.id.itemNomeProfissao);
+            nome_profissao = itemView.findViewById(R.id.itemNomeProfissaoPersonagem);
+            experiencia_profissao = itemView.findViewById(R.id.itemExperienciaProfissaoPersonagem);
+            nivelProfissao = itemView.findViewById(R.id.itemNivelProfissaoPersonagem);
+            cardProfissao = itemView.findViewById(R.id.cardViewProfissaoPersonagem);
             itemView.setOnClickListener(view ->
                 onItemClickListener.onItemClick(profissao, getAdapterPosition())
             );
         }
-
         public void vincula(Profissao profissao) {
             this.profissao = profissao;
             preencheCampo(profissao);
         }
-
         private void preencheCampo(Profissao profissao) {
+            String barraExperiencia = profissao.getExperiencia() + " / " + profissao.getXpMaximo();
+            experiencia_profissao.setText(barraExperiencia);
             nome_profissao.setText(profissao.getNome());
+            nivelProfissao.setText(String.valueOf(profissao.getNivel()));
+            configuraCardPrioridade(profissao);
+        }
+
+        private void configuraCardPrioridade(Profissao profissao) {
+            int cor = profissao.isPrioridade() ?
+                ContextCompat.getColor(context, R.color.cor_background_feito) :
+                ContextCompat.getColor(context, R.color.cor_background_card);
+            GradientDrawable borda = new GradientDrawable();
+            borda.setShape(GradientDrawable.RECTANGLE);
+            borda.setCornerRadius(16f);
+            borda.setStroke(8, cor);
+            cardProfissao.setBackground(borda);
         }
     }
-
     private static class ItemDiffCallback extends DiffUtil.Callback {
         private final ArrayList<Profissao> listaAntiga;
         private final ArrayList<Profissao> listaNova;

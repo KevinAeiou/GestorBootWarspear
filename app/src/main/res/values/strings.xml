@@ -274,6 +274,7 @@
     <string name="expRelativa">Exp relativa</string>
     <string name="expProduzindo">Exp produzindo</string>
     <string name="expProduzir">Exp produzir</string>
+    <string name="profissoes">Profissões</string>
     <string-array name="substancias">
         <item>@string/stringSubstanciaComum</item>
         <item>@string/stringSubstanciaComposta</item>

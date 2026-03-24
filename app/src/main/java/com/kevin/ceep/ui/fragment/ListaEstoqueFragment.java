@@ -45,10 +45,10 @@ import com.kevin.ceep.ui.recyclerview.adapter.ListaTrabalhoEstoqueAdapter;
 import com.kevin.ceep.ui.viewModel.ComponentesVisuais;
 import com.kevin.ceep.ui.viewModel.EstadoAppViewModel;
 import com.kevin.ceep.ui.viewModel.PersonagemViewModel;
-import com.kevin.ceep.ui.viewModel.ProfissaoViewModel;
+import com.kevin.ceep.ui.viewModel.ProfissaoPersonagemViewModel;
 import com.kevin.ceep.ui.viewModel.TrabalhoEstoqueViewModel;
 import com.kevin.ceep.ui.viewModel.factory.PersonagemViewModelFactory;
-import com.kevin.ceep.ui.viewModel.factory.ProfissaoViewModelFactory;
+import com.kevin.ceep.ui.viewModel.factory.ProfissaoPersonagemViewModelFactory;
 import com.kevin.ceep.ui.viewModel.factory.TrabalhoEstoqueViewModelFactory;
 
 import java.util.ArrayList;
@@ -215,9 +215,11 @@ public class ListaEstoqueFragment
 
     private void configuraListaDeProfissoes() {
         profissoes.clear();
-        ProfissaoViewModelFactory profissaoViewModelFactory = new ProfissaoViewModelFactory(idPersonagem);
-        ProfissaoViewModel profissaoViewModel = new ViewModelProvider(this, profissaoViewModelFactory).get(idPersonagem, ProfissaoViewModel.class);
-        profissaoViewModel.getRecuperacaoProfissoes().observe(getViewLifecycleOwner(), resultadoProfissoes -> {
+        ProfissaoPersonagemViewModelFactory profissaoPersonagemViewModelFactory = new ProfissaoPersonagemViewModelFactory(
+            idPersonagem
+        );
+        ProfissaoPersonagemViewModel profissaoPersonagemViewModel = new ViewModelProvider(this, profissaoPersonagemViewModelFactory).get(idPersonagem, ProfissaoPersonagemViewModel.class);
+        profissaoPersonagemViewModel.getRecuperacaoProfissoesPersonagem().observe(getViewLifecycleOwner(), resultadoProfissoes -> {
             if (resultadoProfissoes.getErro() == null) {
                 for (Profissao profissao : resultadoProfissoes.getDado()) {
                     profissoes.add(profissao.getNome());
@@ -227,7 +229,7 @@ public class ListaEstoqueFragment
             }
             mostraMensagem(resultadoProfissoes.getErro());
         });
-        profissaoViewModel.recuperaProfissoes();
+        profissaoPersonagemViewModel.recuperaProfissoesPersonagem();
     }
 
     private void inicializaComponentes() {

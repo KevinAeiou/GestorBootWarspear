@@ -52,12 +52,12 @@ import com.kevin.ceep.repository.TrabalhoRepository;
 import com.kevin.ceep.repository.TrabalhoVendidoRepository;
 import com.kevin.ceep.ui.viewModel.ComponentesVisuais;
 import com.kevin.ceep.ui.viewModel.EstadoAppViewModel;
-import com.kevin.ceep.ui.viewModel.ProfissaoViewModel;
+import com.kevin.ceep.ui.viewModel.ProfissaoPersonagemViewModel;
 import com.kevin.ceep.ui.viewModel.TrabalhoEstoqueViewModel;
 import com.kevin.ceep.ui.viewModel.TrabalhoProducaoViewModel;
 import com.kevin.ceep.ui.viewModel.TrabalhoViewModel;
 import com.kevin.ceep.ui.viewModel.TrabalhosVendidosViewModel;
-import com.kevin.ceep.ui.viewModel.factory.ProfissaoViewModelFactory;
+import com.kevin.ceep.ui.viewModel.factory.ProfissaoPersonagemViewModelFactory;
 import com.kevin.ceep.ui.viewModel.factory.TrabalhoEstoqueViewModelFactory;
 import com.kevin.ceep.ui.viewModel.factory.TrabalhoProducaoViewModelFactory;
 import com.kevin.ceep.ui.viewModel.factory.TrabalhoViewModelFactory;
@@ -88,7 +88,7 @@ public class TrabalhoEspecificoFragment
     private TrabalhoViewModel trabalhoViewModel;
     private TrabalhoProducaoViewModel trabalhoProducaoViewModel;
     private TrabalhoEstoqueViewModel trabalhoEstoqueViewModel;
-    private ProfissaoViewModel profissaoViewModel;
+    private ProfissaoPersonagemViewModel profissaoPersonagemViewModel;
     private ArrayList<Trabalho> trabalhosNecessarios = new ArrayList<>();
     private MutableLiveData<Boolean> confirmacao;
     private NavController controlador;
@@ -311,9 +311,9 @@ public class TrabalhoEspecificoFragment
     }
 
     private void modificaProfissao(TrabalhoProducao trabalho) {
-        profissaoViewModel.getRecuperacaoProfissoes().observe(getViewLifecycleOwner(), resultadoProfissoes -> {
+        profissaoPersonagemViewModel.getRecuperacaoProfissoesPersonagem().observe(getViewLifecycleOwner(), resultadoProfissoes -> {
             if (resultadoProfissoes.getDado() != null) {
-                Profissao profissaoEncontrada = profissaoViewModel.retornaProfissaoModificada(resultadoProfissoes.getDado(), trabalho);
+                Profissao profissaoEncontrada = profissaoPersonagemViewModel.retornaProfissaoModificada(resultadoProfissoes.getDado(), trabalho);
                 if (profissaoEncontrada == null){
                     paraProgresso();
                     mostraMensagem("Profissão não encontrada: "+trabalho.getProfissao());
@@ -323,7 +323,7 @@ public class TrabalhoEspecificoFragment
                 if (profissaoEncontrada.getExperiencia() < EXPERIENCIAS.get(EXPERIENCIAS.size() - 1)) {
                     int novaExperiencia = profissaoEncontrada.getExperiencia()+ trabalho.getExperiencia();
                     profissaoEncontrada.setExperiencia(novaExperiencia);
-                    profissaoViewModel.getModificacaoResultado().observe(getViewLifecycleOwner(), resultadoModificaExperiencia -> {
+                    profissaoPersonagemViewModel.getModificacaoResultado().observe(getViewLifecycleOwner(), resultadoModificaExperiencia -> {
                         paraProgresso();
                         if (resultadoModificaExperiencia.getErro() == null){
                             if (Boolean.TRUE.equals(confirmacao.getValue())) {
@@ -335,7 +335,7 @@ public class TrabalhoEspecificoFragment
                         confirmacao.setValue(false);
                         mostraMensagem("Erro: "+resultadoModificaExperiencia.getErro());
                     });
-                    profissaoViewModel.modificaExperienciaProfissao(profissaoEncontrada);
+                    profissaoPersonagemViewModel.modificaExperienciaProfissao(profissaoEncontrada);
                     return;
                 }
                 voltaParaListaTrabalhosProducao();
@@ -344,7 +344,7 @@ public class TrabalhoEspecificoFragment
             paraProgresso();
             mostraMensagem("Erro: "+resultadoProfissoes.getErro());
         });
-        profissaoViewModel.recuperaProfissoes();
+        profissaoPersonagemViewModel.recuperaProfissoesPersonagem();
     }
 
     private void modificaEstoque(TrabalhoProducao trabalhoModificado) {
@@ -443,8 +443,10 @@ public class TrabalhoEspecificoFragment
         trabalhoProducaoViewModel = new ViewModelProvider(requireActivity(), trabalhoProducaoViewModelFactory).get(idPersonagem, TrabalhoProducaoViewModel.class);
         TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository(idPersonagem));
         trabalhoEstoqueViewModel = new ViewModelProvider(requireActivity(), trabalhoEstoqueViewModelFactory).get(idPersonagem, TrabalhoEstoqueViewModel.class);
-        ProfissaoViewModelFactory profissaoViewModelFactory = new ProfissaoViewModelFactory(idPersonagem);
-        profissaoViewModel = new ViewModelProvider(requireActivity(), profissaoViewModelFactory).get(idPersonagem, ProfissaoViewModel.class);
+        ProfissaoPersonagemViewModelFactory profissaoPersonagemViewModelFactory = new ProfissaoPersonagemViewModelFactory(
+            idPersonagem
+        );
+        profissaoPersonagemViewModel = new ViewModelProvider(requireActivity(), profissaoPersonagemViewModelFactory).get(idPersonagem, ProfissaoPersonagemViewModel.class);
         configuraComponentesAlteraTrabalhoProducao();
     }
 

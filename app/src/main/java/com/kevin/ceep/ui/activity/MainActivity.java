@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void configuraAppBar() {
-        appBarConfiguration = new AppBarConfiguration.Builder(R.id.listaTrabalhosProducao, R.id.listaTrabalhosEstoque, R.id.listaTrabalhosVendidos, R.id.listaProfissoes).setOpenableLayout(drawerLayout).build();
+        appBarConfiguration = new AppBarConfiguration.Builder(R.id.listaTrabalhosProducao, R.id.listaTrabalhosEstoque, R.id.listaTrabalhosVendidos, R.id.listaProfissoesPersonagem).setOpenableLayout(drawerLayout).build();
         NavigationUI.setupWithNavController(toolbar, controlador, appBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, controlador);
         NavigationUI.setupWithNavController(binding.navegacaoInferior, controlador);
@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.listaTrabalhosVendidos:
                     controlador.navigate(R.id.vai_para_lista_trabalhos_vendidos);
                     break;
-                case R.id.listaProfissoes:
+                case R.id.listaProfissoesPersonagem:
                     controlador.navigate(R.id.vai_para_lista_profissoes);
                     break;
             }

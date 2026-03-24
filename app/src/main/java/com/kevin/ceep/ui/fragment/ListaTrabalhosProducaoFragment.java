@@ -8,7 +8,6 @@ import static com.kevin.ceep.utilitario.Utilitario.stringContemString;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -166,17 +165,20 @@ public class ListaTrabalhosProducaoFragment
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void filtroLista() {
         if (textoFiltro.isEmpty()) return;
-        trabalhosFiltrados = (ArrayList<TrabalhoProducao>) trabalhosFiltrados.stream().filter(trabalho -> stringContemString(trabalho.getNome(), textoFiltro)).collect(Collectors.toList());
+        trabalhosFiltrados = (ArrayList<TrabalhoProducao>) trabalhosFiltrados.stream().filter(
+            trabalho -> stringContemString(trabalho.getNome(), textoFiltro)
+        ).collect(Collectors.toList());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void configuraChipSelecionado() {
-        grupoChipsEstados.setOnCheckedStateChangeListener((group, checkedId) -> filtraListaPorEstado(checkedId.get(0)));
+        grupoChipsEstados.setOnCheckedStateChangeListener((
+            group, checkedId
+        ) -> filtraListaPorEstado(checkedId.get(0)));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void filtraListaPorEstado(int checkedId) {
-        Log.d("trabalhoProducao", "filtraListaPorEstado: " + checkedId);
         int estado = -1;
         switch (checkedId){
             case (R.id.chipFiltroTodos):
@@ -204,27 +206,27 @@ public class ListaTrabalhosProducaoFragment
         trabalhoAdapter.atualiza(trabalhosFiltrados);
     }
     private void filtroListaChip(int estado) {
-        Log.d("trabalhoProducao", "Estado: " + estado);
         trabalhosFiltrados.clear();
-        Log.d("trabalhoProducao", "Limpou a lista de trabalhos filtrados");
         if (estado == -1){
-            Log.d("trabalhoProducao", "Estado é igual a -1, clonando lista de trabalhos");
             trabalhosFiltrados = (ArrayList<TrabalhoProducao>) trabalhos.clone();
             return;
         }
-        Log.d("trabalhoProducao", "Tamanho da lista trabalhos: " + trabalhos.size());
         for (TrabalhoProducao item : trabalhos) {
             if (item.getEstado() == estado) {
-                Log.d("trabalhoProducao", "Item inserido na lista filtrada: " + item.getId());
                 trabalhosFiltrados.add(item);
-                Log.d("trabalhoProducao", "Tamanho da lista filtrada: " + trabalhosFiltrados.size());
             }
         }
     }
     private void configuraDeslizeItem() {
-        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT) {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(
+            0, ItemTouchHelper.RIGHT
+        ) {
             @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            public boolean onMove(
+                @NonNull RecyclerView recyclerView,
+                @NonNull RecyclerView.ViewHolder viewHolder,
+                @NonNull RecyclerView.ViewHolder target
+            ) {
                 return false;
             }
 
@@ -236,7 +238,11 @@ public class ListaTrabalhosProducaoFragment
                     TrabalhoProducao trabalhoremovido = trabalhosFiltrados.get(itemPosicao);
                     trabalhoAdapter.remove(itemPosicao);
                     trabalhosFiltrados.remove(trabalhoremovido);
-                    Snackbar snackbarDesfazer = Snackbar.make(binding.getRoot(), trabalhoremovido.getNome()+ " excluido", Snackbar.LENGTH_LONG);
+                    Snackbar snackbarDesfazer = Snackbar.make(
+                        binding.getRoot(),
+                        trabalhoremovido.getNome()+ " excluido",
+                        Snackbar.LENGTH_LONG
+                    );
                     snackbarDesfazer.addCallback(new Snackbar.Callback(){
                         @Override
                         public void onDismissed(Snackbar transientBottomBar, int event) {
@@ -265,28 +271,44 @@ public class ListaTrabalhosProducaoFragment
     }
 
     private void removeTrabalhoProducao(TrabalhoProducao trabalho) {
-        trabalhoProducaoViewModel.getRemocaoResultado().observe(getViewLifecycleOwner(), resultadoRemoveTrabalho -> {
-            if (resultadoRemoveTrabalho.getErro() == null) return;
-            mostraMensagemAncorada("Erro: "+ resultadoRemoveTrabalho.getErro(), binding.floatingActionButton);
-        });
+        trabalhoProducaoViewModel.getRemocaoResultado().observe(
+            getViewLifecycleOwner(),
+            resultadoRemoveTrabalho -> {
+                if (resultadoRemoveTrabalho.getErro() == null) return;
+                mostraMensagemAncorada(
+                    "Erro: "+ resultadoRemoveTrabalho.getErro(),
+                    binding.floatingActionButton);
+            }
+        );
         trabalhoProducaoViewModel.removeTrabalhoProducao(trabalho);
     }
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void configuraSwipeRefreshLayout() {
-        swipeRefreshLayout.setOnRefreshListener(() -> personagemViewModel.pegaPersonagemSelecionado().observe(getViewLifecycleOwner(), personagemSelecionado -> {
-            if (personagemSelecionado == null) return;
-            idPersonagem = personagemSelecionado.getId();
-            recuperaTrabalhosProducao();
-        }));
+        swipeRefreshLayout.setOnRefreshListener(() ->
+            personagemViewModel.pegaPersonagemSelecionado().observe(
+                getViewLifecycleOwner(),
+                personagemSelecionado -> {
+                    if (personagemSelecionado == null) return;
+                    idPersonagem = personagemSelecionado.getId();
+                    recuperaTrabalhosProducao();
+                }
+            )
+        );
     }
     private void configuraBotaoInsereTrabalho() {
         binding.floatingActionButton.setOnClickListener(v -> {
-            personagemViewModel.pegaPersonagemSelecionado().observe(getViewLifecycleOwner(), personagemSelecionado -> {
-                if (personagemSelecionado == null) return;
-                idPersonagem = personagemSelecionado.getId();
-            });
+            personagemViewModel.pegaPersonagemSelecionado().observe(
+                getViewLifecycleOwner(),
+                personagemSelecionado -> {
+                    if (personagemSelecionado == null) return;
+                    idPersonagem = personagemSelecionado.getId();
+                }
+            );
             if (idPersonagem.isEmpty()) {
-                mostraMensagemAncorada("Selecione um personagem para continuar", binding.floatingActionButton);
+                mostraMensagemAncorada(
+                    "Selecione um personagem para continuar",
+                    binding.floatingActionButton
+                );
                 return;
             }
             VaiParaListaTrabalhos acao = ListaTrabalhosProducaoFragmentDirections.vaiParaListaTrabalhos(idPersonagem);
@@ -306,8 +328,13 @@ public class ListaTrabalhosProducaoFragment
         grupoChipsEstados = binding.chipGrupId;
         iconeListaVazia = binding.iconeVazia;
         txtListaVazia = binding.txtListaVazia;
-        PersonagemViewModelFactory personagemViewModelFactory = new PersonagemViewModelFactory(PersonagemRepository.getInstance());
-        personagemViewModel = new ViewModelProvider(requireActivity(), personagemViewModelFactory).get(PersonagemViewModel.class);
+        PersonagemViewModelFactory personagemViewModelFactory = new PersonagemViewModelFactory(
+            PersonagemRepository.getInstance()
+        );
+        personagemViewModel = new ViewModelProvider(
+            requireActivity(),
+            personagemViewModelFactory
+        ).get(PersonagemViewModel.class);
         estadoAppViewModel = new ViewModelProvider(requireActivity()).get(EstadoAppViewModel.class);
     }
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -336,29 +363,39 @@ public class ListaTrabalhosProducaoFragment
     @Override
     public void onResume() {
         super.onResume();
-        personagemViewModel.pegaPersonagemSelecionado().observe(getViewLifecycleOwner(), personagemSelecionado -> {
-            if (personagemSelecionado == null) return;
-            idPersonagem = personagemSelecionado.getId();
-            TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory = new TrabalhoProducaoViewModelFactory(idPersonagem);
-            trabalhoProducaoViewModel = new ViewModelProvider(this, trabalhoProducaoViewModelFactory).get(idPersonagem, TrabalhoProducaoViewModel.class);
-            recuperaTrabalhosProducao();
-        });
+        personagemViewModel.pegaPersonagemSelecionado().observe(
+            getViewLifecycleOwner(),
+            personagemSelecionado -> {
+                if (personagemSelecionado == null) return;
+                idPersonagem = personagemSelecionado.getId();
+                TrabalhoProducaoViewModelFactory trabalhoProducaoViewModelFactory =
+                    new TrabalhoProducaoViewModelFactory(idPersonagem);
+                trabalhoProducaoViewModel = new ViewModelProvider(
+                    this,
+                    trabalhoProducaoViewModelFactory
+                ).get(idPersonagem, TrabalhoProducaoViewModel.class);
+                recuperaTrabalhosProducao();
+            }
+        );
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void recuperaTrabalhosProducao() {
         trabalhos.clear();
-        trabalhoProducaoViewModel.getTrabalhosProducao().observe(getViewLifecycleOwner(), resultadoTrabalhosRecuperados -> {
-            if (resultadoTrabalhosRecuperados.getDado() != null) {
-                trabalhos = resultadoTrabalhosRecuperados.getDado();
-                trabalhosFiltrados= (ArrayList<TrabalhoProducao>) trabalhos.clone();
-                indicadorProgresso.setVisibility(View.GONE);
-                swipeRefreshLayout.setRefreshing(false);
-                atualizaListaTrabalho();
+        trabalhoProducaoViewModel.getTrabalhosProducao().observe(
+            getViewLifecycleOwner(),
+            resultadoTrabalhosRecuperados -> {
+                if (resultadoTrabalhosRecuperados.getDado() != null) {
+                    trabalhos = resultadoTrabalhosRecuperados.getDado();
+                    trabalhosFiltrados= (ArrayList<TrabalhoProducao>) trabalhos.clone();
+                    indicadorProgresso.setVisibility(View.GONE);
+                    swipeRefreshLayout.setRefreshing(false);
+                    atualizaListaTrabalho();
+                }
+                if (resultadoTrabalhosRecuperados.getErro() == null) return;
+                mostraMensagemAncorada(resultadoTrabalhosRecuperados.getErro(), binding.floatingActionButton);
             }
-            if (resultadoTrabalhosRecuperados.getErro() == null) return;
-            mostraMensagemAncorada(resultadoTrabalhosRecuperados.getErro(), binding.floatingActionButton);
-        });
+        );
         trabalhoProducaoViewModel.recuperaTrabalhosProducao();
     }
 

@@ -50,13 +50,15 @@ import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 import com.kevin.ceep.ui.viewModel.ComponentesVisuais;
 import com.kevin.ceep.ui.viewModel.EstadoAppViewModel;
 import com.kevin.ceep.ui.viewModel.ListaNovaProducaoViewModel;
-import com.kevin.ceep.ui.viewModel.ProfissaoViewModel;
+import com.kevin.ceep.ui.viewModel.ProfissaoPersonagemViewModel;
 import com.kevin.ceep.ui.viewModel.TrabalhoEstoqueViewModel;
 import com.kevin.ceep.ui.viewModel.factory.ListaNovaProducaoViewModelFactory;
-import com.kevin.ceep.ui.viewModel.factory.ProfissaoViewModelFactory;
+import com.kevin.ceep.ui.viewModel.factory.ProfissaoPersonagemViewModelFactory;
 import com.kevin.ceep.ui.viewModel.factory.TrabalhoEstoqueViewModelFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,14 +70,17 @@ public class ListaTrabalhosInsereNovoTrabalhoFragment
     private ListaTrabalhoEspecificoNovaProducaoAdapter listaTrabalhoEspecificoAdapter;
     private String idPersonagem, textoFiltro;
     private ChipGroup grupoChipsProfissoes;
-    private ArrayList<String> listaProfissoes;
+    private ArrayList<Profissao> listaProfissoes;
     private ArrayList<Trabalho> todosTrabalhos, listaTrabalhosFiltrada;
     private ListaNovaProducaoViewModel novaProducaoViewModel;
     private TextView txtListaVazia;
     private ImageView iconeListaVazia;
     private int codigoRequisicao = CODIGO_REQUISICAO_INVALIDA;
     @Override
-    protected FragmentListaTrabalhosInsereNovoTrabalhoBinding inflateBinding(LayoutInflater inflater, ViewGroup container) {
+    protected FragmentListaTrabalhosInsereNovoTrabalhoBinding inflateBinding(
+        LayoutInflater inflater,
+        ViewGroup container
+    ) {
         return FragmentListaTrabalhosInsereNovoTrabalhoBinding.inflate(
                 inflater,
                 container,
@@ -85,7 +90,11 @@ public class ListaTrabalhosInsereNovoTrabalhoFragment
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        requireActivity().addMenuProvider(this, getViewLifecycleOwner(), androidx.lifecycle.Lifecycle.State.RESUMED);
+        requireActivity().addMenuProvider(
+            this,
+            getViewLifecycleOwner(),
+            androidx.lifecycle.Lifecycle.State.RESUMED
+        );
         configuraComponentesVisuais();
         inicializaComponentes();
         pegaTodosTrabalhos();
@@ -95,7 +104,9 @@ public class ListaTrabalhosInsereNovoTrabalhoFragment
     }
 
     private void configuraComponentesVisuais() {
-        EstadoAppViewModel estadoAppViewModel = new ViewModelProvider(requireActivity()).get(EstadoAppViewModel.class);
+        EstadoAppViewModel estadoAppViewModel = new ViewModelProvider(
+            requireActivity()
+        ).get(EstadoAppViewModel.class);
         ComponentesVisuais componentesVisuais = new ComponentesVisuais();
         componentesVisuais.appBar = true;
         componentesVisuais.itemMenuBusca = true;
@@ -152,31 +163,41 @@ public class ListaTrabalhosInsereNovoTrabalhoFragment
 
     private void configuraChipSelecionado() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            grupoChipsProfissoes.setOnCheckedStateChangeListener((grupo, listaIds) -> filtraTrabalhoPorProfissaoSelecionada(listaIds));
+            grupoChipsProfissoes.setOnCheckedStateChangeListener(
+                (grupo, listaIds) -> filtraTrabalhoPorProfissaoSelecionada(listaIds)
+            );
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void filtraTrabalhoPorProfissaoSelecionada(List<Integer> listaIds) {
+    private void filtraTrabalhoPorProfissaoSelecionada(List<Integer> lista_ids) {
         listaTrabalhosFiltrada.clear();
-        List<String> profissoesSelecionadas = defineListaDeProfissoesSelecionadas(listaIds);
-        if (profissoesSelecionadas.isEmpty()) {
+
+        List<Profissao> profissoes_selecionadas = defineListaDeProfissoesSelecionadas(lista_ids);
+
+        meuRecycler.smoothScrollToPosition(0);
+
+        if (profissoes_selecionadas.isEmpty()) {
             listaTrabalhosFiltrada = (ArrayList<Trabalho>) todosTrabalhos.clone();
+
         } else {
             ArrayList<Trabalho> listaProfissaoEspecifica;
-            for (String profissao : profissoesSelecionadas) {
+
+            for (Profissao profissao : profissoes_selecionadas) {
                 listaProfissaoEspecifica = (ArrayList<Trabalho>) todosTrabalhos.stream().filter(
-                        trabalho -> stringContemString(trabalho.getProfissao(), profissao))
-                        .collect(Collectors.toList());
+                    trabalho -> stringContemString(trabalho.getProfissao(), profissao.getNome()))
+                    .collect(Collectors.toList());
                 listaTrabalhosFiltrada.addAll(listaProfissaoEspecifica);
             }
         }
+
         filtroLista();
     }
 
     @NonNull
-    private List<String> defineListaDeProfissoesSelecionadas(List<Integer> listaIds) {
-        List<String> profissoesSelecionadas = new ArrayList<>();
+    private List<Profissao> defineListaDeProfissoesSelecionadas(List<Integer> listaIds) {
+        List<Profissao> profissoesSelecionadas = new ArrayList<>();
+        
         for (int id : listaIds) {
             profissoesSelecionadas.add(listaProfissoes.get(id));
         }
@@ -185,14 +206,17 @@ public class ListaTrabalhosInsereNovoTrabalhoFragment
 
     private void configuraGrupoChipsProfissoes() {
         grupoChipsProfissoes.removeAllViews();
-        for (String profissao : listaProfissoes) {
+        for (Profissao profissao : listaProfissoes) {
             adicionaChip(profissao);
         }
     }
 
-    private void adicionaChip(String profissao) {
-        Chip novoChip= new Chip(new ContextThemeWrapper(requireContext(), R.style.estiloChip), null, 0);
-        novoChip.setText(profissao);
+    private void adicionaChip(Profissao profissao) {
+        Chip novoChip= new Chip(new ContextThemeWrapper(
+            requireContext(),
+            R.style.estiloChip
+        ), null, 0);
+        novoChip.setText(profissao.getNome());
         novoChip.setId(listaProfissoes.indexOf(profissao));
         novoChip.setCheckable(true);
         grupoChipsProfissoes.addView(novoChip);
@@ -200,28 +224,62 @@ public class ListaTrabalhosInsereNovoTrabalhoFragment
 
     private void configuraListaDeProfissoes() {
         listaProfissoes.clear();
-        ProfissaoViewModelFactory profissaoViewModelFactory = new ProfissaoViewModelFactory(idPersonagem);
-        ProfissaoViewModel profissaoViewModel = new ViewModelProvider(this, profissaoViewModelFactory).get(ProfissaoViewModel.class);
-        profissaoViewModel.getRecuperacaoProfissoes().observe(getViewLifecycleOwner(), resultadoProfissoes -> {
-            if (resultadoProfissoes.getErro() == null) {
-                for (Profissao profissao : resultadoProfissoes.getDado()) {
-                    listaProfissoes.add(profissao.getNome());
+        ProfissaoPersonagemViewModelFactory profissaoPersonagemViewModelFactory = new ProfissaoPersonagemViewModelFactory(
+            idPersonagem
+        );
+        ProfissaoPersonagemViewModel profissaoPersonagemViewModel = new ViewModelProvider(
+            this,
+                profissaoPersonagemViewModelFactory
+        ).get(ProfissaoPersonagemViewModel.class);
+        profissaoPersonagemViewModel.getRecuperacaoProfissoesPersonagem().observe(
+            getViewLifecycleOwner(),
+            resultadoProfissoes -> {
+                if (resultadoProfissoes.getErro() == null) {
+                    listaProfissoes.addAll(resultadoProfissoes.getDado());
+                    configuraGrupoChipsProfissoes();
+                    ordenaTrabalhosPorProfissao();
+                    return;
                 }
-                configuraGrupoChipsProfissoes();
-                return;
+                mostraMensagem(resultadoProfissoes.getErro());
             }
-            mostraMensagem(resultadoProfissoes.getErro());
+        );
+        profissaoPersonagemViewModel.recuperaProfissoesPersonagem();
+    }
+
+    private void ordenaTrabalhosPorProfissao() {
+        if (todosTrabalhos.isEmpty() || listaProfissoes.isEmpty()) return;
+
+        Collections.sort(todosTrabalhos, new Comparator<Trabalho>() {
+            @Override
+            public int compare(Trabalho t1, Trabalho t2) {
+                int index1 = getProfissaoIndex(t1.getProfissao());
+                int index2 = getProfissaoIndex(t2.getProfissao());
+                return Integer.compare(index1, index2);
+            }
+
+            private int getProfissaoIndex(String idProfissao) {
+                for (int i = 0; i < listaProfissoes.size(); i++) {
+                    if (listaProfissoes.get(i).getId().equals(idProfissao)) {
+                        return i;
+                    }
+                }
+                return Integer.MAX_VALUE;
+            }
         });
-        profissaoViewModel.recuperaProfissoes();
+        
+        listaTrabalhosFiltrada = (ArrayList<Trabalho>) todosTrabalhos.clone();
+        if (listaTrabalhoEspecificoAdapter != null) {
+            listaTrabalhoEspecificoAdapter.atualizaLista(listaTrabalhosFiltrada);
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void filtroLista() {
         if (!textoFiltro.isEmpty()) {
             ArrayList<Trabalho> listaFiltrada =
-                    (ArrayList<Trabalho>) listaTrabalhosFiltrada.stream().filter(
-                            trabalho -> stringContemString(trabalho.getNome(), textoFiltro))
-                            .collect(Collectors.toList());
+                (ArrayList<Trabalho>) listaTrabalhosFiltrada.stream().filter(
+                    trabalho -> stringContemString(trabalho.getNome(), textoFiltro))
+                    .collect(Collectors.toList());
             atualizaVisibilidadeListaVazia(listaFiltrada.isEmpty());
             listaTrabalhoEspecificoAdapter.atualizaLista(listaFiltrada);
         } else {
@@ -239,8 +297,12 @@ public class ListaTrabalhosInsereNovoTrabalhoFragment
     }
 
     private void recebeDadosIntent() {
-        idPersonagem = ListaTrabalhosInsereNovoTrabalhoFragmentArgs.fromBundle(getArguments()).getIdPersonagem();
-        codigoRequisicao = ListaTrabalhosInsereNovoTrabalhoFragmentArgs.fromBundle(getArguments()).getRequisicao();
+        idPersonagem = ListaTrabalhosInsereNovoTrabalhoFragmentArgs.fromBundle(
+            getArguments()
+        ).getIdPersonagem();
+        codigoRequisicao = ListaTrabalhosInsereNovoTrabalhoFragmentArgs.fromBundle(
+            getArguments()
+        ).getRequisicao();
     }
 
     private void configuraMeuRecycler() {
@@ -251,7 +313,10 @@ public class ListaTrabalhosInsereNovoTrabalhoFragment
 
     private void configuraAdapter() {
         if (listaTrabalhoEspecificoAdapter == null) {
-            listaTrabalhoEspecificoAdapter = new ListaTrabalhoEspecificoNovaProducaoAdapter(getContext(), todosTrabalhos);
+            listaTrabalhoEspecificoAdapter = new ListaTrabalhoEspecificoNovaProducaoAdapter(
+                getContext(),
+                todosTrabalhos
+            );
             meuRecycler.setAdapter(listaTrabalhoEspecificoAdapter);
         }
         listaTrabalhoEspecificoAdapter.setOnItemClickListener(new OnItemClickListener() {
@@ -273,39 +338,52 @@ public class ListaTrabalhosInsereNovoTrabalhoFragment
                 vaiParaConfirmaTrabalhoFragment(trabalho);
                 break;
             case CODIGO_REQUISICAO_INSERE_TRABALHO_ESTOQUE:
-                TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository(idPersonagem));
-                TrabalhoEstoqueViewModel trabalhoEstoqueViewModel = new ViewModelProvider(getViewModelStore(), trabalhoEstoqueViewModelFactory).get(TrabalhoEstoqueViewModel.class);
+                TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory =
+                    new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository(idPersonagem));
+                TrabalhoEstoqueViewModel trabalhoEstoqueViewModel =
+                    new ViewModelProvider(
+                        getViewModelStore(),
+                        trabalhoEstoqueViewModelFactory
+                    ).get(TrabalhoEstoqueViewModel.class);
                 TrabalhoEstoque trabalhoEstoque = new TrabalhoEstoque();
                 trabalhoEstoque.setIdTrabalho(trabalho.getId());
                 trabalhoEstoque.setQuantidade(1);
-                trabalhoEstoqueViewModel.getTrabalhoPorId().observe(getViewLifecycleOwner(), resultadoTrabalhoEncontrado -> {
-                    if (resultadoTrabalhoEncontrado.getErro() == null) {
-                        TrabalhoEstoque trabalhoEncontrado = resultadoTrabalhoEncontrado.getDado();
-                        if (trabalhoEncontrado == null) {
-                            trabalhoEstoqueViewModel.getInsercaoResultado().observe(getViewLifecycleOwner(), resultadoInsereTrabalho -> {
-                                if (resultadoInsereTrabalho.getErro() != null) {
-                                    mostraMensagem(resultadoInsereTrabalho.getErro());
-                                    return;
-                                }
-                                voltaParaListaEstoqueFragment();
-                            });
-                            trabalhoEstoqueViewModel.insereTrabalhoEstoque(trabalhoEstoque);
-                            return;
-                        }
-                        trabalhoEncontrado.setQuantidade(trabalhoEncontrado.getQuantidade() + 1);
-                        trabalhoEstoqueViewModel.getModificacaoResultado().observe(
-                                getViewLifecycleOwner(),
-                                resultadoInsereTrabalho -> {
-                                    if (resultadoInsereTrabalho.getErro() != null) {
-                                        mostraMensagem(resultadoInsereTrabalho.getErro());
-                                        return;
+                trabalhoEstoqueViewModel.getTrabalhoPorId().observe(
+                    getViewLifecycleOwner(),
+                    resultadoTrabalhoEncontrado -> {
+                        if (resultadoTrabalhoEncontrado.getErro() == null) {
+                            TrabalhoEstoque trabalhoEncontrado = resultadoTrabalhoEncontrado.getDado();
+                            if (trabalhoEncontrado == null) {
+                                trabalhoEstoqueViewModel.getInsercaoResultado().observe(
+                                    getViewLifecycleOwner(),
+                                    resultadoInsereTrabalho -> {
+                                        if (resultadoInsereTrabalho.getErro() != null) {
+                                            mostraMensagem(resultadoInsereTrabalho.getErro());
+                                            return;
+                                        }
+                                        voltaParaListaEstoqueFragment();
                                     }
-                                    voltaParaListaEstoqueFragment();
-                                });
-                        trabalhoEstoqueViewModel.modificaTrabalhoEstoque(trabalhoEncontrado);
+                                );
+                                trabalhoEstoqueViewModel.insereTrabalhoEstoque(trabalhoEstoque);
+                                return;
+                            }
+                            trabalhoEncontrado.setQuantidade(trabalhoEncontrado.getQuantidade() + 1);
+                            trabalhoEstoqueViewModel.getModificacaoResultado().observe(
+                                    getViewLifecycleOwner(),
+                                    resultadoInsereTrabalho -> {
+                                        if (resultadoInsereTrabalho.getErro() != null) {
+                                            mostraMensagem(resultadoInsereTrabalho.getErro());
+                                            return;
+                                        }
+                                        voltaParaListaEstoqueFragment();
+                                    });
+                            trabalhoEstoqueViewModel.modificaTrabalhoEstoque(trabalhoEncontrado);
+                        }
                     }
-                });
-                trabalhoEstoqueViewModel.recuperaTrabalhoEstoquePorIdTrabalho(trabalhoEstoque.getIdTrabalho());
+                );
+                trabalhoEstoqueViewModel.recuperaTrabalhoEstoquePorIdTrabalho(
+                    trabalhoEstoque.getIdTrabalho()
+                );
                 break;
             case CODIGO_REQUISICAO_INSERE_TRABALHO_VENDAS:
                 vaiParaDetalhesVenda(trabalho);
@@ -316,7 +394,11 @@ public class ListaTrabalhosInsereNovoTrabalhoFragment
     private void vaiParaDetalhesVenda(Trabalho trabalho) {
         TrabalhoVendido trabalhoVendido = new TrabalhoVendido();
         trabalhoVendido.setIdTrabalho(trabalho.getId());
-        VaiDeTrabalhosParaDetalhesVenda acao = ListaTrabalhosInsereNovoTrabalhoFragmentDirections.vaiDeTrabalhosParaDetalhesVenda(trabalhoVendido, idPersonagem);
+        VaiDeTrabalhosParaDetalhesVenda acao =
+            ListaTrabalhosInsereNovoTrabalhoFragmentDirections.vaiDeTrabalhosParaDetalhesVenda(
+                trabalhoVendido,
+                idPersonagem
+            );
         acao.setCodigoRequisicao(codigoRequisicao);
         Navigation.findNavController(binding.getRoot()).navigate(acao);
     }
@@ -328,7 +410,10 @@ public class ListaTrabalhosInsereNovoTrabalhoFragment
 
     private void vaiParaConfirmaTrabalhoFragment(Trabalho trabalho) {
         try {
-            VaiParaConfirmaTrabalho acao = ListaTrabalhosInsereNovoTrabalhoFragmentDirections.vaiParaConfirmaTrabalho(idPersonagem);
+            VaiParaConfirmaTrabalho acao =
+                ListaTrabalhosInsereNovoTrabalhoFragmentDirections.vaiParaConfirmaTrabalho(
+                    idPersonagem
+                );
             acao.setTrabalho(trabalho);
             Navigation.findNavController(requireView()).navigate(acao);
         } catch (IllegalArgumentException e) {
@@ -343,27 +428,33 @@ public class ListaTrabalhosInsereNovoTrabalhoFragment
         listaProfissoes = new ArrayList<>();
         todosTrabalhos = new ArrayList<>();
         listaTrabalhosFiltrada = new ArrayList<>();
-        ListaNovaProducaoViewModelFactory listaNovaProducaoViewModelFactory = new ListaNovaProducaoViewModelFactory(TrabalhoRepository.getInstancia(getContext()));
-        novaProducaoViewModel = new ViewModelProvider(this, listaNovaProducaoViewModelFactory).get(ListaNovaProducaoViewModel.class);
+        ListaNovaProducaoViewModelFactory listaNovaProducaoViewModelFactory =
+            new ListaNovaProducaoViewModelFactory(
+                TrabalhoRepository.getInstancia(getContext())
+            );
+        novaProducaoViewModel = new ViewModelProvider(
+            this,
+            listaNovaProducaoViewModelFactory
+        ).get(ListaNovaProducaoViewModel.class);
         iconeListaVazia = binding.iconeVazia;
         txtListaVazia = binding.txtListaVazia;
         textoFiltro = "";
     }
 
     private void pegaTodosTrabalhos() {
-        novaProducaoViewModel.pegaTodosTrabalhos().observe(getViewLifecycleOwner(), resultadoPegaTodosTrabalhos -> {
-            if (resultadoPegaTodosTrabalhos.getDado() != null) {
-                todosTrabalhos = resultadoPegaTodosTrabalhos.getDado();
-                listaTrabalhosFiltrada = (ArrayList<Trabalho>) todosTrabalhos.clone();
-                indicadorProgresso.setVisibility(GONE);
-                atualizaVisibilidadeListaVazia(listaTrabalhosFiltrada.isEmpty());
-                configuraListaDeProfissoes();
-                listaTrabalhoEspecificoAdapter.atualizaLista(listaTrabalhosFiltrada);
+        novaProducaoViewModel.pegaTodosTrabalhos().observe(
+            getViewLifecycleOwner(),
+            resultadoPegaTodosTrabalhos -> {
+                if (resultadoPegaTodosTrabalhos.getDado() != null) {
+                    todosTrabalhos = resultadoPegaTodosTrabalhos.getDado();
+                    indicadorProgresso.setVisibility(GONE);
+                    configuraListaDeProfissoes();
+                }
+                if (resultadoPegaTodosTrabalhos.getErro() != null) {
+                    mostraMensagem(resultadoPegaTodosTrabalhos.getErro());
+                }
             }
-            if (resultadoPegaTodosTrabalhos.getErro() != null) {
-                mostraMensagem(resultadoPegaTodosTrabalhos.getErro());
-            }
-        });
+        );
     }
     @Override
     public void onDestroyView() {

@@ -27,12 +27,12 @@
 
     <action
         android:id="@+id/vai_para_lista_profissoes"
-        app:destination="@+id/listaProfissoes"
+        app:destination="@+id/listaProfissoesPersonagem"
         app:enterAnim="@animator/nav_default_enter_anim"
         app:exitAnim="@animator/nav_default_exit_anim"
         app:popEnterAnim="@animator/nav_default_pop_enter_anim"
         app:popExitAnim="@animator/nav_default_pop_exit_anim"
-        app:popUpTo="@id/listaProfissoes"
+        app:popUpTo="@id/listaProfissoesPersonagem"
         app:popUpToInclusive="true" />
 
     <action
@@ -55,10 +55,10 @@
         app:popUpTo="@id/nav_graph"
         app:popUpToInclusive="true" />
     <fragment
-        android:id="@+id/listaProfissoes"
-        android:name="com.kevin.ceep.ui.fragment.ListaProfissoesFragment"
+        android:id="@+id/listaProfissoesPersonagem"
+        android:name="com.kevin.ceep.ui.fragment.ListaProfissoesPersonagemFragment"
         android:label="@string/stringProfissoes"
-        tools:layout="@layout/fragment_lista_profissoes" />
+        tools:layout="@layout/fragment_lista_profissoes_personagem" />
     <fragment
         android:id="@+id/listaTrabalhosEstoque"
         android:name="com.kevin.ceep.ui.fragment.ListaEstoqueFragment"
@@ -299,4 +299,9 @@
         android:name="com.kevin.ceep.ui.fragment.RecursosFragment"
         android:label="@string/stringRecursos"
         tools:layout="@layout/fragment_recursos" />
+    <fragment
+        android:id="@+id/listaProfissoesFragment"
+        android:name="com.kevin.ceep.ui.fragment.ListaProfissoesFragment"
+        android:label="@string/profissoes"
+        tools:layout="@layout/fragment_lista_profissoes" />
 </navigation>

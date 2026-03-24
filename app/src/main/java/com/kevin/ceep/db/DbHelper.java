@@ -6,6 +6,7 @@ import static com.kevin.ceep.db.contracts.EstoqueDbContract.EstoqueEntry.COLUMN_
 import static com.kevin.ceep.db.contracts.EstoqueDbContract.EstoqueEntry.COLUMN_NAME_QUANTIDADE;
 import static com.kevin.ceep.db.contracts.EstoqueDbContract.EstoqueEntry.TABLE_ESTOQUE;
 import static com.kevin.ceep.db.contracts.PersoagemDbContract.PersonagemEntry.TABLE_PERSONAGENS;
+import static com.kevin.ceep.db.contracts.ProfissaoDbContract.ProfissaoEntry.TABLE_PROFISSOES;
 import static com.kevin.ceep.db.contracts.TrabalhoDbContract.TrabalhoEntry.TABLE_TRABALHOS;
 import static com.kevin.ceep.db.contracts.TrabalhoProducaoContract.TrabalhoProducaoEntry.TABLE_TRABALHOS_PRODUCAO;
 import static com.kevin.ceep.db.contracts.TrabalhoVendidoContract.TrabalhoVendidoEntry.COLUMN_NAME_DATA_VENDA;
@@ -18,11 +19,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.kevin.ceep.db.contracts.PersoagemDbContract.PersonagemEntry;
+import com.kevin.ceep.db.contracts.ProfissaoDbContract;
 import com.kevin.ceep.db.contracts.TrabalhoDbContract.TrabalhoEntry;
 import com.kevin.ceep.db.contracts.TrabalhoProducaoContract.TrabalhoProducaoEntry;
 
 public class DbHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 9;
+    public static final int DATABASE_VERSION = 10;
     public static final String DATABASE_NAME = "autoProducao.db";
     private static DbHelper minhaInstancia = null;
 
@@ -98,6 +100,14 @@ public class DbHelper extends SQLiteOpenHelper {
                 COLUMN_NAME_VALOR + " INTEGER" +
                 ")"
         );
+        sqLiteDatabase.execSQL(
+                "CREATE TABLE " +
+                TABLE_PROFISSOES +
+                " (" +
+                ProfissaoDbContract.ProfissaoEntry.COLUMN_NAME_ID + " VARCHAR(30) PRIMARY KEY," +
+                ProfissaoDbContract.ProfissaoEntry.COLUMN_NAME_NOME + " TEXT" +
+                ")"
+        );
     }
 
     @Override
@@ -107,6 +117,7 @@ public class DbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_TRABALHOS_PRODUCAO);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_ESTOQUE);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_TRABALHOS_VENDIDOS);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_PROFISSOES);
         onCreate(sqLiteDatabase);
     }
 }
