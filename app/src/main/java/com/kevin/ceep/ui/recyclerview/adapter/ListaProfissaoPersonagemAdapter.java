@@ -14,8 +14,8 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kevin.ceep.R;
-import com.kevin.ceep.model.Profissao;
-import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListenerProfissao;
+import com.kevin.ceep.model.ProfissaoPersonagem;
+import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListenerProfissaoPersonagem;
 
 import java.util.ArrayList;
 
@@ -23,16 +23,16 @@ public class ListaProfissaoPersonagemAdapter extends RecyclerView.Adapter<
     ListaProfissaoPersonagemAdapter.ProfissaoViewHolder
 > {
 
-    private final ArrayList<Profissao> profissoes;
+    private final ArrayList<ProfissaoPersonagem> profissoes;
     private final Context context;
-    private OnItemClickListenerProfissao onItemClickListener;
+    private OnItemClickListenerProfissaoPersonagem onItemClickListener;
 
-    public ListaProfissaoPersonagemAdapter(Context context, ArrayList<Profissao> profissao) {
-        this.profissoes = profissao;
+    public ListaProfissaoPersonagemAdapter(Context context, ArrayList<ProfissaoPersonagem> profissaoPersonagem) {
+        this.profissoes = profissaoPersonagem;
         this.context = context;
     }
 
-    public void setOnItemClickListener(OnItemClickListenerProfissao onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListenerProfissaoPersonagem onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
     @NonNull
@@ -45,8 +45,8 @@ public class ListaProfissaoPersonagemAdapter extends RecyclerView.Adapter<
 
     @Override
     public void onBindViewHolder(@NonNull ProfissaoViewHolder holder, int position) {
-        Profissao profissao = profissoes.get(position);
-        holder.vincula(profissao);
+        ProfissaoPersonagem profissaoPersonagem = profissoes.get(position);
+        holder.vincula(profissaoPersonagem);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class ListaProfissaoPersonagemAdapter extends RecyclerView.Adapter<
         return profissoes.size();
     }
 
-    public void atualiza(ArrayList<Profissao> profissoesAtualizadas) {
+    public void atualiza(ArrayList<ProfissaoPersonagem> profissoesAtualizadas) {
         DiffUtil.DiffResult diffResult= DiffUtil.calculateDiff(new ItemDiffCallback(profissoes, profissoesAtualizadas));
         profissoes.clear();
         profissoes.addAll(profissoesAtualizadas);
@@ -70,7 +70,7 @@ public class ListaProfissaoPersonagemAdapter extends RecyclerView.Adapter<
         private final TextView experiencia_profissao;
         private final TextView nivelProfissao;
         private final CardView cardProfissao;
-        private Profissao profissao;
+        private ProfissaoPersonagem profissaoPersonagem;
         public ProfissaoViewHolder(@NonNull View itemView) {
             super(itemView);
             nome_profissao = itemView.findViewById(R.id.itemNomeProfissaoPersonagem);
@@ -78,23 +78,23 @@ public class ListaProfissaoPersonagemAdapter extends RecyclerView.Adapter<
             nivelProfissao = itemView.findViewById(R.id.itemNivelProfissaoPersonagem);
             cardProfissao = itemView.findViewById(R.id.cardViewProfissaoPersonagem);
             itemView.setOnClickListener(view ->
-                onItemClickListener.onItemClick(profissao, getAdapterPosition())
+                onItemClickListener.onItemClick(profissaoPersonagem, getAdapterPosition())
             );
         }
-        public void vincula(Profissao profissao) {
-            this.profissao = profissao;
-            preencheCampo(profissao);
+        public void vincula(ProfissaoPersonagem profissaoPersonagem) {
+            this.profissaoPersonagem = profissaoPersonagem;
+            preencheCampo(profissaoPersonagem);
         }
-        private void preencheCampo(Profissao profissao) {
-            String barraExperiencia = profissao.getExperiencia() + " / " + profissao.getXpMaximo();
+        private void preencheCampo(ProfissaoPersonagem profissaoPersonagem) {
+            String barraExperiencia = profissaoPersonagem.getExperiencia() + " / " + profissaoPersonagem.getXpMaximo();
             experiencia_profissao.setText(barraExperiencia);
-            nome_profissao.setText(profissao.getNome());
-            nivelProfissao.setText(String.valueOf(profissao.getNivel()));
-            configuraCardPrioridade(profissao);
+            nome_profissao.setText(profissaoPersonagem.getNome());
+            nivelProfissao.setText(String.valueOf(profissaoPersonagem.getNivel()));
+            configuraCardPrioridade(profissaoPersonagem);
         }
 
-        private void configuraCardPrioridade(Profissao profissao) {
-            int cor = profissao.isPrioridade() ?
+        private void configuraCardPrioridade(ProfissaoPersonagem profissaoPersonagem) {
+            int cor = profissaoPersonagem.isPrioridade() ?
                 ContextCompat.getColor(context, R.color.cor_background_feito) :
                 ContextCompat.getColor(context, R.color.cor_background_card);
             GradientDrawable borda = new GradientDrawable();
@@ -105,9 +105,9 @@ public class ListaProfissaoPersonagemAdapter extends RecyclerView.Adapter<
         }
     }
     private static class ItemDiffCallback extends DiffUtil.Callback {
-        private final ArrayList<Profissao> listaAntiga;
-        private final ArrayList<Profissao> listaNova;
-        public ItemDiffCallback(ArrayList<Profissao> listaAntiga, ArrayList<Profissao> listaNova) {
+        private final ArrayList<ProfissaoPersonagem> listaAntiga;
+        private final ArrayList<ProfissaoPersonagem> listaNova;
+        public ItemDiffCallback(ArrayList<ProfissaoPersonagem> listaAntiga, ArrayList<ProfissaoPersonagem> listaNova) {
             this.listaAntiga= listaAntiga;
             this.listaNova= listaNova;
         }

@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.kevin.ceep.databinding.FragmentListaProfissoesPersonagemBinding;
-import com.kevin.ceep.model.Profissao;
+import com.kevin.ceep.model.ProfissaoPersonagem;
 import com.kevin.ceep.model.TrabalhoProducao;
 import com.kevin.ceep.repository.PersonagemRepository;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaProfissaoPersonagemAdapter;
@@ -38,7 +38,7 @@ public class ListaProfissoesPersonagemFragment
         extends BaseFragment<FragmentListaProfissoesPersonagemBinding> {
     private ListaProfissaoPersonagemAdapter listaProfissaoPersonagemAdapter;
     private String idPersonagem;
-    private ArrayList<Profissao> todasProfissoes;
+    private ArrayList<ProfissaoPersonagem> todasProfissoes;
     private ArrayList<TrabalhoProducao> producao;
     private RecyclerView meuRecycler;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -128,13 +128,13 @@ public class ListaProfissoesPersonagemFragment
                         .filter(trabalho ->
                             trabalho.getProfissao().equals(profissao.getNome()))
                         .collect(Collectors.toCollection(ArrayList::new));
-                ProfissaoFragment profissaoFragment = new ProfissaoFragment();
+                ProfissaoPersonagemFragment profissaoPersonagemFragment = new ProfissaoPersonagemFragment();
                 Bundle argumento = new Bundle();
                 argumento.putString(CHAVE_ID_PERSONAGEM, idPersonagem);
                 argumento.putSerializable("profissao", profissao);
                 argumento.putSerializable("producao", producaoFiltrada);
-                profissaoFragment.setArguments(argumento);
-                profissaoFragment.show(getChildFragmentManager(), "profissaoFragment");
+                profissaoPersonagemFragment.setArguments(argumento);
+                profissaoPersonagemFragment.show(getChildFragmentManager(), "profissaoFragment");
             }
         );
     }

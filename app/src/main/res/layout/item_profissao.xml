@@ -12,30 +12,30 @@
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
     app:cardCornerRadius="16dp"
-    app:cardElevation="6dp"
->
+    app:cardElevation="0dp"
+    app:cardUseCompatPadding="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-    >
+        android:background="@drawable/bg_card_profissao">
 
         <TextView
             android:id="@+id/itemNomeProfissao"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:ellipsize="end"
             android:maxLines="1"
+            android:textColor="@android:color/black"
             style="@style/TextAppearance.Texto"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            tools:text="Engenheiro de Software"
-        />
+            tools:text="Engenheiro de Software" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

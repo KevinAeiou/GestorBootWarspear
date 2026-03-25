@@ -43,7 +43,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.FragmentTrabalhoEspecificoBinding;
-import com.kevin.ceep.model.Profissao;
+import com.kevin.ceep.model.ProfissaoPersonagem;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.model.TrabalhoProducao;
@@ -313,29 +313,31 @@ public class TrabalhoEspecificoFragment
     private void modificaProfissao(TrabalhoProducao trabalho) {
         profissaoPersonagemViewModel.getRecuperacaoProfissoesPersonagem().observe(getViewLifecycleOwner(), resultadoProfissoes -> {
             if (resultadoProfissoes.getDado() != null) {
-                Profissao profissaoEncontrada = profissaoPersonagemViewModel.retornaProfissaoModificada(resultadoProfissoes.getDado(), trabalho);
-                if (profissaoEncontrada == null){
+                ProfissaoPersonagem profissaoPersonagemEncontrada = profissaoPersonagemViewModel.retornaProfissaoModificada(resultadoProfissoes.getDado(), trabalho);
+                if (profissaoPersonagemEncontrada == null){
                     paraProgresso();
                     mostraMensagem("Profissão não encontrada: "+trabalho.getProfissao());
                     voltaParaListaTrabalhosProducao();
                     return;
                 }
-                if (profissaoEncontrada.getExperiencia() < EXPERIENCIAS.get(EXPERIENCIAS.size() - 1)) {
-                    int novaExperiencia = profissaoEncontrada.getExperiencia()+ trabalho.getExperiencia();
-                    profissaoEncontrada.setExperiencia(novaExperiencia);
-                    profissaoPersonagemViewModel.getModificacaoResultado().observe(getViewLifecycleOwner(), resultadoModificaExperiencia -> {
-                        paraProgresso();
-                        if (resultadoModificaExperiencia.getErro() == null){
-                            if (Boolean.TRUE.equals(confirmacao.getValue())) {
-                                mostraMensagem(trabalhoProducaoRecebido.getNome() + " foi modificado com sucesso!");
-                                voltaParaListaTrabalhosProducao();
+                if (profissaoPersonagemEncontrada.getExperiencia() < EXPERIENCIAS.get(EXPERIENCIAS.size() - 1)) {
+                    int novaExperiencia = profissaoPersonagemEncontrada.getExperiencia()+ trabalho.getExperiencia();
+                    profissaoPersonagemEncontrada.setExperiencia(novaExperiencia);
+                    profissaoPersonagemViewModel.getModificacaoResultado().observe(
+                        getViewLifecycleOwner(),
+                        resultadoModificaExperiencia -> {
+                            paraProgresso();
+                            if (resultadoModificaExperiencia.getErro() == null){
+                                if (Boolean.TRUE.equals(confirmacao.getValue())) {
+                                    mostraMensagem(trabalhoProducaoRecebido.getNome() + " foi modificado com sucesso!");
+                                    voltaParaListaTrabalhosProducao();
+                                }
+                                return;
                             }
-                            return;
-                        }
-                        confirmacao.setValue(false);
-                        mostraMensagem("Erro: "+resultadoModificaExperiencia.getErro());
+                            confirmacao.setValue(false);
+                            mostraMensagem("Erro: "+resultadoModificaExperiencia.getErro());
                     });
-                    profissaoPersonagemViewModel.modificaExperienciaProfissao(profissaoEncontrada);
+                    profissaoPersonagemViewModel.modificaExperienciaProfissao(profissaoPersonagemEncontrada);
                     return;
                 }
                 voltaParaListaTrabalhosProducao();

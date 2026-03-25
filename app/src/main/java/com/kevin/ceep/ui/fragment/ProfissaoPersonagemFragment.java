@@ -23,7 +23,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.FragmentProfissaoBinding;
-import com.kevin.ceep.model.Profissao;
+import com.kevin.ceep.model.ProfissaoPersonagem;
 import com.kevin.ceep.model.TrabalhoProducao;
 import com.kevin.ceep.ui.viewModel.ProfissaoPersonagemViewModel;
 import com.kevin.ceep.ui.viewModel.factory.ProfissaoPersonagemViewModelFactory;
@@ -31,9 +31,9 @@ import com.kevin.ceep.ui.viewModel.factory.ProfissaoPersonagemViewModelFactory;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class ProfissaoFragment extends DialogFragment {
+public class ProfissaoPersonagemFragment extends DialogFragment {
     private FragmentProfissaoBinding binding;
-    private Profissao profissaoRecebido;
+    private ProfissaoPersonagem profissaoPersonagemRecebido;
     private TextInputEditText edtExperiencia;
     private SwitchMaterial swtPrioridade;
     private ProfissaoPersonagemViewModel profissaoPersonagemViewModel;
@@ -49,9 +49,9 @@ public class ProfissaoFragment extends DialogFragment {
         if (argumento != null) {
             idPersonagem = argumento.getString(CHAVE_ID_PERSONAGEM);
             if (argumento.containsKey("profissao")) {
-                profissaoRecebido = new Profissao();
+                profissaoPersonagemRecebido = new ProfissaoPersonagem();
                 producao = (ArrayList<TrabalhoProducao>) argumento.getSerializable("producao");
-                profissaoRecebido = (Profissao) argumento.getSerializable("profissao");
+                profissaoPersonagemRecebido = (ProfissaoPersonagem) argumento.getSerializable("profissao");
             }
         }
     }
@@ -82,21 +82,21 @@ public class ProfissaoFragment extends DialogFragment {
         );
         profissaoPersonagemViewModel = new ViewModelProvider(this, profissaoPersonagemViewModelFactory).get(ProfissaoPersonagemViewModel.class);
 
-        txtNomePersonagem.setText(profissaoRecebido.getNome());
-        edtExperiencia.setText(String.valueOf(profissaoRecebido.getExperiencia()));
-        swtPrioridade.setChecked(profissaoRecebido.isPrioridade());
+        txtNomePersonagem.setText(profissaoPersonagemRecebido.getNome());
+        edtExperiencia.setText(String.valueOf(profissaoPersonagemRecebido.getExperiencia()));
+        swtPrioridade.setChecked(profissaoPersonagemRecebido.isPrioridade());
 
         configuraBarraProgressoCircular();
     }
 
     private void configuraBarraProgressoCircular() {
-        int xpNecessario = profissaoRecebido.getXpNecessario();
+        int xpNecessario = profissaoPersonagemRecebido.getXpNecessario();
         indicadorMaximo.setMax(xpNecessario);
         indicadorAtual.setMax(xpNecessario);
         indicadorProduzindo.setMax(xpNecessario);
         indicadorProduzir.setMax(xpNecessario);
 
-        int experienciaAtual = profissaoRecebido.getExperienciaRelativa();
+        int experienciaAtual = profissaoPersonagemRecebido.getExperienciaRelativa();
         int experienciaProduzindo = 0;
         int experienciaProduzir = 0;
         for(TrabalhoProducao trabalho : producao) {
@@ -153,15 +153,15 @@ public class ProfissaoFragment extends DialogFragment {
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
         String experiencia = Objects.requireNonNull(edtExperiencia.getText()).toString();
-        if (experiencia.isEmpty() || experiencia.equals(String.valueOf(profissaoRecebido.getExperiencia())) && swtPrioridade.isChecked() == profissaoRecebido.isPrioridade()) {
+        if (experiencia.isEmpty() || experiencia.equals(String.valueOf(profissaoPersonagemRecebido.getExperiencia())) && swtPrioridade.isChecked() == profissaoPersonagemRecebido.isPrioridade()) {
             return;
         }
-        Profissao profissaoModificada = new Profissao();
-        profissaoModificada.setId(profissaoRecebido.getId());
-        profissaoModificada.setNome(profissaoRecebido.getNome());
-        profissaoModificada.setExperiencia(Integer.parseInt(experiencia));
-        profissaoModificada.setPrioridade(swtPrioridade.isChecked());
-        profissaoPersonagemViewModel.modificaExperienciaProfissao(profissaoModificada);
+        ProfissaoPersonagem profissaoPersonagemModificada = new ProfissaoPersonagem();
+        profissaoPersonagemModificada.setId(profissaoPersonagemRecebido.getId());
+        profissaoPersonagemModificada.setNome(profissaoPersonagemRecebido.getNome());
+        profissaoPersonagemModificada.setExperiencia(Integer.parseInt(experiencia));
+        profissaoPersonagemModificada.setPrioridade(swtPrioridade.isChecked());
+        profissaoPersonagemViewModel.modificaExperienciaProfissao(profissaoPersonagemModificada);
     }
 
     @Override

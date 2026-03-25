@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kevin.ceep.R;
-import com.kevin.ceep.model.Profissao;
+import com.kevin.ceep.model.ProfissaoBase;
 import com.kevin.ceep.ui.recyclerview.adapter.listener.OnItemClickListenerProfissao;
 
 import java.util.ArrayList;
@@ -19,11 +19,11 @@ import java.util.ArrayList;
 public class ListaProfissaoAdapter extends RecyclerView.Adapter<
     ListaProfissaoAdapter.ProfissaoViewHolder
 > {
-    private final ArrayList<Profissao> profissoes;
+    private final ArrayList<ProfissaoBase> profissoes;
     private final Context context;
     private static OnItemClickListenerProfissao onItemClickListener;
 
-    public ListaProfissaoAdapter(ArrayList<Profissao> profissoes, Context context) {
+    public ListaProfissaoAdapter(ArrayList<ProfissaoBase> profissoes, Context context) {
         this.profissoes = profissoes;
         this.context = context;
     }
@@ -42,7 +42,7 @@ public class ListaProfissaoAdapter extends RecyclerView.Adapter<
 
     @Override
     public void onBindViewHolder(@NonNull ProfissaoViewHolder holder, int position) {
-        Profissao profissao = profissoes.get(position);
+        ProfissaoBase profissao = profissoes.get(position);
         holder.vincula(profissao);
     }
 
@@ -51,7 +51,7 @@ public class ListaProfissaoAdapter extends RecyclerView.Adapter<
         return profissoes.size();
     }
 
-    public void atualiza(ArrayList<Profissao> profissoesAtualizadas) {
+    public void atualiza(ArrayList<ProfissaoBase> profissoesAtualizadas) {
         DiffUtil.DiffResult diffResult= DiffUtil.calculateDiff(
             new ListaProfissaoAdapter.ItemDiffCallback(profissoes, profissoesAtualizadas)
         );
@@ -66,7 +66,7 @@ public class ListaProfissaoAdapter extends RecyclerView.Adapter<
 
     public static class ProfissaoViewHolder extends RecyclerView.ViewHolder {
         private final TextView nome_profissao;
-        private Profissao profissao;
+        private ProfissaoBase profissao;
 
         public ProfissaoViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -77,20 +77,20 @@ public class ListaProfissaoAdapter extends RecyclerView.Adapter<
             );
         }
 
-        public void vincula(Profissao profissao) {
+        public void vincula(ProfissaoBase profissao) {
             this.profissao = profissao;
             preencheCampo(profissao);
         }
 
-        private void preencheCampo(Profissao profissao) {
-            nome_profissao.setText(profissao.getNome());
+        private void preencheCampo(ProfissaoBase profissaoPersonagem) {
+            nome_profissao.setText(profissaoPersonagem.getNome());
         }
     }
 
     private static class ItemDiffCallback extends DiffUtil.Callback {
-        private final ArrayList<Profissao> listaAntiga;
-        private final ArrayList<Profissao> listaNova;
-        public ItemDiffCallback(ArrayList<Profissao> listaAntiga, ArrayList<Profissao> listaNova) {
+        private final ArrayList<ProfissaoBase> listaAntiga;
+        private final ArrayList<ProfissaoBase> listaNova;
+        public ItemDiffCallback(ArrayList<ProfissaoBase> listaAntiga, ArrayList<ProfissaoBase> listaNova) {
             this.listaAntiga= listaAntiga;
             this.listaNova= listaNova;
         }

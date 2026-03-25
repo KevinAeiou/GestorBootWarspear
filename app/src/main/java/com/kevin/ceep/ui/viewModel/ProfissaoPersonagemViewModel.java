@@ -3,7 +3,7 @@ package com.kevin.ceep.ui.viewModel;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
-import com.kevin.ceep.model.Profissao;
+import com.kevin.ceep.model.ProfissaoPersonagem;
 import com.kevin.ceep.model.TrabalhoProducao;
 import com.kevin.ceep.repository.ProfissaoPersonagemRepository;
 import com.kevin.ceep.repository.Resource;
@@ -15,7 +15,7 @@ public class ProfissaoPersonagemViewModel extends ViewModel {
     private final ProfissaoPersonagemRepository repository;
     private final SingleLiveEvent<Resource<Void>> insercaoResultado = new SingleLiveEvent<>();
     private final SingleLiveEvent<Resource<Void>> modificacaoResultado = new SingleLiveEvent<>();
-    private final SingleLiveEvent<Resource<ArrayList<Profissao>>> recuperacaoProfissoesPersonagem = new SingleLiveEvent<>();
+    private final SingleLiveEvent<Resource<ArrayList<ProfissaoPersonagem>>> recuperacaoProfissoesPersonagem = new SingleLiveEvent<>();
     public ProfissaoPersonagemViewModel(ProfissaoPersonagemRepository repository) {
         this.repository = repository;
     }
@@ -27,22 +27,22 @@ public class ProfissaoPersonagemViewModel extends ViewModel {
     public SingleLiveEvent<Resource<Void>> getModificacaoResultado() {
         return modificacaoResultado;
     }
-    public SingleLiveEvent<Resource<ArrayList<Profissao>>> getRecuperacaoProfissoesPersonagem() {
+    public SingleLiveEvent<Resource<ArrayList<ProfissaoPersonagem>>> getRecuperacaoProfissoesPersonagem() {
         return recuperacaoProfissoesPersonagem;
     }
-    public Profissao retornaProfissaoModificada(
-            ArrayList<Profissao> profissoes,
+    public ProfissaoPersonagem retornaProfissaoModificada(
+            ArrayList<ProfissaoPersonagem> profissoes,
             TrabalhoProducao trabalhoModificado
     ) {
         return repository.retornaProfissaoModificada(profissoes,trabalhoModificado);
     }
 
     public void recuperaProfissoesPersonagem() {
-        Observer<? super Resource<ArrayList<Profissao>>> observer = new Observer<
-            Resource<ArrayList<Profissao>>
+        Observer<? super Resource<ArrayList<ProfissaoPersonagem>>> observer = new Observer<
+            Resource<ArrayList<ProfissaoPersonagem>>
         >() {
             @Override
-            public void onChanged(Resource<ArrayList<Profissao>> resultado) {
+            public void onChanged(Resource<ArrayList<ProfissaoPersonagem>> resultado) {
                 recuperacaoProfissoesPersonagem.setValue(resultado);
                 repository.recuperaProfissoesPersonagem().removeObserver(this);
             }
@@ -51,16 +51,16 @@ public class ProfissaoPersonagemViewModel extends ViewModel {
     }
 
     public void modificaExperienciaProfissao(
-            Profissao profissao
+            ProfissaoPersonagem profissaoPersonagem
     ) {
         Observer<? super Resource<Void>> observer = new Observer<Resource<Void>>() {
             @Override
             public void onChanged(Resource<Void> resultado) {
                 modificacaoResultado.setValue(resultado);
-                repository.modificaProfissaoPersonagem(profissao).removeObserver(this);
+                repository.modificaProfissaoPersonagem(profissaoPersonagem).removeObserver(this);
             }
         };
-        repository.modificaProfissaoPersonagem(profissao).observeForever(observer);
+        repository.modificaProfissaoPersonagem(profissaoPersonagem).observeForever(observer);
     }
 
     public void insereProfissoes() {

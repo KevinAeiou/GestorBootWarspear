@@ -4,11 +4,11 @@ import static org.junit.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
-public class ProfissaoTest {
-    private final Profissao BRACELETES = new Profissao();
-    private final Profissao CAPOTES = new Profissao();
-    private final Profissao ANEIS = new Profissao();
-    private final Profissao AMULETOS = new Profissao();
+public class ProfissaoPersonagemTest {
+    private final ProfissaoPersonagem BRACELETES = new ProfissaoPersonagem();
+    private final ProfissaoPersonagem CAPOTES = new ProfissaoPersonagem();
+    private final ProfissaoPersonagem ANEIS = new ProfissaoPersonagem();
+    private final ProfissaoPersonagem AMULETOS = new ProfissaoPersonagem();
 
     @Test
     public void deve_RetornarNivelUm_QuandoXpAtualIgualADezenove() {

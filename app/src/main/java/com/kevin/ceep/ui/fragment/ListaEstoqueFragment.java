@@ -36,7 +36,7 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
 import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.FragmentListaTrabalhosEstoqueBinding;
-import com.kevin.ceep.model.Profissao;
+import com.kevin.ceep.model.ProfissaoPersonagem;
 import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.repository.PersonagemRepository;
 import com.kevin.ceep.repository.TrabalhoEstoqueRepository;
@@ -221,8 +221,8 @@ public class ListaEstoqueFragment
         ProfissaoPersonagemViewModel profissaoPersonagemViewModel = new ViewModelProvider(this, profissaoPersonagemViewModelFactory).get(idPersonagem, ProfissaoPersonagemViewModel.class);
         profissaoPersonagemViewModel.getRecuperacaoProfissoesPersonagem().observe(getViewLifecycleOwner(), resultadoProfissoes -> {
             if (resultadoProfissoes.getErro() == null) {
-                for (Profissao profissao : resultadoProfissoes.getDado()) {
-                    profissoes.add(profissao.getNome());
+                for (ProfissaoPersonagem profissaoPersonagem : resultadoProfissoes.getDado()) {
+                    profissoes.add(profissaoPersonagem.getNome());
                 }
                 configuraGrupoChipsProfissoes();
                 return;

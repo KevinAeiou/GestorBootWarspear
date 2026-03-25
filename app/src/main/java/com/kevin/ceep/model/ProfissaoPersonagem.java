@@ -7,20 +7,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Profissao implements Serializable {
-    private String id;
-    private String nome;
+public class ProfissaoPersonagem extends ProfissaoBase implements Serializable {
     private Integer experiencia;
     private boolean prioridade;
     private final List<Integer> xpNiveis;
 
-    public Profissao(){
+    public ProfissaoPersonagem(){
+        super();
         ArrayList<Integer> listaTemporaria = new ArrayList<>(EXPERIENCIAS);
         this.xpNiveis = Collections.unmodifiableList(listaTemporaria);
-    }
-
-    public String getNome() {
-        return nome;
     }
 
     public Integer getExperiencia() {
@@ -67,21 +62,9 @@ public class Profissao implements Serializable {
         return getXpMaximo(0);
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public void setExperiencia(int experiencia) {
         if (experiencia > 1195000) experiencia = 1195000;
         this.experiencia = experiencia;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
     }
 
     public void setPrioridade(boolean prioridade) {

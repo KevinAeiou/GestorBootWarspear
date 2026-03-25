@@ -10,7 +10,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.kevin.ceep.db.DbHelper;
-import com.kevin.ceep.model.Profissao;
+import com.kevin.ceep.model.ProfissaoBase;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,12 +46,12 @@ public class ProfissaoDao {
         return mapa;
     }
 
-    public void substituirTodas(List<Profissao> profissoes) {
+    public void substituirTodas(List<ProfissaoBase> profissoes) {
         db.beginTransaction();
         try {
             db.delete(TABLE_PROFISSOES, null, null);
 
-            for (Profissao profissao : profissoes) {
+            for (ProfissaoBase profissao : profissoes) {
                 ContentValues values = new ContentValues();
                 values.put(COLUMN_NAME_ID, profissao.getId());
                 values.put(COLUMN_NAME_NOME, profissao.getNome());

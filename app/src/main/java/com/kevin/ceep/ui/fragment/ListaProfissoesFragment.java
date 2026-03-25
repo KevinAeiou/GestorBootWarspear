@@ -1,5 +1,6 @@
 package com.kevin.ceep.ui.fragment;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,10 +13,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import com.kevin.ceep.databinding.FragmentListaProfissoesBinding;
-import com.kevin.ceep.model.Profissao;
+import com.kevin.ceep.model.ProfissaoBase;
 import com.kevin.ceep.ui.recyclerview.adapter.ListaProfissaoAdapter;
 import com.kevin.ceep.ui.viewModel.ComponentesVisuais;
 import com.kevin.ceep.ui.viewModel.EstadoAppViewModel;
@@ -27,7 +29,7 @@ import java.util.ArrayList;
 public class ListaProfissoesFragment extends BaseFragment<FragmentListaProfissoesBinding> {
 
     private ListaProfissaoAdapter listaProfissaoAdapter;
-    private ArrayList<Profissao> profissoes;
+    private ArrayList<ProfissaoBase> profissoes;
     private RecyclerView meuRecycler;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar indicadorProgresso;
@@ -93,9 +95,37 @@ public class ListaProfissoesFragment extends BaseFragment<FragmentListaProfissoe
 
     private void configuraCliqueItemProfissao() {
         listaProfissaoAdapter.setOnItemClickListener(
-            (profissao, adapterPosition) -> {
-                mostraMensagem("Item: " + profissao.getNome());
-            });
+            (profissao, adapterPosition) -> abreModalEdicao(profissao));
+    }
+
+    private void abreModalEdicao(ProfissaoBase profissao) {
+        final EditText input = new EditText(getContext());
+
+        input.setText(profissao.getNome());
+
+        new AlertDialog.Builder(getContext())
+            .setTitle("Editar Profissão")
+            .setView(input)
+            .setPositiveButton("Salvar", (dialog, which) -> {
+                String novoNome = input.getText().toString();
+
+                profissao.setNome(novoNome);
+
+                profissaoViewModel.getModificacaoProfissao().observe(
+                        getViewLifecycleOwner(),
+                        resultado -> {
+                            if (resultado.getErro() == null) {
+                                mostraMensagem(profissao.getNome() + " modificado com sucesso!");
+                                return;
+                            }
+
+                            mostraMensagem("Erro: "+resultado.getErro());
+                        }
+                );
+                profissaoViewModel.modificaProfissao(profissao);
+            })
+            .setNegativeButton("Cancelar", null)
+            .show();
     }
 
     private void configuraSwipeRefreshLayout() {

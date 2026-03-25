@@ -36,7 +36,7 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.kevin.ceep.R;
 import com.kevin.ceep.databinding.FragmentListaTrabalhosInsereNovoTrabalhoBinding;
-import com.kevin.ceep.model.Profissao;
+import com.kevin.ceep.model.ProfissaoPersonagem;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
 import com.kevin.ceep.model.TrabalhoVendido;
@@ -70,7 +70,7 @@ public class ListaTrabalhosInsereNovoTrabalhoFragment
     private ListaTrabalhoEspecificoNovaProducaoAdapter listaTrabalhoEspecificoAdapter;
     private String idPersonagem, textoFiltro;
     private ChipGroup grupoChipsProfissoes;
-    private ArrayList<Profissao> listaProfissoes;
+    private ArrayList<ProfissaoPersonagem> listaProfissoes;
     private ArrayList<Trabalho> todosTrabalhos, listaTrabalhosFiltrada;
     private ListaNovaProducaoViewModel novaProducaoViewModel;
     private TextView txtListaVazia;
@@ -173,7 +173,7 @@ public class ListaTrabalhosInsereNovoTrabalhoFragment
     private void filtraTrabalhoPorProfissaoSelecionada(List<Integer> lista_ids) {
         listaTrabalhosFiltrada.clear();
 
-        List<Profissao> profissoes_selecionadas = defineListaDeProfissoesSelecionadas(lista_ids);
+        List<ProfissaoPersonagem> profissoes_selecionadas = defineListaDeProfissoesSelecionadas(lista_ids);
 
         meuRecycler.smoothScrollToPosition(0);
 
@@ -183,9 +183,9 @@ public class ListaTrabalhosInsereNovoTrabalhoFragment
         } else {
             ArrayList<Trabalho> listaProfissaoEspecifica;
 
-            for (Profissao profissao : profissoes_selecionadas) {
+            for (ProfissaoPersonagem profissaoPersonagem : profissoes_selecionadas) {
                 listaProfissaoEspecifica = (ArrayList<Trabalho>) todosTrabalhos.stream().filter(
-                    trabalho -> stringContemString(trabalho.getProfissao(), profissao.getNome()))
+                    trabalho -> stringContemString(trabalho.getProfissao(), profissaoPersonagem.getNome()))
                     .collect(Collectors.toList());
                 listaTrabalhosFiltrada.addAll(listaProfissaoEspecifica);
             }
@@ -195,8 +195,8 @@ public class ListaTrabalhosInsereNovoTrabalhoFragment
     }
 
     @NonNull
-    private List<Profissao> defineListaDeProfissoesSelecionadas(List<Integer> listaIds) {
-        List<Profissao> profissoesSelecionadas = new ArrayList<>();
+    private List<ProfissaoPersonagem> defineListaDeProfissoesSelecionadas(List<Integer> listaIds) {
+        List<ProfissaoPersonagem> profissoesSelecionadas = new ArrayList<>();
         
         for (int id : listaIds) {
             profissoesSelecionadas.add(listaProfissoes.get(id));
@@ -206,18 +206,18 @@ public class ListaTrabalhosInsereNovoTrabalhoFragment
 
     private void configuraGrupoChipsProfissoes() {
         grupoChipsProfissoes.removeAllViews();
-        for (Profissao profissao : listaProfissoes) {
-            adicionaChip(profissao);
+        for (ProfissaoPersonagem profissaoPersonagem : listaProfissoes) {
+            adicionaChip(profissaoPersonagem);
         }
     }
 
-    private void adicionaChip(Profissao profissao) {
+    private void adicionaChip(ProfissaoPersonagem profissaoPersonagem) {
         Chip novoChip= new Chip(new ContextThemeWrapper(
             requireContext(),
             R.style.estiloChip
         ), null, 0);
-        novoChip.setText(profissao.getNome());
-        novoChip.setId(listaProfissoes.indexOf(profissao));
+        novoChip.setText(profissaoPersonagem.getNome());
+        novoChip.setId(listaProfissoes.indexOf(profissaoPersonagem));
         novoChip.setCheckable(true);
         grupoChipsProfissoes.addView(novoChip);
     }

@@ -4,6 +4,7 @@ import static com.kevin.ceep.repository.TrabalhoProducaoRepository.destroyInstan
 import static com.kevin.ceep.ui.activity.Constantes.CHAVE_LISTA_PROFISSOES;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -15,7 +16,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.ceep.dao.ProfissaoDao;
-import com.kevin.ceep.model.Profissao;
+import com.kevin.ceep.model.ProfissaoBase;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -45,19 +46,19 @@ public class ProfissaoRepository {
         return instancia;
     }
 
-    public LiveData<Resource<ArrayList<Profissao>>> recuperaProfissoes() {
-        MutableLiveData<Resource<ArrayList<Profissao>>> profissoesRecuperadas = new MutableLiveData<>();
+    public LiveData<Resource<ArrayList<ProfissaoBase>>> recuperaProfissoes() {
+        MutableLiveData<Resource<ArrayList<ProfissaoBase>>> profissoesRecuperadas = new MutableLiveData<>();
 
         ouvinteListaProfissoes = new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ArrayList<Profissao> profissoes = new ArrayList<>();
+                ArrayList<ProfissaoBase> profissoes = new ArrayList<>();
 
                 for (DataSnapshot dn : snapshot.getChildren()) {
-                    Profissao profissao = dn.getValue(Profissao.class);
-                    assert profissao != null;
-                    profissoes.add(profissao);
+                    ProfissaoBase profissaoPersonagem = dn.getValue(ProfissaoBase.class);
+                    assert profissaoPersonagem != null;
+                    profissoes.add(profissaoPersonagem);
                 }
 
                 profissoesRecuperadas.postValue(new Resource<>(profissoes, null));
@@ -78,7 +79,7 @@ public class ProfissaoRepository {
     }
 
     public LiveData<Resource<Void>> sincronizaProfissoes() {
-        ArrayList<Profissao> profissoesServidor = new ArrayList<>();
+        ArrayList<ProfissaoBase> profissoesServidor = new ArrayList<>();
         MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
 
         ouvinteListaProfissoes = new ValueEventListener() {
@@ -88,7 +89,7 @@ public class ProfissaoRepository {
                 profissoesServidor.clear();
 
                 for (DataSnapshot dn : snapshot.getChildren()) {
-                    Profissao profissao = dn.getValue(Profissao.class);
+                    ProfissaoBase profissao = dn.getValue(ProfissaoBase.class);
                     if (profissao != null) {
                         profissoesServidor.add(profissao);
                     }
@@ -114,6 +115,32 @@ public class ProfissaoRepository {
 
         referenciaListaProfissoes.addListenerForSingleValueEvent(ouvinteListaProfissoes);
         return liveData;
+    }
+
+    public LiveData<Resource<Void>> modificaProfissao(ProfissaoBase profissao) {
+        MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
+        Log.d("PROFISSAO", "modificaProfissao: "+ profissao.getId() + " : " + profissao.getNome());
+        referenciaListaProfissoes.child(profissao.getId()).setValue(profissao)
+            .addOnCompleteListener(backGroundExecutor, task -> {
+               if (task.isSuccessful()) {
+                   liveData.postValue(new Resource<>(null, null));
+                   return;
+               }
+
+               Exception exception = task.getException();
+               String erro = recuperaErro(
+                   exception,
+                   "Erro desconhecido ao modificar profissão"
+               );
+
+               liveData.postValue(new Resource<>(null, erro));
+            });
+
+        return liveData;
+    }
+
+    private String recuperaErro(Exception exception, String erroPadrao) {
+        return exception == null ? erroPadrao : exception.getMessage();
     }
 
     public void removeOuvinte() {

@@ -1,7 +1,8 @@
 package com.kevin.ceep.ui.recyclerview.adapter.listener;
 
-import com.kevin.ceep.model.Profissao;
+import com.kevin.ceep.model.ProfissaoBase;
 
 public interface OnItemClickListenerProfissao {
-    void onItemClick(Profissao profissao, int adapterPosition);
+    void onItemClick(ProfissaoBase profissao, int adapterPosition);
+
 }
