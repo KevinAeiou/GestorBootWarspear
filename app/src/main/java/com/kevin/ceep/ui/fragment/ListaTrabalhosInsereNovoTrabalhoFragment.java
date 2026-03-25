@@ -339,7 +339,9 @@ public class ListaTrabalhosInsereNovoTrabalhoFragment
                 break;
             case CODIGO_REQUISICAO_INSERE_TRABALHO_ESTOQUE:
                 TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory =
-                    new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository(idPersonagem));
+                    new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository(
+                            idPersonagem, getContext()
+                    ));
                 TrabalhoEstoqueViewModel trabalhoEstoqueViewModel =
                     new ViewModelProvider(
                         getViewModelStore(),

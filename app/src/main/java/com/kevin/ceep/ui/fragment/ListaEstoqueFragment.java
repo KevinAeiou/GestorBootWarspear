@@ -52,6 +52,8 @@ import com.kevin.ceep.ui.viewModel.factory.ProfissaoPersonagemViewModelFactory;
 import com.kevin.ceep.ui.viewModel.factory.TrabalhoEstoqueViewModelFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,7 +62,7 @@ public class ListaEstoqueFragment
         implements MenuProvider {
     private ListaTrabalhoEstoqueAdapter trabalhoEstoqueAdapter;
     private RecyclerView recyclerView;
-    private ArrayList<TrabalhoEstoque> todosTrabalhosEstoque, trabalhosEstoqueFiltrada;
+    private ArrayList<TrabalhoEstoque> trabalhosEstoque, trabalhosEstoqueFiltrada;
     private ArrayList<String> profissoes;
     private String idPersonagem, textoFiltro;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -103,21 +105,13 @@ public class ListaEstoqueFragment
         configuraBotaoInsereTrabalho();
     }
 
-    private void configuraIndicadorListaVazia(ArrayList<TrabalhoEstoque> listaFiltrada) {
-        if (listaFiltrada.isEmpty()) {
-            iconeListaVazia.setVisibility(VISIBLE);
-            txtListaVazia.setVisibility(VISIBLE);
-            return;
-        }
-        txtListaVazia.setVisibility(GONE);
-        iconeListaVazia.setVisibility(GONE);
-    }
-
     private void configuraPersonagemSelecionado() {
         personagemViewModel.pegaPersonagemSelecionado().observe(getViewLifecycleOwner(), personagemSelecionado -> {
             if (personagemSelecionado == null) return;
             idPersonagem = personagemSelecionado.getId();
-            TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(TrabalhoEstoqueRepository.getInstance(idPersonagem));
+            TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(
+                TrabalhoEstoqueRepository.getInstance(idPersonagem, getContext())
+            );
             trabalhoEstoqueViewModel = new ViewModelProvider(this, trabalhoEstoqueViewModelFactory).get(idPersonagem, TrabalhoEstoqueViewModel.class);
         });
     }
@@ -138,22 +132,26 @@ public class ListaEstoqueFragment
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void filtraTrabalhoPorProfissaoSelecionada(List<Integer> listaIDS) {
         trabalhosEstoqueFiltrada.clear();
+
         List<String> profissoesSelecionadas = defineListaDeProfissoesSelecionadas(listaIDS);
+
+        recyclerView.smoothScrollToPosition(0);
+
         if (profissoesSelecionadas.isEmpty()) {
-            trabalhosEstoqueFiltrada = (ArrayList<TrabalhoEstoque>) todosTrabalhosEstoque.clone();
-            configuraIndicadorListaVazia(trabalhosEstoqueFiltrada);
-            trabalhoEstoqueAdapter.atualiza(trabalhosEstoqueFiltrada);
+            trabalhosEstoqueFiltrada = (ArrayList<TrabalhoEstoque>) trabalhosEstoque.clone();
+
+            filtroLista();
             return;
         }
         ArrayList<TrabalhoEstoque> listaProfissaoEspecifica;
+
         for (String profissao : profissoesSelecionadas) {
-            listaProfissaoEspecifica = (ArrayList<TrabalhoEstoque>) todosTrabalhosEstoque.stream().filter(
-                            trabalho -> stringContemString(trabalho.getProfissao(), profissao))
-                    .collect(Collectors.toList());
+            listaProfissaoEspecifica = (ArrayList<TrabalhoEstoque>) trabalhosEstoque.stream().filter(
+                trabalho -> stringContemString(trabalho.getProfissao(), profissao)
+                ).collect(Collectors.toList());
             trabalhosEstoqueFiltrada.addAll(listaProfissaoEspecifica);
         }
-        configuraIndicadorListaVazia(trabalhosEstoqueFiltrada);
-        trabalhoEstoqueAdapter.atualiza(trabalhosEstoqueFiltrada);
+
         filtroLista();
     }
 
@@ -168,34 +166,40 @@ public class ListaEstoqueFragment
     private void configuraSwipeRefreshLayout() {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             if (idPersonagem == null) return;
-            recuperaTrabalhosEstoque();
+            sincronizaEstoque();
+            recuperaEstoque();
         });
     }
 
-    private void recuperaTrabalhosEstoque() {
-        trabalhoEstoqueViewModel.getTrabalhosEstoque().observe(
+    private void sincronizaEstoque() {
+        trabalhoEstoqueViewModel.getSincronizacaoResultado().observe(
                 getViewLifecycleOwner(),
-                resultadorecuperaTrabalhos -> {
-            if (resultadorecuperaTrabalhos.getErro() == null) {
-                todosTrabalhosEstoque = resultadorecuperaTrabalhos.getDado();
-                trabalhosEstoqueFiltrada = (ArrayList<TrabalhoEstoque>) todosTrabalhosEstoque.clone();
-                indicadorDeProgresso.setVisibility(View.GONE);
-                swipeRefreshLayout.setRefreshing(false);
-                if (trabalhosEstoqueFiltrada.isEmpty()) {
-                    iconeListaVazia.setVisibility(View.VISIBLE);
-                    txtListaVazia.setVisibility(View.VISIBLE);
-                    txtListaVazia.setVisibility(View.VISIBLE);
-                    return;
+                resultadoSincroniza -> {
+                    if (resultadoSincroniza.getErro() != null) {
+                        mostraMensagem("Erro: " + resultadoSincroniza.getErro());
+                    }
                 }
-                iconeListaVazia.setVisibility(View.GONE);
-                txtListaVazia.setVisibility(View.GONE);
-                trabalhoEstoqueAdapter.atualiza(trabalhosEstoqueFiltrada);
-                configuraListaDeProfissoes();
-                return;
+        );
+
+        trabalhoEstoqueViewModel.sincronizaEstoque();
+    }
+
+    private void recuperaEstoque() {
+        trabalhoEstoqueViewModel.getEstoque().observe(
+            getViewLifecycleOwner(),
+            resultadoRecuperaEstoque -> {
+                if (resultadoRecuperaEstoque.getDado() != null) {
+                    trabalhosEstoque = resultadoRecuperaEstoque.getDado();
+                    indicadorDeProgresso.setVisibility(GONE);
+                    configuraListaDeProfissoes();
+                }
+                if (resultadoRecuperaEstoque.getErro() != null) {
+                    mostraMensagem(resultadoRecuperaEstoque.getErro());
+                }
             }
-            mostraMensagem(resultadorecuperaTrabalhos.getErro());
-        });
-        trabalhoEstoqueViewModel.recuperaTrabalhosEstoque();
+        );
+
+        trabalhoEstoqueViewModel.recuperaEstoque();
     }
 
     private void configuraGrupoChipsProfissoes() {
@@ -225,6 +229,7 @@ public class ListaEstoqueFragment
                     profissoes.add(profissaoPersonagem.getNome());
                 }
                 configuraGrupoChipsProfissoes();
+                ordenaEstoquePorProfissao();
                 return;
             }
             mostraMensagem(resultadoProfissoes.getErro());
@@ -232,10 +237,49 @@ public class ListaEstoqueFragment
         profissaoPersonagemViewModel.recuperaProfissoesPersonagem();
     }
 
+    private void ordenaEstoquePorProfissao() {
+        if (trabalhosEstoque.isEmpty() || profissoes.isEmpty()) return;
+
+        Collections.sort(trabalhosEstoque, new Comparator<TrabalhoEstoque>() {
+
+            @Override
+            public int compare(TrabalhoEstoque t1, TrabalhoEstoque t2) {
+                int index1 = getProfissaoIndex(t1.getProfissao());
+                int index2 = getProfissaoIndex(t2.getProfissao());
+                return Integer.compare(index1, index2);
+            }
+
+            private int getProfissaoIndex(String idProfissao) {
+                for (int i = 0; i < profissoes.size(); i++) {
+                    if (profissoes.get(i).equals(idProfissao)) {
+                        return i;
+                    }
+                }
+                return Integer.MAX_VALUE;
+            }
+        });
+
+        trabalhosEstoqueFiltrada = (ArrayList<TrabalhoEstoque>) trabalhosEstoque.clone();
+        if (trabalhoEstoqueAdapter != null) {
+            trabalhoEstoqueAdapter.atualiza(trabalhosEstoqueFiltrada);
+        }
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    private void atualizaVisibilidadeListaVazia(boolean listaVazia) {
+        if (listaVazia) {
+            iconeListaVazia.setVisibility(VISIBLE);
+            txtListaVazia.setVisibility(VISIBLE);
+            return;
+        }
+        iconeListaVazia.setVisibility(GONE);
+        txtListaVazia.setVisibility(GONE);
+    }
+
     private void inicializaComponentes() {
         idPersonagem= "";
         textoFiltro= "";
-        todosTrabalhosEstoque = new ArrayList<>();
+        trabalhosEstoque = new ArrayList<>();
         trabalhosEstoqueFiltrada = new ArrayList<>();
         profissoes= new ArrayList<>();
         recyclerView = binding.listaTrabalhoEstoqueRecyclerView;
@@ -321,7 +365,7 @@ public class ListaEstoqueFragment
     }
 
     private void removeTrabalhoDaLista(TrabalhoEstoque trabalhoRemovido) {
-        todosTrabalhosEstoque.remove(trabalhoRemovido);
+        trabalhosEstoque.remove(trabalhoRemovido);
     }
 
     private void removeTrabalhoDoBanco(TrabalhoEstoque trabalhoremovido) {
@@ -334,7 +378,7 @@ public class ListaEstoqueFragment
     @Override
     public void onResume() {
         super.onResume();
-        recuperaTrabalhosEstoque();
+        recuperaEstoque();
     }
 
     @Override
@@ -390,20 +434,15 @@ public class ListaEstoqueFragment
     private void filtroLista() {
         if (textoFiltro.isEmpty()) {
             trabalhoEstoqueAdapter.atualiza(trabalhosEstoqueFiltrada);
+            atualizaVisibilidadeListaVazia(trabalhosEstoqueFiltrada.isEmpty());
             return;
         }
         ArrayList<TrabalhoEstoque> listaFiltrada =
                 (ArrayList<TrabalhoEstoque>) trabalhosEstoqueFiltrada.stream().filter(
-                                trabalho -> stringContemString(trabalho.getNome(), textoFiltro))
-                        .collect(Collectors.toList());
-        if (listaFiltrada.isEmpty()) {
-            iconeListaVazia.setVisibility(VISIBLE);
-            txtListaVazia.setVisibility(VISIBLE);
-            trabalhoEstoqueAdapter.atualiza(listaFiltrada);
-            return;
-        }
-        txtListaVazia.setVisibility(GONE);
-        iconeListaVazia.setVisibility(GONE);
+                    trabalho -> stringContemString(trabalho.getNome(), textoFiltro)
+                    ).collect(Collectors.toList());
+
+        atualizaVisibilidadeListaVazia(listaFiltrada.isEmpty());
         trabalhoEstoqueAdapter.atualiza(listaFiltrada);
     }
 

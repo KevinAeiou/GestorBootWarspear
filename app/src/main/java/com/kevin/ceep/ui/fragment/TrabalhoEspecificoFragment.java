@@ -446,7 +446,9 @@ public class TrabalhoEspecificoFragment
             idPersonagem
         );
         trabalhoProducaoViewModel = new ViewModelProvider(requireActivity(), trabalhoProducaoViewModelFactory).get(idPersonagem, TrabalhoProducaoViewModel.class);
-        TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(new TrabalhoEstoqueRepository(idPersonagem));
+        TrabalhoEstoqueViewModelFactory trabalhoEstoqueViewModelFactory = new TrabalhoEstoqueViewModelFactory(
+            new TrabalhoEstoqueRepository(idPersonagem, getContext())
+        );
         trabalhoEstoqueViewModel = new ViewModelProvider(requireActivity(), trabalhoEstoqueViewModelFactory).get(idPersonagem, TrabalhoEstoqueViewModel.class);
         ProfissaoPersonagemViewModelFactory profissaoPersonagemViewModelFactory = new ProfissaoPersonagemViewModelFactory(
             idPersonagem

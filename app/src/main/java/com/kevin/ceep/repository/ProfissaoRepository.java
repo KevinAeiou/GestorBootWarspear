@@ -4,7 +4,6 @@ import static com.kevin.ceep.repository.TrabalhoProducaoRepository.destroyInstan
 import static com.kevin.ceep.ui.activity.Constantes.CHAVE_LISTA_PROFISSOES;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -119,7 +118,6 @@ public class ProfissaoRepository {
 
     public LiveData<Resource<Void>> modificaProfissao(ProfissaoBase profissao) {
         MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
-        Log.d("PROFISSAO", "modificaProfissao: "+ profissao.getId() + " : " + profissao.getNome());
         referenciaListaProfissoes.child(profissao.getId()).setValue(profissao)
             .addOnCompleteListener(backGroundExecutor, task -> {
                if (task.isSuccessful()) {

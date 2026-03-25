@@ -4,6 +4,7 @@ import static com.kevin.ceep.repository.TrabalhoProducaoRepository.destroyInstan
 import static com.kevin.ceep.ui.activity.Constantes.CHAVE_ESTOQUE;
 import static com.kevin.ceep.ui.activity.Constantes.CHAVE_LISTA_TRABALHO;
 
+import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
@@ -19,13 +20,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.kevin.ceep.dao.EstoqueDao;
 import com.kevin.ceep.model.Trabalho;
 import com.kevin.ceep.model.TrabalhoEstoque;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -41,21 +45,27 @@ public class TrabalhoEstoqueRepository {
     private ValueEventListener ouvinteRecuperaEstoqueIdTrabalho;
     private final Executor backgroundExecutor = Executors.newFixedThreadPool(2);
     private MutableLiveData<Resource<ArrayList<TrabalhoEstoque>>> estoqueEncontrado;
+    private EstoqueDao estoqueDao;
+    private static Map<String, String> mapaProfissoes = new HashMap<>();
+    private ProfissaoRepository profissaoRepository;
 
-    public TrabalhoEstoqueRepository(String idPersonagem) {
+    public TrabalhoEstoqueRepository(String idPersonagem, Context context) {
         this.idPersonagem = idPersonagem;
         FirebaseDatabase meuBanco = FirebaseDatabase.getInstance();
-        this.referenciaEstoqueIdPersonagem = meuBanco.getReference(CHAVE_ESTOQUE).child(idPersonagem);
+        this.referenciaEstoqueIdPersonagem = meuBanco.getReference(CHAVE_ESTOQUE)
+            .child(idPersonagem);
         this.referenciaTrabalhos = meuBanco.getReference(CHAVE_LISTA_TRABALHO);
+        this.estoqueDao = new EstoqueDao(context);
+        this.profissaoRepository = ProfissaoRepository.getInstance(context);
     }
     public TrabalhoEstoqueRepository() {
         this.referenciaEstoque= FirebaseDatabase.getInstance().getReference(CHAVE_ESTOQUE);
     }
 
-    public static TrabalhoEstoqueRepository getInstance(String idPersonagem) {
+    public static TrabalhoEstoqueRepository getInstance(String idPersonagem, Context context) {
         if (instancia == null || !instancia.idPersonagem.equals(idPersonagem)) {
             destroyInstance();
-            instancia = new TrabalhoEstoqueRepository(idPersonagem);
+            instancia = new TrabalhoEstoqueRepository(idPersonagem, context);
         }
         return instancia;
     }
@@ -94,8 +104,19 @@ public class TrabalhoEstoqueRepository {
         return trabalho == null || trabalho.getId() == null || trabalho.getId().isEmpty();
     }
 
-    public LiveData<Resource<ArrayList<TrabalhoEstoque>>> recuperaEstoque() {
+    public LiveData<Resource<ArrayList<TrabalhoEstoque>>> recuperaEstoqueServidor() {
         estoqueEncontrado = new MutableLiveData<>();
+
+        backgroundExecutor.execute(() -> {
+            mapaProfissoes = profissaoRepository.recuperaMapaProfissoesLocal();
+
+            buscarEstoque();
+        });
+
+        return estoqueEncontrado;
+    }
+
+    private void buscarEstoque() {
         ouvinteRecuperaEstoque = new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
@@ -140,14 +161,17 @@ public class TrabalhoEstoqueRepository {
             }
         };
         referenciaEstoqueIdPersonagem.addValueEventListener(ouvinteRecuperaEstoque);
-        return estoqueEncontrado;
     }
 
     private TrabalhoEstoque defineAtributosTrabalho(TrabalhoEstoque trabalhoEstoque, Trabalho trabalho) {
         trabalhoEstoque.setNome(trabalho.getNome());
         trabalhoEstoque.setRaridade(trabalho.getRaridade());
         trabalhoEstoque.setNivel(trabalho.getNivel());
-        trabalhoEstoque.setProfissao(trabalho.getProfissao());
+        String nomeProfissao = mapaProfissoes.get(trabalho.getProfissao());
+        trabalhoEstoque.setProfissao(
+                nomeProfissao != null ? nomeProfissao : trabalho.getProfissao()
+        );
+
         return trabalhoEstoque;
     }
 
@@ -270,5 +294,45 @@ public class TrabalhoEstoqueRepository {
         if (referenciaEstoqueIdPersonagem != null && ouvinteRecuperaEstoqueIdTrabalho != null) {
             referenciaEstoqueIdPersonagem.removeEventListener(ouvinteRecuperaEstoqueIdTrabalho);
         }
+    }
+
+    public LiveData<Resource<Void>> sincronizaEstoque() {
+        ArrayList<TrabalhoEstoque> estoque = new ArrayList<>();
+        MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
+
+        ouvinteRecuperaEstoque = new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                estoque.clear();
+
+                for (DataSnapshot dn : snapshot.getChildren()) {
+                    TrabalhoEstoque trabalho = dn.getValue(TrabalhoEstoque.class);
+                    if (trabalho != null) {
+                        estoque.add(trabalho);
+                    }
+                }
+
+                backgroundExecutor.execute(() -> {
+                    try {
+                        estoqueDao.substituirTodas(estoque, idPersonagem);
+
+                        liveData.postValue(new Resource<>(null, null));
+
+                    } catch (Exception e) {
+                        liveData.postValue(new Resource<>(null, e.getMessage()));
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                liveData.setValue(new Resource<>(null, error.getMessage()));
+            }
+        };
+
+        referenciaEstoqueIdPersonagem.addListenerForSingleValueEvent(ouvinteRecuperaEstoque);
+
+        return liveData;
     }
 }

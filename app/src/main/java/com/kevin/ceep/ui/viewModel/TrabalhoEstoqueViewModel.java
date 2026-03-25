@@ -18,26 +18,29 @@ public class TrabalhoEstoqueViewModel extends ViewModel {
     private final TrabalhoEstoqueRepository repository;
     private final MutableLiveData<Boolean> triggerRecuperaEstoque = new MutableLiveData<>();
     private final MutableLiveData<String> triggerRecuperaPorId = new MutableLiveData<>();
-    public final LiveData<Resource<ArrayList<TrabalhoEstoque>>> trabalhosEstoque;
+    public final LiveData<Resource<ArrayList<TrabalhoEstoque>>> estoqueServidor;
     public final LiveData<Resource<TrabalhoEstoque>> trabalhoPorId;
     private final SingleLiveEvent<Resource<Void>> modificacaoResultado = new SingleLiveEvent<>();
     private final SingleLiveEvent<Resource<Void>> insercaoResultado = new SingleLiveEvent<>();
     private final SingleLiveEvent<Resource<Void>> remocaoResultado = new SingleLiveEvent<>();
     private final SingleLiveEvent<Resource<Void>> remocaoReferenciaResultado = new SingleLiveEvent<>();
 
+
+    private final SingleLiveEvent<Resource<Void>> sincronizacaoResultado = new SingleLiveEvent<>();
+
     public TrabalhoEstoqueViewModel(TrabalhoEstoqueRepository repository) {
         this.repository = repository;
-        trabalhosEstoque = Transformations.switchMap(
+        estoqueServidor = Transformations.switchMap(
                 triggerRecuperaEstoque,
-                trigger -> repository.recuperaEstoque()
+                trigger -> repository.recuperaEstoqueServidor()
                 );
         trabalhoPorId = Transformations.switchMap(
                 triggerRecuperaPorId,
                 repository::recuperaTrabalhoEstoquePorIdTrabalho
         );
     }
-    public LiveData<Resource<ArrayList<TrabalhoEstoque>>> getTrabalhosEstoque() {
-        return trabalhosEstoque;
+    public LiveData<Resource<ArrayList<TrabalhoEstoque>>> getEstoque() {
+        return estoqueServidor;
     }
 
     public SingleLiveEvent<Resource<Void>> getModificacaoResultado() {
@@ -58,7 +61,11 @@ public class TrabalhoEstoqueViewModel extends ViewModel {
     public SingleLiveEvent<Resource<Void>> getRemocaoReferenciaResultado() {
         return remocaoReferenciaResultado;
     }
-    public void recuperaTrabalhosEstoque() {
+
+    public SingleLiveEvent<Resource<Void>> getSincronizacaoResultado() {
+        return sincronizacaoResultado;
+    }
+    public void recuperaEstoque() {
         triggerRecuperaEstoque.setValue(true);
     }
 
@@ -109,5 +116,18 @@ public class TrabalhoEstoqueViewModel extends ViewModel {
     }
     public void removeOuvinte() {
         repository.removeOuvinte();
+    }
+
+    public void sincronizaEstoque() {
+        Observer<? super Resource<Void>> oberver;
+        oberver = new Observer<Resource<Void>>() {
+
+            @Override
+            public void onChanged(Resource<Void> resultado) {
+                sincronizacaoResultado.setValue(resultado);
+                repository.sincronizaEstoque().removeObserver(this);
+            }
+        };
+        repository.sincronizaEstoque().observeForever(oberver);
     }
 }
