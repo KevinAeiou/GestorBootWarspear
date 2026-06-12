@@ -8,14 +8,16 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <!-- Cores de texto -->
-    <color name="cor_texto_licenca_principiante">#ffcc00</color>
-    <color name="cor_texto_licenca_novato">#c3c3c3</color>
-    <color name="cor_texto_licenca_mestre">#ffcc00</color>
-    <color name="cor_texto_licenca_aprediz">#66ff66</color>
-    <color name="cor_texto_raridade_especial">#ff6666</color>
-    <color name="cor_texto_raridade_raro">#ff66ff</color>
-    <color name="cor_texto_raridade_melhorado">#ffcc00</color>
-    <color name="cor_texto_raridade_comum">#FCF5EF</color>
+    <color name="cor_texto_licenca_principiante">#FFD54F</color>
+    <color name="cor_texto_licenca_aprediz">#66FF66</color>
+    <color name="cor_texto_licenca_novato">#2F3B52</color>
+    <color name="cor_texto_licenca_mestre">#FFB300</color>
+
+    <color name="cor_texto_raridade_comum">#F5F5F5</color>
+    <color name="cor_texto_raridade_melhorado">#F4C542</color>
+    <color name="cor_texto_raridade_raro">#C084FC</color>
+    <color name="cor_texto_raridade_especial">#FF6B6B</color>
+
     <color name="cor_texto_nivel">#00ff00</color>
     <!-- Cores de fundo -->
     <color name="cor_azul">#115588</color>
@@ -27,6 +29,7 @@
     <color name="cor_background_claro">#59D8FF</color>
     <color name="cor_background_claro_secundario">#A0E2F7</color>
     <color name="cor_background_bordo">#A71500</color>
+
     <color name="cor_background_card">#6DB5CA</color>
     <color name="cor_background_produzindo">#6d87ca</color>
     <color name="cor_background_feito">#b5ca6d</color>
@@ -36,7 +39,8 @@
     <color name="light_blue_A200">#FF40C4FF</color>
     <color name="light_blue_A400">#FF00B0FF</color>
     <color name="black_overlay">#66000000</color>
-
+    <color name="cor_primaria_transparente">#33115588</color>
     <color name="skeleton">#66000000</color>
     <color name="text_color">#000</color>
+    <color name="ripple_color">#33000000</color>
 </resources>

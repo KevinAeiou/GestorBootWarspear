@@ -1,0 +1,276 @@
+package com.kevin.gestorproducao.ui.fragment;
+
+import static com.kevin.gestorproducao.ui.fragment.ListaEstoqueFragmentDirections.vaiParaListaTrabalhosEstoque;
+
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+import com.kevin.gestorproducao.databinding.FragmentDetalhesEstoqueBinding;
+import com.kevin.gestorproducao.model.TrabalhoEstoque;
+import com.kevin.gestorproducao.ui.viewModel.ComponentesVisuais;
+import com.kevin.gestorproducao.ui.viewModel.PersonagemViewModel;
+import com.kevin.gestorproducao.ui.viewModel.TrabalhoEstoqueViewModel;
+import com.kevin.gestorproducao.ui.viewModel.factory.ViewModelFactory;
+
+import java.util.Objects;
+
+public class DetalhesEstoqueFragment
+    extends BaseFragment<FragmentDetalhesEstoqueBinding>
+{
+    private TrabalhoEstoque trabalho;
+    private TextView txtNomeTrabalho, txtProfissaoTrabalho, txtNivelTrabalho;
+    private TextInputLayout txtQuantidadeTrabalho;
+    private TextInputEditText edtQuantidadeTrabalho;
+    private TrabalhoEstoqueViewModel estoqueViewModel;
+    private PersonagemViewModel personagemViewModel;
+    private MaterialButton btnExcluir, btnConfirmar;
+    private LinearLayout loadingBotaoConfirmar;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        DetalhesEstoqueFragmentArgs argumentos = DetalhesEstoqueFragmentArgs.fromBundle(getArguments());
+
+        trabalho = argumentos.getTrabalho();
+    }
+
+    @Override
+    protected FragmentDetalhesEstoqueBinding inflateBinding(
+        LayoutInflater inflater,
+        ViewGroup container
+    ) {
+        return FragmentDetalhesEstoqueBinding.inflate(inflater, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        inicializaComponentes();
+        preencheCampos();
+        configuraBotaoExcluir();
+        configuraBotaoConfirmar();
+        observarEstoque();
+        observarPersonagem();
+    }
+
+    private void configuraBotaoConfirmar() {
+        btnConfirmar.setOnClickListener(v -> {
+            iniciarLoadingBotao(
+                btnConfirmar,
+                loadingBotaoConfirmar
+            );
+
+            verificaModificacao();
+        });
+    }
+
+    private void verificaModificacao() {
+        Integer quantidadeNova = defineValorQuantidade();
+        if (quantidadeNova == null) return;
+
+        TrabalhoEstoque trabalho = defineTrabalhoModificado(quantidadeNova);
+
+        estoqueViewModel.modificaEstoque(trabalho);
+    }
+
+    private TrabalhoEstoque defineTrabalhoModificado(Integer quantidade) {
+        TrabalhoEstoque trabalhoModificado = new TrabalhoEstoque();
+
+        trabalhoModificado.setId(trabalho.getId());
+        trabalhoModificado.setIdTrabalho(trabalho.getIdTrabalho());
+        trabalhoModificado.setQuantidade(quantidade);
+
+        return trabalhoModificado;
+    }
+
+    private void configuraBotaoExcluir() {
+        btnExcluir.setOnClickListener(v -> {
+            iniciarLoadingBotao(
+                btnConfirmar,
+                loadingBotaoConfirmar
+            );
+
+            ConfirmacaoDialog dialog = ConfirmacaoDialog.novaInstancia(
+                "Excluir trabalho em estoque",
+                "Tem certeza que deseja excluir este trabalho?",
+                () -> {
+                    btnExcluir.setEnabled(false);
+                    estoqueViewModel.removeTrabalhoEstoque(trabalho);
+                },
+                () -> pararLoadingBotao(btnConfirmar, loadingBotaoConfirmar)
+            );
+
+            dialog.show(getParentFragmentManager(), "confirmacao_exclusao");
+        });
+    }
+
+    @Override
+    protected ComponentesVisuais fornecerComponentesVisuais() {
+
+        return new ComponentesVisuais(
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            trabalho.getNome(),
+            false
+        );
+    }
+
+    private void observarPersonagem() {
+        personagemViewModel.pegaPersonagemSelecionado().observe(
+            getViewLifecycleOwner(),
+            personagem -> {
+                if (personagem == null) return;
+
+                estoqueViewModel.setIdPersonagem(personagem.getId());
+            }
+        );
+    }
+
+    private void observarEstoque() {
+        estoqueViewModel.getModificacaoResultado().observe(
+            getViewLifecycleOwner(),
+            resultado -> {
+                paraProgresso();
+
+                if (resultado.getErro() == null) {
+                    voltaParaEstoque();
+                    return;
+                }
+
+                pararLoadingBotao(
+                    btnConfirmar,
+                    loadingBotaoConfirmar
+                );
+
+                txtQuantidadeTrabalho.setError(resultado.getErro());
+            }
+        );
+
+        estoqueViewModel.getRemocaoResultado().observe(
+            getViewLifecycleOwner(),
+            resultado -> {
+                paraProgresso();
+
+                if (resultado.getErro() == null) {
+                    voltaParaEstoque();
+                    mostraMensagemAncorada("Item removido com sucesso");
+                    return;
+                }
+
+                pararLoadingBotao(
+                    btnConfirmar,
+                    loadingBotaoConfirmar
+                );
+                mostraMensagemAncorada("Erro: " + resultado.getErro());
+            }
+        );
+    }
+
+    private void paraProgresso() {
+        btnExcluir.setEnabled(true);
+    }
+
+    private void voltaParaEstoque() {
+        NavController controlador = Navigation.findNavController(binding.getRoot());
+        controlador.navigate(vaiParaListaTrabalhosEstoque());
+    }
+
+    private void preencheCampos() {
+        txtNomeTrabalho.setText(trabalho.getNome());
+        txtProfissaoTrabalho.setText(trabalho.getProfissao());
+        txtNivelTrabalho.setText(String.valueOf(trabalho.getNivel()));
+        edtQuantidadeTrabalho.setText(String.valueOf(trabalho.getQuantidade()));
+    }
+
+    @Nullable
+    private Integer defineValorQuantidade() {
+        String quantidade = edtQuantidadeTrabalho.getText().toString().trim();
+        if (quantidade.isEmpty()) {
+            txtQuantidadeTrabalho.setError("Campo obrigatório");
+            return null;
+        }
+
+        int quantidadeNova;
+        try {
+            quantidadeNova = obterValorNumerico(edtQuantidadeTrabalho);
+
+            if (quantidadeNova < 0) {
+                throw new NumberFormatException("A quantidade não pode ser negativa");
+            }
+        } catch (NumberFormatException e) {
+            txtQuantidadeTrabalho.setError(e.getMessage());
+            return null;
+        }
+
+        if (Objects.equals(quantidadeNova, trabalho.getQuantidade())) {
+            voltaParaEstoque();
+            return null;
+        }
+
+        return quantidadeNova;
+    }
+
+    private void inicializaComponentes() {
+        txtNomeTrabalho = binding.txtNomeTrabalho;
+        txtProfissaoTrabalho = binding.txtProfissaoTrabalho;
+        txtNivelTrabalho = binding.txtNivelTrabalho;
+        txtQuantidadeTrabalho = binding.txtQuantidadeEstoqueFragment;
+        edtQuantidadeTrabalho = binding.edtQuantidadeEstoqueFragment;
+        btnExcluir = binding.btnExcluiEstoque;
+        btnConfirmar = binding.btnConfirmarEstoque;
+        loadingBotaoConfirmar = binding.loadingDotsConfirmar.getRoot();
+
+        configurarMascaraMilhar(edtQuantidadeTrabalho);
+
+        ViewModelFactory viewModelFactory = new ViewModelFactory(getContext());
+
+        estoqueViewModel = new ViewModelProvider(
+            this,
+            viewModelFactory
+        ).get(TrabalhoEstoqueViewModel.class);
+
+        personagemViewModel = new ViewModelProvider(
+            requireActivity(),
+            viewModelFactory
+        ).get(PersonagemViewModel.class);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        binding = null;
+        trabalho = null;
+        removerOuvinteEstoque();
+        removerOuvintePersonagem();
+    }
+
+    private void removerOuvintePersonagem() {
+        if (personagemViewModel == null) return;
+        personagemViewModel.removeObservador();
+    }
+
+    private void removerOuvinteEstoque() {
+        if (estoqueViewModel == null) return;
+        estoqueViewModel.removeObservador();
+    }
+}
