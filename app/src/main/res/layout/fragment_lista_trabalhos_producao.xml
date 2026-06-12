@@ -6,55 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chipGrupId"
-        app:singleLine="true"
-        app:singleSelection="true"
-        app:selectionRequired="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipFiltroTodos"
-            android:padding="8dp"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/stringTodos"/>
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipFiltroProduzir"
-            android:checked="true"
-            android:padding="8dp"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/stringProduzir"/>
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipFiltroProduzindo"
-            android:padding="8dp"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/stringProduzindo"/>
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipFiltroPronto"
-            android:padding="8dp"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/stringPronto"/>
-    </com.google.android.material.chip.ChipGroup>
-
     <ProgressBar
         android:id="@+id/indicadorProgressoListaTrabalhosFragment"
         android:layout_width="wrap_content"
@@ -69,11 +20,10 @@
         android:id="@+id/swipeRefreshLayoutTrabalhos"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/chipGrupId">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listaTrabalhoRecyclerView"
@@ -113,12 +63,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:contentDescription="@string/cadastrar_novo_trabalho"
-        android:foregroundGravity="center"
-        app:elevation="12dp"
-        app:fabSize="auto"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_adiciona"
-        tools:ignore="SpeakableTextPresentCheck" />
+        app:srcCompat="@drawable/ic_adiciona"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

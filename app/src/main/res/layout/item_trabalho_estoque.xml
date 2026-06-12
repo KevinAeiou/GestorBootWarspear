@@ -1,105 +1,74 @@
-<?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    style="@style/card"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/card"
     android:id="@+id/itemCardTrabalhoEstoque">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayoutItemCardTrabalhoEstoque"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/itemNomeTrabalhoEstoque"
-            style="@style/txtTituloCard"
-            android:gravity="center"
-            android:contentDescription="Nome do item em estoque"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/itemQuantidadeContainer"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Nome do trabalho estoque" />
+            tools:text="Trabalho Muito Grande Aqui" />
 
-        <TextView
-            android:id="@+id/itemProfissaoTrabalhoEstoque"
-            android:layout_width="0dp"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/itemQuantidadeContainer"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="Profissão do item em estoque"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:textSize="18sp"
-            android:gravity="center"
-            app:layout_constraintEnd_toEndOf="@+id/itemNomeTrabalhoEstoque"
-            app:layout_constraintStart_toStartOf="@id/itemNomeTrabalhoEstoque"
-            app:layout_constraintTop_toBottomOf="@id/itemNomeTrabalhoEstoque"
-            tools:text="Profissão do trabalho estoque" />
+            android:layout_marginEnd="8dp"
+            app:cardBackgroundColor="?attr/colorSecondaryContainer"
+            app:cardCornerRadius="12dp"
+            app:layout_constraintBottom_toBottomOf="@+id/itemNomeTrabalhoEstoque"
+            app:layout_constraintEnd_toStartOf="@id/itemNivelContainer"
+            app:layout_constraintTop_toTopOf="@+id/itemNomeTrabalhoEstoque"
+            app:strokeWidth="0dp">
 
-        <TextView
-            android:id="@+id/itemNivelTrabalhoEstoque"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:contentDescription="Nível do item em estoque"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:textSize="20sp"
-            android:gravity="center"
-            app:layout_constraintEnd_toEndOf="@+id/itemProfissaoTrabalhoEstoque"
-            app:layout_constraintStart_toStartOf="@id/itemProfissaoTrabalhoEstoque"
-            app:layout_constraintTop_toBottomOf="@id/itemProfissaoTrabalhoEstoque"
-            tools:text="Nível do trabalho estoque" />
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/linearLayoutItemTrabalhoEstoque"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintStart_toStartOf="@+id/itemNivelTrabalhoEstoque"
-            app:layout_constraintEnd_toEndOf="@id/itemNivelTrabalhoEstoque"
-            app:layout_constraintTop_toBottomOf="@id/itemNivelTrabalhoEstoque"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/itemBotaoMenosUm"
+            <TextView
+                android:id="@+id/itemQuantidadeTrabalhoEstoque"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/Widget.Material3.MaterialTimePicker.ImageButton"
-                android:src="@drawable/ic_menos_um" />
-
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/itemBotaoMenosCinquenta"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/Widget.Material3.MaterialTimePicker.ImageButton"
-                android:src="@drawable/ic_menos_um" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/itemTxtQuantidadeTrabalhoEstoque"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textSize="22sp"
-                android:padding="8dp"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:textColor="?attr/colorOnSecondaryContainer"
+                android:textSize="13sp"
                 android:textStyle="bold"
-                tools:text="0"/>
+                tools:text="120 und" />
+        </com.google.android.material.card.MaterialCardView>
 
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/itemBotaoMaisCinquenta"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/itemNivelContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/cor_primaria_transparente"
+            app:cardCornerRadius="12dp"
+            app:layout_constraintBottom_toBottomOf="@+id/itemQuantidadeContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/itemQuantidadeContainer"
+            app:strokeWidth="0dp">
+
+            <TextView
+                android:id="@+id/itemNivelTrabalhoEstoque"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/Widget.Material3.MaterialTimePicker.ImageButton"
-                android:src="@drawable/ic_mais_um"/>
-
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/itemBotaoMaisUm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/Widget.Material3.MaterialTimePicker.ImageButton"
-                android:src="@drawable/ic_mais_um"/>
-        </androidx.appcompat.widget.LinearLayoutCompat>
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="6dp"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:text="Nv. 10" />
+        </com.google.android.material.card.MaterialCardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

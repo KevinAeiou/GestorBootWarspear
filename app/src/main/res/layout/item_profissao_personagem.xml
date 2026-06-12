@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android="http://schemas.android.com/apk/res/android"
     style="@style/card"
     android:id="@+id/cardViewProfissaoPersonagem">
 
@@ -10,20 +10,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/itemNivelProfissaoPersonagem"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/itemNivelContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="30sp"
             android:layout_margin="16dp"
-            android:padding="8dp"
-            android:textStyle="bold"
-            style="@style/TextAppearance.Texto"
+            app:cardCornerRadius="12dp"
+            app:cardBackgroundColor="@color/cor_primaria_transparente"
+            app:strokeWidth="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            tools:text="26"
-        />
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:id="@+id/itemNivelProfissaoPersonagem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                android:textColor="?attr/colorPrimary"
+                tools:text="10"/>
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:id="@+id/itemNomeProfissaoPersonagem"
@@ -33,30 +42,25 @@
             android:layout_marginTop="16dp"
             android:layout_marginStart="8dp"
             android:padding="8dp"
-            android:textSize="22sp"
+            android:textSize="16sp"
             android:textStyle="bold"
-            style="@style/TextAppearance.Texto"
+            android:textColor="?attr/colorOnSurface"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/itemNivelProfissaoPersonagem"
+            app:layout_constraintStart_toEndOf="@id/itemNivelContainer"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Profissao"
-            />
+            tools:text="Profissao" />
 
         <TextView
             android:id="@+id/itemExperienciaProfissaoPersonagem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
             android:padding="8dp"
+            android:textSize="13sp"
             android:layout_marginBottom="16dp"
-            style="@style/TextAppearance.Texto"
             app:layout_constraintStart_toStartOf="@+id/itemNomeProfissaoPersonagem"
             app:layout_constraintEnd_toEndOf="@id/itemNomeProfissaoPersonagem"
             app:layout_constraintTop_toBottomOf="@id/itemNomeProfissaoPersonagem"
             app:layout_constraintBottom_toBottomOf="parent"
-            tools:text="Experiência"
-            />
-
+            tools:text="Experiência" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>
