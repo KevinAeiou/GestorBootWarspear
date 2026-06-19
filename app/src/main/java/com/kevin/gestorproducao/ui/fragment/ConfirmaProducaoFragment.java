@@ -157,7 +157,7 @@ public class ConfirmaProducaoFragment
                     btnConfirmar,
                     loadingBotaoConfirmar
                 );
-                mostraMensagemAncorada("Erro: " + resultado.getErro());
+                mostraMensagemAncorada(resultado.getErro());
             }
         );
     }
