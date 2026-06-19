@@ -17,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kevin.gestorproducao.dao.ProducaoDao;
 import com.kevin.gestorproducao.model.TrabalhoProducao;
+import com.kevin.gestorproducao.repository.helper.FirebaseTimeoutHelper;
 
 import org.jspecify.annotations.Nullable;
 
@@ -58,121 +59,110 @@ public class  TrabalhoProducaoRepository {
         TrabalhoProducao trabalho,
         String idPersonagem
     ) {
-        MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
         if (producaoInvalida(trabalho)) {
+            MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
             liveData.postValue(new Resource<>(null, "Produção inválida"));
             return liveData;
         }
-        referenciaProducao.child(idPersonagem).child(trabalho.getId()).setValue(trabalho)
+
+        return FirebaseTimeoutHelper.execute(callback -> referenciaProducao
+            .child(idPersonagem)
+            .child(trabalho.getId())
+            .setValue(trabalho)
             .addOnCompleteListener(backgroundExecutor, task -> {
                 if (task.isSuccessful()) {
                     try {
                         producaoDao.modificaProducao(trabalho, idPersonagem);
-                        liveData.postValue(new Resource<>(null, null));
+                        callback.sucesso();
 
                     } catch (RuntimeException e) {
-                        liveData.postValue(new Resource<>(null, e.getMessage()));
+                        callback.erro(e.getMessage());
                     }
                     return;
                 }
 
-                Exception exception = task.getException();
-
-                String erro = recuperaErro(exception, "Erro desconhecido ao modificar produção");
-
-                liveData.postValue(new Resource<>(null, erro));
-            }
+                callback.erro(
+                    recuperaErro(
+                        task.getException(),
+                        "Erro desconhecido ao modificar produção"
+                    )
+                );
+            })
         );
-
-        return liveData;
-    }
-
-    private String recuperaErro(Exception exception, String erroPadrao) {
-        if (exception == null) {
-            return erroPadrao;
-        }
-
-        if (exception instanceof FirebaseNetworkException) {
-            return "Erro de conexão";
-        }
-
-        String mensagem = exception.getMessage();
-
-        return mensagem == null || mensagem.isEmpty()
-                ? erroPadrao
-                : mensagem;
-    }
-
-    private boolean producaoInvalida(TrabalhoProducao trabalho) {
-        return trabalho.getIdTrabalho() == null || trabalho.getIdTrabalho().isEmpty() ||
-            trabalho.getTipoLicenca() == null || trabalho.getTipoLicenca().isEmpty() ||
-            trabalho.getEstado() == null ||
-            trabalho.getExperiencia() == null ||
-            trabalho.getRecorrencia() == null;
     }
 
     public LiveData<Resource<Void>> insereTrabalhoProducao(
         TrabalhoProducao trabalho,
         String idPersonagem
     ) {
-        MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
         if (idTrabalhoInvalido(trabalho) || producaoInvalida(trabalho)) {
+            MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
             liveData.postValue(new Resource<>(null, "Produção inválida"));
             return liveData;
         }
-        referenciaProducao.child(idPersonagem).child(trabalho.getId()).setValue(trabalho)
+
+        return FirebaseTimeoutHelper.execute(callback -> referenciaProducao
+            .child(idPersonagem)
+            .child(trabalho.getId())
+            .setValue(trabalho)
             .addOnCompleteListener(backgroundExecutor, task -> {
                 if (task.isSuccessful()) {
                     try {
                         producaoDao.insereProducao(trabalho, idPersonagem);
-                        liveData.postValue(new Resource<>(null, null));
+                        callback.sucesso();
 
                     } catch (RuntimeException e) {
-                        liveData.postValue(new Resource<>(null, e.getMessage()));
+                        callback.erro(e.getMessage());
                     }
+
                     return;
                 }
 
-                Exception exception = task.getException();
-                String erro = recuperaErro(exception, "Erro desconhecido ao inserir produção");
-                liveData.postValue(new Resource<>(null, erro));
-            }
+                callback.erro(
+                    recuperaErro(
+                        task.getException(),
+                        "Erro desconhecido ao inserir produção"
+                    )
+                );
+            })
         );
-        return liveData;
     }
 
     public LiveData<Resource<Void>> removeTrabalhoProducao(
         TrabalhoProducao trabalho,
         String idPersonagem
     ) {
-        MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
         if (idTrabalhoInvalido(trabalho)) {
+            MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
             liveData.postValue(new Resource<>(null, "Id produção inválido"));
+
             return liveData;
         }
-        referenciaProducao.child(idPersonagem).child(trabalho.getId()).removeValue()
+
+        return FirebaseTimeoutHelper.execute(callback -> referenciaProducao
+            .child(idPersonagem)
+            .child(trabalho.getId())
+            .removeValue()
             .addOnCompleteListener(backgroundExecutor, task -> {
                 if (task.isSuccessful()) {
                     try {
                         producaoDao.removeProducao(trabalho);
-                        liveData.postValue(new Resource<>(null, null));
+                        callback.sucesso();
 
                     } catch (RuntimeException e) {
-                        liveData.postValue(new Resource<>(null, e.getMessage()));
+                        callback.erro(e.getMessage());
                     }
                     return;
                 }
 
-                Exception exception = task.getException();
-                String erro = recuperaErro(exception, "Erro desconhecido ao remover produção");
-                liveData.postValue(new Resource<>(null, erro));
-            }
+                callback.erro(
+                    recuperaErro(
+                        task.getException(),
+                        "Erro desconhecido ao remover produção"
+                    )
+                );
+            })
         );
-        return liveData;
-    }
-
-    private boolean idTrabalhoInvalido(TrabalhoProducao trabalho) {
-        return trabalho == null || trabalho.getId() == null || trabalho.getId().isEmpty();
     }
 
     public void removeReferenciaTrabalhoEspecifico(String idTrabalho) {
@@ -287,5 +277,33 @@ public class  TrabalhoProducaoRepository {
                 }
             }
         );
+    }
+
+    private String recuperaErro(Exception exception, String erroPadrao) {
+        if (exception == null) {
+            return erroPadrao;
+        }
+
+        if (exception instanceof FirebaseNetworkException) {
+            return "Erro de conexão";
+        }
+
+        String mensagem = exception.getMessage();
+
+        return mensagem == null || mensagem.isEmpty()
+                ? erroPadrao
+                : mensagem;
+    }
+
+    private boolean producaoInvalida(TrabalhoProducao trabalho) {
+        return trabalho.getIdTrabalho() == null || trabalho.getIdTrabalho().isEmpty() ||
+                trabalho.getTipoLicenca() == null || trabalho.getTipoLicenca().isEmpty() ||
+                trabalho.getEstado() == null ||
+                trabalho.getExperiencia() == null ||
+                trabalho.getRecorrencia() == null;
+    }
+
+    private boolean idTrabalhoInvalido(TrabalhoProducao trabalho) {
+        return trabalho == null || trabalho.getId() == null || trabalho.getId().isEmpty();
     }
 }
