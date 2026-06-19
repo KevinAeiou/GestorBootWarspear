@@ -3,22 +3,22 @@ package com.kevin.gestorproducao.ui.fragment;
 import static com.kevin.gestorproducao.ui.fragment.CadastrarUsuarioFragmentDirections.vaiParaSlashScreen;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,13 +34,15 @@ public class CadastrarUsuarioFragment
     extends BaseFragment<FragmentCadastrarUsuarioBinding>
     implements View.OnClickListener
 {
-    private AppCompatButton botaoCadastrarUsuario;
+    private MaterialButton botaoCadastrarUsuario;
+    private TextView txtEntrar;
     private TextInputLayout txtSenha;
-    private TextInputEditText edtNome;
+    private TextInputEditText edtNome, edtEmail;
     private TextInputEditText edtSenha;
     String[] menssagens = {"Preencha todos os campos", "Usuário cadastrado com sucesso!"};
     private AutenticacaoViewModel autenticacaoViewModel;
     private NavController controlador;
+    private LinearLayout loadingBotaoConfirmar;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -50,10 +52,27 @@ public class CadastrarUsuarioFragment
         configuraEdtSenhaRobusta();
         observarAutenticacao();
         botaoCadastrarUsuario.setOnClickListener(this);
-        binding.txtLinkEntrar.setOnClickListener(this);
+        txtEntrar.setOnClickListener(this);
     }
 
     private void observarAutenticacao() {
+        autenticacaoViewModel.getCriacaoResultado().observe(
+            getViewLifecycleOwner(),
+            resultado -> {
+                if (resultado.getErro() == null) {
+                    salvarDadosUsuario();
+                    return;
+                }
+
+                pararLoadingBotao(
+                    botaoCadastrarUsuario,
+                    loadingBotaoConfirmar
+                );
+
+                mostraMensagemAncorada(resultado.getErro());
+            }
+        );
+
         autenticacaoViewModel.getInsercaoResultado().observe(
             getViewLifecycleOwner(),
             resultado -> {
@@ -63,6 +82,11 @@ public class CadastrarUsuarioFragment
                     return;
                 }
 
+                pararLoadingBotao(
+                    botaoCadastrarUsuario,
+                    loadingBotaoConfirmar
+                );
+
                 mostraMensagemAncorada("Erro: " + resultado.getErro());
             }
         );
@@ -71,11 +95,18 @@ public class CadastrarUsuarioFragment
     private void inicializaComponentes() {
         txtSenha = binding.txtSenha;
         edtSenha = binding.edtSenha;
+        edtNome = binding.edtNome;
+        edtEmail = binding.edtEmail;
+        txtEntrar = binding.txtLinkEntrar;
+        loadingBotaoConfirmar = binding.loadingDotsConfirmar.getRoot();
+
         botaoCadastrarUsuario = binding.botaoCadastrarUsuario;
 
         controlador = Navigation.findNavController(binding.getRoot());
 
-        ViewModelFactory viewModelFactory = new ViewModelFactory(getContext());
+        ViewModelFactory viewModelFactory = new ViewModelFactory(
+            getContext()
+        );
 
         autenticacaoViewModel = new ViewModelProvider(
             this,
@@ -105,11 +136,14 @@ public class CadastrarUsuarioFragment
     @SuppressLint("ResourceAsColor")
     private void verificaSenhaRobusta() {
         String senha = Objects.requireNonNull(edtSenha.getText()).toString();
+
         int tamanhoSenha = senha.length();
+
         String upperCaseChars = getString(R.string.stringCasoChaMa);
         String lowerCaseChars = getString(R.string.stringCasoCharMi);
         String numbers = getString(R.string.stringCasoCharNum);
         String especial = getString(R.string.stringCasoCharS);
+
         if (configuraEditSenha(tamanhoSenha>=8)
             && configuraEditSenha(senha.matches(especial))
             && configuraEditSenha(senha.matches(numbers))
@@ -139,15 +173,19 @@ public class CadastrarUsuarioFragment
         if (!configuraEditSenha(tamanhoSenha >= 8)) {
             txtSenha.setError(getString(R.string.string_senha_curta));
         }
+
         if (!configuraEditSenha(senha.matches(numbers))) {
             txtSenha.setError(getString(R.string.string_senha_numerica));
         }
+
         if (!configuraEditSenha(senha.matches(lowerCaseChars))) {
             txtSenha.setError(getString(R.string.string_senha_minuscula));
         }
+
         if (!configuraEditSenha(senha.matches(upperCaseChars))) {
             txtSenha.setError(getString(R.string.string_senha_maiuscula));
         }
+
         if (!configuraEditSenha(senha.matches(especial))) {
             txtSenha.setError(getString(R.string.string_senha_especial));
         }
@@ -169,48 +207,51 @@ public class CadastrarUsuarioFragment
                 controlador.navigate(vaiParaSlashScreen());
                 break;
             case R.id.botaoCadastrarUsuario:
-                cadastrarUsuario();
+                Usuario usuario = defineNovoUsuario();
+
+                iniciarLoadingBotao(
+                    botaoCadastrarUsuario,
+                    loadingBotaoConfirmar
+                );
+
+                cadastrarUsuario(usuario);
         }
     }
 
-    private void cadastrarUsuario() {
-        edtNome = binding.edtNome;
-        TextInputEditText edtEmail = binding.edtEmail;
+    private void cadastrarUsuario(Usuario usuario) {
+
+        if (verificaCampos(usuario)){
+            autenticacaoViewModel.criaUsuario(usuario);
+            return;
+        }
+
+        mostraMensagemAncorada(menssagens[0]);
+    }
+
+    @NonNull
+    private Usuario defineNovoUsuario() {
         Usuario usuario = new Usuario();
+
         usuario.setNome(Objects.requireNonNull(edtNome.getText()).toString());
         usuario.setEmail(Objects.requireNonNull(edtEmail.getText()).toString());
         usuario.setSenha(Objects.requireNonNull(edtSenha.getText()).toString());
-
-        botaoCadastrarUsuario.setEnabled(false);
-        if (verificaCampos(usuario)){
-            autenticacaoViewModel.criaUsuario(usuario).observe(
-                getViewLifecycleOwner(),
-                resultado -> {
-                    if (resultado.getErro() == null) {
-                        salvarDadosUsuario();
-                        return;
-                    }
-
-                    Snackbar snackbar = Snackbar.make(binding.getRoot(), resultado.getErro(), Snackbar.LENGTH_SHORT);
-                    snackbar.setBackgroundTint(Color.WHITE);
-                    snackbar.setTextColor(Color.BLACK);
-                    snackbar.show();
-                }
-            );
-            return;
-        }
-        mostraMensagemAncorada(menssagens[0]);
+        return usuario;
     }
 
     private void salvarDadosUsuario() {
         Usuario usuario = new Usuario();
         usuario.setId(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
         usuario.setNome(Objects.requireNonNull(edtNome.getText()).toString());
+
         autenticacaoViewModel.insereUsuario(usuario);
     }
 
     private boolean verificaCampos(Usuario usuario) {
-        return !(usuario.getNome().isEmpty() || usuario.getEmail().isEmpty() || usuario.getSenha().isEmpty());
+        return !(
+            usuario.getNome().isEmpty() ||
+            usuario.getEmail().isEmpty() ||
+            usuario.getSenha().isEmpty()
+        );
     }
 
     @Override
@@ -219,11 +260,5 @@ public class CadastrarUsuarioFragment
         ViewGroup container
     ) {
         return FragmentCadastrarUsuarioBinding.inflate(inflater, container, false);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
     }
 }

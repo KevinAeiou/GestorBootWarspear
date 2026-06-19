@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Gestor de Produção</string>
-    <string name="string_desfazer">Desfacer</string>
+    <string name="string_desfazer">Desfazer</string>
     <string name="personagens">Personagens</string>
     <string name="sair">Sair</string>
     <string name="estoque">Estoque</string>
@@ -175,7 +175,7 @@
 
     <string name="stringCasoChaMa">(.*[A-Z].*)</string>
     <string name="stringCasoCharMi">(.*[a-z].*)</string>
-    <string name="stringCasoCharNum">(.*\d.*)</string>
+    <string name="stringCasoCharNum">(.*\\d.*)</string>
     <string name="stringCasoCharS">(.*[@,#,$,%].*$)</string>
     <string name="string_senha_curta">Senha muito curta.</string>
     <string name="string_senha_numerica">Senha deve conter ao menos um número.</string>
@@ -183,7 +183,6 @@
     <string name="string_senha_maiuscula">Senha deve conter ao menos uma letra maiúscula.</string>
     <string name="string_senha_especial">Senha deve conter ao menos um caracter especial.</string>
     <string name="string_entre"><u>Entre</u></string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="stringAtivo">Ativo</string>
     <string name="stringInativo">Inativo</string>
     <string name="stringCarregandoDados">Carregando dados…</string>
@@ -240,7 +239,6 @@
     <string name="stringRaro">Raro</string>
     <string name="stringComum">Comum</string>
     <string name="stringNadaEncontrado">Nada encontrado</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="stringDescricao">Descrição</string>
     <string name="stringData">Data</string>

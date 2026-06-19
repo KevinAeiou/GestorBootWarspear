@@ -12,6 +12,7 @@ public class AutenticacaoViewModel extends ViewModel {
     private final FirebaseAuthRepository repository;
     private final MediatorLiveData<Resource<Void>> recuperacaoResultado = new MediatorLiveData<>();
     private final MediatorLiveData<Resource<Void>> insercaoResultado = new MediatorLiveData<>();
+    private final MediatorLiveData<Resource<Void>> criacaoResultado = new MediatorLiveData<>();
     private final MediatorLiveData<Resource<Usuario>> usuarioAtual = new MediatorLiveData<>();
     public AutenticacaoViewModel(FirebaseAuthRepository repository) {
         this.repository = repository;
@@ -25,6 +26,10 @@ public class AutenticacaoViewModel extends ViewModel {
         return insercaoResultado;
     }
 
+    public MediatorLiveData<Resource<Void>> getCriacaoResultado() {
+        return criacaoResultado;
+    }
+
     public LiveData<Resource<Usuario>> getUsuarioAtual() {
         return usuarioAtual;
     }
@@ -32,8 +37,13 @@ public class AutenticacaoViewModel extends ViewModel {
         return repository.autenticarUsuario(usuario);
     }
 
-    public LiveData<Resource<Void>> criaUsuario(Usuario usuario) {
-        return repository.criaUsuario(usuario);
+    public void criaUsuario(Usuario usuario) {
+        LiveData<Resource<Void>> source = repository.criaUsuario(usuario);
+
+        criacaoResultado.addSource(source, resultado -> {
+            criacaoResultado.setValue(resultado);
+            criacaoResultado.removeSource(source);
+        });
     }
 
     public void insereUsuario(Usuario usuario) {
@@ -58,9 +68,7 @@ public class AutenticacaoViewModel extends ViewModel {
         LiveData<Resource<Usuario>> source = repository.recuperaUsuarioAtual();
 
         usuarioAtual.addSource(source, resultado -> {
-
             usuarioAtual.setValue(resultado);
-
             usuarioAtual.removeSource(source);
         });
     }

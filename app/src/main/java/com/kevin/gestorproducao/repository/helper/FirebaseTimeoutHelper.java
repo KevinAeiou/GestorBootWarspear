@@ -13,10 +13,10 @@ public class FirebaseTimeoutHelper {
 
     private static final long TIMEOUT_MS = 10000;
 
-    public static MutableLiveData<Resource<Void>> execute(
-        Consumer<Callback> operation
+    public static <T> MutableLiveData<Resource<T>> execute(
+        Consumer<Callback<T>> operation
     ) {
-        MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
+        MutableLiveData<Resource<T>> liveData = new MutableLiveData<>();
 
         Handler handler = new Handler(Looper.getMainLooper());
 
@@ -29,12 +29,12 @@ public class FirebaseTimeoutHelper {
 
         handler.postDelayed(timeoutRunnable, TIMEOUT_MS);
 
-        operation.accept(new Callback() {
+        operation.accept(new Callback<T>() {
             @Override
-            public void sucesso() {
+            public void sucesso(T dado) {
                 handler.removeCallbacks(timeoutRunnable);
                 liveData.postValue(
-                    new Resource<>(null, null)
+                    new Resource<>(dado, null)
                 );
             }
 
@@ -50,8 +50,9 @@ public class FirebaseTimeoutHelper {
         return liveData;
     }
 
-    public interface Callback {
-        void sucesso();
+    public interface Callback<T> {
+
+        void sucesso(T dado);
         void erro(String mensagem);
     }
 }

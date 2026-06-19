@@ -6,6 +6,7 @@ import static com.kevin.gestorproducao.ui.activity.Constantes.CHAVE_USUARIOS2;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
@@ -13,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.kevin.gestorproducao.model.Usuario;
+import com.kevin.gestorproducao.repository.helper.FirebaseTimeoutHelper;
 
 import java.util.Objects;
 import java.util.concurrent.Executor;
@@ -38,63 +40,74 @@ public class FirebaseAuthRepository {
     }
 
     public LiveData<Resource<Void>> autenticarUsuario(Usuario usuario) {
-        MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
-        minhaInstancia.signInWithEmailAndPassword(usuario.getEmail(),usuario.getSenha())
+
+        return FirebaseTimeoutHelper.execute(callback -> minhaInstancia
+            .signInWithEmailAndPassword(usuario.getEmail(),usuario.getSenha())
             .addOnCompleteListener(backgroundExecutor, task -> {
                 if (task.isSuccessful()) {
-                    liveData.postValue(new Resource<>(null, null));
+                    callback.sucesso(null);
                     return;
                 }
-                Exception exception = task.getException();
-                String erro = recuperaErro(exception, "Erro desconhecido ao autenticar usuário");
-                liveData.postValue(new Resource<>(null, erro));            });
-        return liveData;
+
+                callback.erro(
+                    recuperaErro(
+                        task.getException(),
+                        "Erro desconhecido ao autenticar usuário"
+                    )
+                );
+            })
+        );
     }
 
     public LiveData<Resource<Void>> criaUsuario(Usuario usuario) {
-        MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
 
-        minhaInstancia.createUserWithEmailAndPassword(usuario.getEmail(),usuario.getSenha())
+        return FirebaseTimeoutHelper.execute(callback -> minhaInstancia
+            .createUserWithEmailAndPassword(usuario.getEmail(),usuario.getSenha())
             .addOnCompleteListener(backgroundExecutor, task -> {
                 if (task.isSuccessful()){
-                    liveData.postValue(new Resource<>(null, null));
+                    callback.sucesso(null);
                     return;
-
                 }
 
-                String erro;
+                String erroString;
                 try{
                     throw Objects.requireNonNull(task.getException());
                 }catch (FirebaseAuthWeakPasswordException e){
-                    erro = "A senha deve conter no mínimo 8 caracteres!";
+                    erroString = "A senha deve conter no mínimo 8 caracteres!";
                 } catch (FirebaseAuthUserCollisionException e){
-                    erro = "Conta já cadastrada!";
+                    erroString = "Conta já cadastrada!";
                 }catch (FirebaseAuthInvalidCredentialsException e) {
-                    erro = "Email inválido!";
+                    erroString = "Email inválido!";
+                }catch (FirebaseNetworkException e) {
+                    erroString = "Erro de conexão! Tente novamente.";
                 }catch (Exception e) {
-                    erro = "Erro ao cadastrar usuário";
+                    erroString = "Erro ao cadastrar usuário: " + e.getMessage();
                 }
-                liveData.postValue(new Resource<>(null, erro));
-            });
 
-        return liveData;
+                callback.erro(erroString);
+            })
+        );
     }
 
     public LiveData<Resource<Void>> insereUsuario(Usuario usuario) {
-        MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
 
-        minhaReferencia.child(usuario.getId()).setValue(usuario).addOnCompleteListener(backgroundExecutor, task -> {
-            if (task.isSuccessful()) {
-                liveData.postValue(new Resource<>(null, null));
-                return;
-            }
+        return FirebaseTimeoutHelper.execute(callback -> minhaReferencia
+            .child(usuario.getId())
+            .setValue(usuario)
+            .addOnCompleteListener(backgroundExecutor, task -> {
+                if (task.isSuccessful()) {
+                    callback.sucesso(null);
+                    return;
+                }
 
-            Exception exception = task.getException();
-            String erro = recuperaErro(exception, "Erro desconhecido ao inserir usuário");
-            liveData.postValue(new Resource<>(null, erro));
-        });
-
-        return liveData;
+                callback.erro(
+                    recuperaErro(
+                        task.getException(),
+                        "Erro desconhecido ao salvar dados do usuário"
+                    )
+                );
+            })
+        );
     }
 
     private String recuperaErro(Exception exception, String erro) {
@@ -102,28 +115,29 @@ public class FirebaseAuthRepository {
     }
 
     public LiveData<Resource<Void>> recuperaSenha(String email) {
-        MutableLiveData<Resource<Void>> liveData = new MutableLiveData<>();
 
-        minhaInstancia.sendPasswordResetEmail(email).addOnCompleteListener(
-            backgroundExecutor, task -> {
+        return FirebaseTimeoutHelper.execute(callback -> minhaInstancia
+            .sendPasswordResetEmail(email)
+            .addOnCompleteListener(backgroundExecutor, task -> {
                 if (task.isSuccessful()) {
-                    liveData.postValue(new Resource<>(null, null));
+                    callback.sucesso(null);
                     return;
                 }
 
-                Exception exception = task.getException();
-                String erro = recuperaErro(exception, "Erro desconhecido recuperar a senha");
-                liveData.postValue(new Resource<>(null, erro));
-            }
+                callback.erro(
+                    recuperaErro(
+                        task.getException(),
+                        "Erro desconhecido ao recuperar a senha"
+                    )
+                );
+            })
         );
-
-        return liveData;
     }
 
     public LiveData<Resource<Usuario>> recuperaUsuarioAtual() {
-        MutableLiveData<Resource<Usuario>> liveData = new MutableLiveData<>();
 
         if (minhaInstancia.getCurrentUser() == null) {
+            MutableLiveData<Resource<Usuario>> liveData = new MutableLiveData<>();
             liveData.postValue(
                 new Resource<>(null, "Usuário não autenticado")
             );
@@ -133,27 +147,22 @@ public class FirebaseAuthRepository {
 
         String uid = minhaInstancia.getCurrentUser().getUid();
 
-        minhaReferencia.child(uid).get().addOnCompleteListener(
-            backgroundExecutor, task -> {
+        return FirebaseTimeoutHelper.execute(callback -> minhaReferencia
+            .child(uid).get().addOnCompleteListener(backgroundExecutor, task -> {
                 if (task.isSuccessful()) {
-
                     Usuario usuario = task.getResult().getValue(Usuario.class);
 
-                    liveData.postValue(new Resource<>(usuario, null));
-
+                    callback.sucesso(usuario);
                     return;
                 }
 
-                Exception exception = task.getException();
-
-                String erro = recuperaErro(
-                    exception,
-                    "Erro ao recuperar usuário"
+                callback.erro(
+                    recuperaErro(
+                        task.getException(),
+                        "Erro desconhecido ao recuperar usuário"
+                    )
                 );
-
-                liveData.postValue(new Resource<>(null, erro));
-            });
-
-        return liveData;
+            })
+        );
     }
 }

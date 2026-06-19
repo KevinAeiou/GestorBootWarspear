@@ -85,13 +85,26 @@
                         android:hint="@string/string_senha" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/botaoCadastrarUsuario"
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/stringCadastrar"
-                    android:enabled="false"
-                    android:layout_marginTop="24dp"/>
+                    android:layout_marginTop="24dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/botaoCadastrarUsuario"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:text="@string/stringConfirmar"/>
+
+                    <include
+                        android:id="@+id/loadingDotsConfirmar"
+                        layout="@layout/view_loading_dots"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:visibility="gone"/>
+                </FrameLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

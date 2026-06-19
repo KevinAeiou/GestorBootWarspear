@@ -2,6 +2,8 @@ package com.kevin.gestorproducao.model;
 
 import static com.kevin.gestorproducao.utilitario.Utilitario.geraIdAleatorio;
 
+import com.google.firebase.database.Exclude;
+
 import java.io.Serializable;
 
 public class Usuario implements Serializable {
@@ -15,6 +17,7 @@ public class Usuario implements Serializable {
 
     public Usuario() {
         this.id = geraIdAleatorio();
+        this.tipo = "usuario";
     }
 
     public String getNome() {
@@ -56,6 +59,7 @@ public class Usuario implements Serializable {
         this.tipo = tipo;
     }
 
+    @Exclude
     public boolean isAdministrador() {
         return tipo != null && tipo.equalsIgnoreCase("super");
     }

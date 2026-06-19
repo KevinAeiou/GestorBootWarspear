@@ -73,7 +73,7 @@ public class  TrabalhoProducaoRepository {
                 if (task.isSuccessful()) {
                     try {
                         producaoDao.modificaProducao(trabalho, idPersonagem);
-                        callback.sucesso();
+                        callback.sucesso(null);
 
                     } catch (RuntimeException e) {
                         callback.erro(e.getMessage());
@@ -109,7 +109,7 @@ public class  TrabalhoProducaoRepository {
                 if (task.isSuccessful()) {
                     try {
                         producaoDao.insereProducao(trabalho, idPersonagem);
-                        callback.sucesso();
+                        callback.sucesso(null);
 
                     } catch (RuntimeException e) {
                         callback.erro(e.getMessage());
@@ -147,7 +147,7 @@ public class  TrabalhoProducaoRepository {
                 if (task.isSuccessful()) {
                     try {
                         producaoDao.removeProducao(trabalho);
-                        callback.sucesso();
+                        callback.sucesso(null);
 
                     } catch (RuntimeException e) {
                         callback.erro(e.getMessage());
